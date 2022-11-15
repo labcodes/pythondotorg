@@ -22,8 +22,13 @@ from mailing.admin import BaseEmailTemplateAdmin
 from sponsors.models import *
 from sponsors.models.benefits import RequiredAssetMixin
 from sponsors import views_admin
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm, \
-    SponsorshipBenefitAdminForm, CloneApplicationConfigForm
+from sponsors.forms import (
+    SponsorshipReviewAdminForm,
+    SponsorBenefitAdminInlineForm,
+    RequiredImgAssetConfigurationForm,
+    SponsorshipBenefitAdminForm,
+    CloneApplicationConfigForm,
+)
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -110,6 +115,7 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         ProvidedFileAssetConfigurationInline,
     ]
 
+
 @admin.register(SponsorshipBenefit)
 class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
     change_form_template = "sponsors/admin/sponsorshipbenefit_change_form.html"
@@ -124,7 +130,9 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
         "unavailable",
         "move_up_down_links",
     ]
-    list_filter = ["program", "year", "package_only", "packages", "new", "standalone", "unavailable"]
+    list_filter = [
+        "program", "year", "package_only", "packages", "new", "standalone", "unavailable"
+    ]
     search_fields = ["name"]
     form = SponsorshipBenefitAdminForm
 
@@ -450,7 +458,10 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         for title, cfg in super().get_fieldsets(request, obj):
             # disable collapse option in case of sponsorships with customizations
             if title == "User Customizations" and obj:
-                if obj.user_customizations["added_by_user"] or obj.user_customizations["removed_by_user"]:
+                if (
+                        obj.user_customizations["added_by_user"] or
+                        obj.user_customizations["removed_by_user"]
+                ):
                     cfg["classes"] = []
             fieldsets.append((title, cfg))
         return fieldsets
@@ -507,7 +518,10 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         cost = None
         html = "This sponsorship has not customizations so there's no estimated cost"
         if obj.for_modified_package:
-            msg = "This sponsorship has customizations and this cost is a sum of all benefit's internal values from when this sponsorship was created"
+            msg = (
+                "This sponsorship has customizations and this cost is a sum "
+                "of all benefit's internal values from when this sponsorship was created"
+            )
             cost = intcomma(obj.estimated_cost)
             html = f"{cost} USD <br/><b>Important: </b> {msg}"
         return mark_safe(html)
@@ -583,7 +597,10 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     get_sponsor_landing_page_url.short_description = "Landing Page URL"
 
     def get_sponsor_web_logo(self, obj):
-        html = "{% load thumbnail %}{% thumbnail sponsor.web_logo '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+        html = (
+            "{% load thumbnail %}{% thumbnail sponsor.web_logo '150x150' format='PNG' "
+            "quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+        )
         template = Template(html)
         context = Context({'sponsor': obj.sponsor})
         html = template.render(context)
@@ -595,7 +612,10 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         img = obj.sponsor.print_logo
         html = ""
         if img:
-            html = "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+            html = (
+                "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}"
+                "<img src='{{ im.url}}'/>{% endthumbnail %}"
+            )
             template = Template(html)
             context = Context({'img': img})
             html = template.render(context)
@@ -614,7 +634,10 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
             f"{sponsor.city} - {sponsor.get_country_display()} ({sponsor.country})"
         )
         if sponsor.state:
-            city_row = f"{sponsor.city} - {sponsor.state} - {sponsor.get_country_display()} ({sponsor.country})"
+            city_row = (
+                f"{sponsor.city} - {sponsor.state} - "
+                f"{sponsor.get_country_display()} ({sponsor.country})"
+            )
 
         mail_row = sponsor.mailing_address_line_1
         if sponsor.mailing_address_line_2:
@@ -774,6 +797,7 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
 
     def clone_application_config(self, request):
         return views_admin.clone_application_config(self, request)
+
 
 @admin.register(LegalClause)
 class LegalClauseModelAdmin(OrderedModelAdmin):
@@ -972,8 +996,10 @@ class AssociatedBenefitListFilter(admin.SimpleListFilter):
 
     @property
     def benefits_with_assets(self):
-        qs = BenefitFeature.objects.required_assets().values_list("sponsor_benefit__sponsorship_benefit",
-                                                                  flat=True).distinct()
+        qs = BenefitFeature.objects.required_assets().values_list(
+            "sponsor_benefit__sponsorship_benefit",
+            flat=True
+        ).distinct()
         benefits = SponsorshipBenefit.objects.filter(id__in=Subquery(qs))
         return {str(b.id): b for b in benefits}
 
