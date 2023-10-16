@@ -1,6 +1,12 @@
-from django.db.models import Prefetch
-from django.http import Http404
-from django.urls import reverse
+from django.db.models import (
+    Prefetch,
+)
+from django.http import (
+    Http404,
+)
+from django.urls import (
+    reverse,
+)
 from django.views.generic import (
     DetailView,
     ListView,
@@ -16,7 +22,8 @@ from .models import (
 
 
 class DownloadLatestPython2(RedirectView):
-    """ Redirect to latest Python 2 release """
+    """Redirect to latest Python 2 release"""
+
     permanent = False
 
     def get_redirect_url(self, **kwargs):
@@ -32,7 +39,8 @@ class DownloadLatestPython2(RedirectView):
 
 
 class DownloadLatestPython3(RedirectView):
-    """ Redirect to latest Python 3 release """
+    """Redirect to latest Python 3 release"""
+
     permanent = False
 
     def get_redirect_url(self, **kwargs):
@@ -48,14 +56,16 @@ class DownloadLatestPython3(RedirectView):
 
 
 class DownloadBase:
-    """ Include latest releases in all views """
+    """Include latest releases in all views"""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({
-            'latest_python2': Release.objects.latest_python2(),
-            'latest_python3': Release.objects.latest_python3(),
-        })
+        context.update(
+            {
+                'latest_python2': Release.objects.latest_python2(),
+                'latest_python3': Release.objects.latest_python3(),
+            }
+        )
         return context
 
 
@@ -85,12 +95,14 @@ class DownloadHome(DownloadBase, TemplateView):
                 data['python3'] = latest_python3.download_file_for_os(o.slug)
             python_files.append(data)
 
-        context.update({
-            'releases': Release.objects.downloads(),
-            'latest_python2': latest_python2,
-            'latest_python3': latest_python3,
-            'python_files': python_files,
-        })
+        context.update(
+            {
+                'releases': Release.objects.downloads(),
+                'latest_python2': latest_python2,
+                'latest_python3': latest_python3,
+                'python_files': python_files,
+            }
+        )
 
         return context
 
@@ -111,15 +123,22 @@ class DownloadOSList(DownloadBase, DetailView):
         release_files = ReleaseFile.objects.select_related(
             'os',
         ).filter(os=self.object)
-        context.update({
-            'os_slug': self.object.slug,
-            'releases': Release.objects.released().prefetch_related(
-                Prefetch('files', queryset=release_files),
-            ).order_by('-release_date'),
-            'pre_releases': Release.objects.published().pre_release().prefetch_related(
-                Prefetch('files', queryset=release_files),
-            ).order_by('-release_date'),
-        })
+        context.update(
+            {
+                'os_slug': self.object.slug,
+                'releases': Release.objects.released()
+                .prefetch_related(
+                    Prefetch('files', queryset=release_files),
+                )
+                .order_by('-release_date'),
+                'pre_releases': Release.objects.published()
+                .pre_release()
+                .prefetch_related(
+                    Prefetch('files', queryset=release_files),
+                )
+                .order_by('-release_date'),
+            }
+        )
         return context
 
 
@@ -130,8 +149,10 @@ class DownloadReleaseDetail(DownloadBase, DetailView):
 
     def get_object(self):
         try:
-            return self.get_queryset().select_related().get(
-                slug=self.kwargs['release_slug']
+            return (
+                self.get_queryset()
+                .select_related()
+                .get(slug=self.kwargs['release_slug'])
             )
         except self.model.DoesNotExist:
             raise Http404
@@ -150,9 +171,9 @@ class DownloadReleaseDetail(DownloadBase, DetailView):
         # Add all other OSes
         context['release_files'].extend(
             list(
-                self.object.files.exclude(
-                    os__slug='source'
-                ).order_by('os__slug', 'name')
+                self.object.files.exclude(os__slug='source').order_by(
+                    'os__slug', 'name'
+                )
             )
         )
 

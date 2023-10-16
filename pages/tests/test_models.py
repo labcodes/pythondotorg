@@ -3,10 +3,12 @@ import unittest
 
 import ddt
 
-from .base import BasePageTests
 from ..models import (
     PAGE_PATH_RE,
     Page,
+)
+from .base import (
+    BasePageTests,
 )
 
 
@@ -39,20 +41,22 @@ class PageModelTests(BasePageTests):
         fourth line
         """
         content_ht = os.path.join(
-            os.path.dirname(__file__), 'fake_svn_content_checkout', 'content.ht'
+            os.path.dirname(__file__),
+            'fake_svn_content_checkout',
+            'content.ht',
         )
         page = Page.objects.create(
-            title='Testing', content=content.format(content_ht=content_ht),
+            title='Testing',
+            content=content.format(content_ht=content_ht),
         )
         self.assertEqual(
             page.content.rendered,
-            '<blockquote>\n<p>first line</p>\n<p>fourth line</p>\n</blockquote>\n'
+            '<blockquote>\n<p>first line</p>\n<p>fourth line</p>\n</blockquote>\n',
         )
 
 
 @ddt.ddt
 class PagePathReTests(unittest.TestCase):
-
     good_paths = (
         "path",
         "path/2",

@@ -1,7 +1,13 @@
-from django.contrib.redirects.models import Redirect
-from django.contrib.sites.models import Site
+from django.contrib.redirects.models import (
+    Redirect,
+)
+from django.contrib.sites.models import (
+    Site,
+)
 
-from .base import BasePageTests
+from .base import (
+    BasePageTests,
+)
 
 
 class PageViewTests(BasePageTests):
@@ -30,7 +36,7 @@ class PageViewTests(BasePageTests):
         redirect = Redirect.objects.create(
             old_path='/%s/' % self.p1.path,
             new_path='http://redirected.example.com',
-            site=Site.objects.get_current()
+            site=Site.objects.get_current(),
         )
         response = self.client.get(redirect.old_path)
         self.assertEqual(response.status_code, 301)

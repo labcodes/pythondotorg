@@ -1,11 +1,14 @@
 import factory
-from factory.django import DjangoModelFactory
+from factory.django import (
+    DjangoModelFactory,
+)
 
-from .models import Company
+from .models import (
+    Company,
+)
 
 
 class CompanyFactory(DjangoModelFactory):
-
     class Meta:
         model = Company
         django_get_or_create = ('name',)

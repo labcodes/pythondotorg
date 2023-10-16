@@ -1,12 +1,17 @@
-from django.contrib.redirects.models import Redirect
-from django.contrib.sites.models import Site
-from django.test import TestCase
+from django.contrib.redirects.models import (
+    Redirect,
+)
+from django.contrib.sites.models import (
+    Site,
+)
+from django.test import (
+    TestCase,
+)
 
 
 class MiddlewareTests(TestCase):
-
     def test_admin_caching(self):
-        """ Ensure admin is not cached """
+        """Ensure admin is not cached"""
         response = self.client.get('/admin/')
         self.assertTrue(response.has_header('Cache-Control'))
         self.assertEqual(response['Cache-Control'], 'private')
@@ -18,7 +23,7 @@ class MiddlewareTests(TestCase):
         redirect = Redirect.objects.create(
             old_path='/old_path/',
             new_path='http://redirected.example.com',
-            site=Site.objects.get_current()
+            site=Site.objects.get_current(),
         )
         url = redirect.old_path
         response = self.client.get(url)

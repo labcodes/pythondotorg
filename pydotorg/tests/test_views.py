@@ -1,13 +1,20 @@
 import factory
-from django.db.models import signals
-from django.test import TestCase
-from django.urls import reverse
+from django.db.models import (
+    signals,
+)
+from django.test import (
+    TestCase,
+)
+from django.urls import (
+    reverse,
+)
 
-from downloads.models import Release
+from downloads.models import (
+    Release,
+)
 
 
 class ViewsTests(TestCase):
-
     @factory.django.mute_signals(signals.post_save)
     def test_download_index_without_release(self):
         url = reverse('documentation')
@@ -18,7 +25,7 @@ class ViewsTests(TestCase):
         # "Browse Current Documentation" link.
         self.assertContains(
             response,
-            '<a href="https://docs.python.org/3/">Browse Current Documentation</a>'
+            '<a href="https://docs.python.org/3/">Browse Current Documentation</a>',
         )
         self.assertContains(response, 'What\'s new in Python 3')
 

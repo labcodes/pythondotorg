@@ -1,11 +1,19 @@
 import os
 import re
-from urllib.parse import urlparse
+from urllib.parse import (
+    urlparse,
+)
 
 import requests
-from django.conf import settings
-from django.core.files import File
-from django.core.management.base import BaseCommand
+from django.conf import (
+    settings,
+)
+from django.core.files import (
+    File,
+)
+from django.core.management.base import (
+    BaseCommand,
+)
 
 from ...models import (
     Image,
@@ -15,7 +23,7 @@ from ...models import (
 
 
 class Command(BaseCommand):
-    """ Fix success story page images """
+    """Fix success story page images"""
 
     def get_success_pages(self):
         return Page.objects.filter(path__startswith='about/success/')
@@ -70,7 +78,7 @@ class Command(BaseCommand):
         return paths
 
     def process_success_story(self, page):
-        """ Process an individual success story """
+        """Process an individual success story"""
         image_paths = self.find_image_paths(page)
 
         for path in image_paths:

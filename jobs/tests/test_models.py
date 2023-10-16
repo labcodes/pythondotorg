@@ -1,9 +1,15 @@
 import datetime
 
-from django.test import TestCase
-from django.utils import timezone
+from django.test import (
+    TestCase,
+)
+from django.utils import (
+    timezone,
+)
 
-from .. import factories
+from .. import (
+    factories,
+)
 from ..models import (
     Job,
     JobCategory,
@@ -12,7 +18,6 @@ from ..models import (
 
 
 class JobsModelsTests(TestCase):
-
     def create_job(self, **kwargs):
         job_kwargs = {
             'city': "Memphis",

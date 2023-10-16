@@ -1,8 +1,10 @@
-from django.db import models, migrations
+from django.db import (
+    migrations,
+    models,
+)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('successstories', '0003_auto_20170720_1655'),
     ]

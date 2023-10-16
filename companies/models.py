@@ -1,9 +1,19 @@
-from django.conf import settings
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-from markupfield.fields import MarkupField
+from django.conf import (
+    settings,
+)
+from django.db import (
+    models,
+)
+from django.utils.translation import (
+    gettext_lazy as _,
+)
+from markupfield.fields import (
+    MarkupField,
+)
 
-from cms.models import NameSlugModel
+from cms.models import (
+    NameSlugModel,
+)
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
@@ -18,4 +28,4 @@ class Company(NameSlugModel):
     class Meta:
         verbose_name = _('company')
         verbose_name_plural = _('companies')
-        ordering = ('name', )
+        ordering = ('name',)

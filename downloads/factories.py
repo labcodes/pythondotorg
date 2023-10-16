@@ -1,10 +1,17 @@
-from urllib.parse import urljoin
+from urllib.parse import (
+    urljoin,
+)
 
 import factory
 import requests
-from factory.django import DjangoModelFactory
+from factory.django import (
+    DjangoModelFactory,
+)
 
-from users.factories import UserFactory
+from users.factories import (
+    UserFactory,
+)
+
 from .models import (
     OS,
     Release,
@@ -13,7 +20,6 @@ from .models import (
 
 
 class OSFactory(DjangoModelFactory):
-
     class Meta:
         model = OS
         django_get_or_create = ('slug',)
@@ -22,7 +28,6 @@ class OSFactory(DjangoModelFactory):
 
 
 class ReleaseFactory(DjangoModelFactory):
-
     class Meta:
         model = Release
         django_get_or_create = ('slug',)
@@ -32,7 +37,6 @@ class ReleaseFactory(DjangoModelFactory):
 
 
 class ReleaseFileFactory(DjangoModelFactory):
-
     class Meta:
         model = ReleaseFile
         django_get_or_create = ('slug',)

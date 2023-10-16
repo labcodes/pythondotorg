@@ -1,24 +1,48 @@
-from collections import defaultdict
+from collections import (
+    defaultdict,
+)
 
 from allauth.account.views import (
     PasswordChangeView,
     SignupView,
 )
-from django.conf import settings
-from django.contrib import messages
-from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import UserPassesTestMixin
-from django.core.mail import send_mail
-from django.db.models import Subquery
-from django.http import Http404
-from django.shortcuts import redirect
+from django.conf import (
+    settings,
+)
+from django.contrib import (
+    messages,
+)
+from django.contrib.auth import (
+    get_user_model,
+)
+from django.contrib.auth.decorators import (
+    login_required,
+)
+from django.contrib.auth.mixins import (
+    UserPassesTestMixin,
+)
+from django.core.mail import (
+    send_mail,
+)
+from django.db.models import (
+    Subquery,
+)
+from django.http import (
+    Http404,
+)
+from django.shortcuts import (
+    redirect,
+)
 from django.urls import (
     reverse,
     reverse_lazy,
 )
-from django.utils import timezone
-from django.utils.decorators import method_decorator
+from django.utils import (
+    timezone,
+)
+from django.utils.decorators import (
+    method_decorator,
+)
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -27,9 +51,13 @@ from django.views.generic import (
     TemplateView,
     UpdateView,
 )
-from honeypot.decorators import check_honeypot
+from honeypot.decorators import (
+    check_honeypot,
+)
 
-from pydotorg.mixins import LoginRequiredMixin
+from pydotorg.mixins import (
+    LoginRequiredMixin,
+)
 from sponsors.forms import (
     SponsorRequiredAssetsForm,
     SponsorUpdateForm,
@@ -39,12 +67,15 @@ from sponsors.models import (
     Sponsor,
     Sponsorship,
 )
+
 from .forms import (
     MembershipForm,
     MembershipUpdateForm,
     UserProfileForm,
 )
-from .models import Membership
+from .models import (
+    Membership,
+)
 
 User = get_user_model()
 
@@ -117,7 +148,7 @@ class MembershipVoteAffirm(TemplateView):
     template_name = 'users/membership_vote_affirm.html'
 
     def post(self, request, *args, **kwargs):
-        """ Store the vote affirmation """
+        """Store the vote affirmation"""
         self.request.user.membership.votes = True
         self.request.user.membership.last_vote_affirmation = timezone.now()
         self.request.user.membership.save()
@@ -152,7 +183,6 @@ class UserDetail(DetailView):
 
 
 class HoneypotSignupView(SignupView):
-
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
@@ -188,7 +218,10 @@ class MembershipDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     http_method_names = ['post', 'delete']
 
     def get_success_url(self):
-        return reverse('users:user_detail', kwargs={'slug': self.request.user.username})
+        return reverse(
+            'users:user_detail',
+            kwargs={'slug': self.request.user.username},
+        )
 
     def test_func(self):
         return self.get_object().creator == self.request.user
@@ -203,7 +236,12 @@ class UserNominationsView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        elections = defaultdict(lambda: {'nominations_recieved': [], 'nominations_made': []})
+        elections = defaultdict(
+            lambda: {
+                'nominations_recieved': [],
+                'nominations_made': [],
+            }
+        )
         for nomination in self.request.user.nominations_recieved.all():
             nominations = nomination.nominations.all()
             for nomin in nominations:
@@ -212,7 +250,13 @@ class UserNominationsView(LoginRequiredMixin, TemplateView):
         for nomination in self.request.user.nominations_made.all():
             nomination.is_editable = nomination.editable(user=self.request.user)
             elections[nomination.election]['nominations_made'].append(nomination)
-        context['elections'] = dict(sorted(dict(elections).items(), key=lambda item: item[0].date, reverse=True))
+        context['elections'] = dict(
+            sorted(
+                dict(elections).items(),
+                key=lambda item: item[0].date,
+                reverse=True,
+            )
+        )
         return context
 
 
@@ -232,12 +276,7 @@ class UserSponsorshipsDashboard(ListView):
         by_status = []
         inactive = [sp for sp in sponsorships if not sp.is_active]
         for value, label in Sponsorship.STATUS_CHOICES[::-1]:
-            by_status.append((
-                label, [
-                    sp for sp in inactive
-                    if sp.status == value
-                ]
-            ))
+            by_status.append((label, [sp for sp in inactive if sp.status == value]))
 
         context["by_status"] = by_status
         return context
@@ -257,7 +296,9 @@ class SponsorshipDetailView(DetailView):
         context = super().get_context_data(*args, **kwargs)
 
         sponsorship = context["sponsorship"]
-        required_assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
+        required_assets = BenefitFeature.objects.required_assets().from_sponsorship(
+            sponsorship
+        )
         fulfilled, pending = [], []
         for asset in required_assets:
             if bool(asset.value):
@@ -265,7 +306,9 @@ class SponsorshipDetailView(DetailView):
             else:
                 pending.append(asset)
 
-        provided_assets = BenefitFeature.objects.provided_assets().from_sponsorship(sponsorship)
+        provided_assets = BenefitFeature.objects.provided_assets().from_sponsorship(
+            sponsorship
+        )
         provided = []
         for asset in provided_assets:
             if bool(asset.value):
@@ -287,11 +330,17 @@ class UpdateSponsorInfoView(UpdateView):
     def get_queryset(self):
         if self.request.user.is_superuser:
             return Sponsor.objects.all()
-        sponsor_ids = self.request.user.sponsorships.values_list("sponsor_id", flat=True)
+        sponsor_ids = self.request.user.sponsorships.values_list(
+            "sponsor_id", flat=True
+        )
         return Sponsor.objects.filter(id__in=Subquery(sponsor_ids))
 
     def get_success_url(self):
-        messages.add_message(self.request, messages.SUCCESS, "Sponsor info updated with success.")
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            "Sponsor info updated with success.",
+        )
         return self.request.path
 
 
@@ -319,8 +368,15 @@ class UpdateSponsorshipAssetsView(UpdateView):
         return context
 
     def get_success_url(self):
-        messages.add_message(self.request, messages.SUCCESS, "Assets were updated with success.")
-        return reverse("users:sponsorship_application_detail", args=[self.object.pk])
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            "Assets were updated with success.",
+        )
+        return reverse(
+            "users:sponsorship_application_detail",
+            args=[self.object.pk],
+        )
 
     def form_valid(self, form):
         form.update_assets()
@@ -339,7 +395,9 @@ class ProvidedSponsorshipAssetsView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        provided_assets = BenefitFeature.objects.provided_assets().from_sponsorship(context["sponsorship"])
+        provided_assets = BenefitFeature.objects.provided_assets().from_sponsorship(
+            context["sponsorship"]
+        )
         provided = []
         for asset in provided_assets:
             if bool(asset.value):

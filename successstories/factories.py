@@ -1,6 +1,10 @@
 import factory
-from factory.django import DjangoModelFactory
-from faker.providers import BaseProvider
+from factory.django import (
+    DjangoModelFactory,
+)
+from faker.providers import (
+    BaseProvider,
+)
 
 from .models import (
     Story,
@@ -9,7 +13,6 @@ from .models import (
 
 
 class StoryProvider(BaseProvider):
-
     story_categories = [
         'Arts',
         'Business',
@@ -28,7 +31,6 @@ factory.Faker.add_provider(StoryProvider)
 
 
 class StoryCategoryFactory(DjangoModelFactory):
-
     class Meta:
         model = StoryCategory
         django_get_or_create = ('name',)
@@ -37,7 +39,6 @@ class StoryCategoryFactory(DjangoModelFactory):
 
 
 class StoryFactory(DjangoModelFactory):
-
     class Meta:
         model = Story
         django_get_or_create = ('name',)
@@ -55,5 +56,6 @@ class StoryFactory(DjangoModelFactory):
 
 def initial_data():
     return {
-        'successstories': StoryFactory.create_batch(size=10) + [StoryFactory(featured=True)],
+        'successstories': StoryFactory.create_batch(size=10)
+        + [StoryFactory(featured=True)],
     }

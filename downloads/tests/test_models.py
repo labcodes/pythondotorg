@@ -1,9 +1,12 @@
-from .base import BaseDownloadTests
-from ..models import Release
+from ..models import (
+    Release,
+)
+from .base import (
+    BaseDownloadTests,
+)
 
 
 class DownloadModelTests(BaseDownloadTests):
-
     def test_stringification(self):
         self.assertEqual(str(self.osx), 'macOS')
         self.assertEqual(str(self.release_275), 'Python 2.7.5')
@@ -67,7 +70,10 @@ class DownloadModelTests(BaseDownloadTests):
 
     def test_get_version_invalid(self):
         names = [
-            'spam', 'Python2.7.5', 'Python   2.7.7', r'Python\t2.7.9',
+            'spam',
+            'Python2.7.5',
+            'Python   2.7.7',
+            r'Python\t2.7.9',
             r'\tPython 2.8.0',
         ]
         for name in names:

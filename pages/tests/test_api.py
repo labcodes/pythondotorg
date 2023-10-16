@@ -1,8 +1,16 @@
-from rest_framework.test import APITestCase
+from rest_framework.test import (
+    APITestCase,
+)
 
-from pages.factories import PageFactory
-from pydotorg.drf import BaseAPITestCase
-from users.factories import UserFactory
+from pages.factories import (
+    PageFactory,
+)
+from pydotorg.drf import (
+    BaseAPITestCase,
+)
+from users.factories import (
+    UserFactory,
+)
 
 
 class PageApiViewsTest(BaseAPITestCase, APITestCase):
@@ -68,7 +76,9 @@ class PageApiViewsTest(BaseAPITestCase, APITestCase):
         self.assertEqual(response.status_code, 401)
 
         # 'PageViewSet' is read-only.
-        response = self.json_client('POST', url, data, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.json_client(
+            'POST', url, data, HTTP_AUTHORIZATION=self.Authorization
+        )
         self.assertEqual(response.status_code, 405)
 
     def test_delete_page(self):
@@ -77,5 +87,7 @@ class PageApiViewsTest(BaseAPITestCase, APITestCase):
         self.assertEqual(response.status_code, 401)
 
         # 'PageViewSet' is read-only.
-        response = self.json_client('DELETE', url, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.json_client(
+            'DELETE', url, HTTP_AUTHORIZATION=self.Authorization
+        )
         self.assertEqual(response.status_code, 405)

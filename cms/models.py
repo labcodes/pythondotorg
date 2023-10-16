@@ -10,10 +10,18 @@ around common "content management" tasks. These common attributes are:
     - access controls (TODO)
 """
 
-from django.conf import settings
-from django.db import models
-from django.template.defaultfilters import slugify
-from django.utils import timezone
+from django.conf import (
+    settings,
+)
+from django.db import (
+    models,
+)
+from django.template.defaultfilters import (
+    slugify,
+)
+from django.utils import (
+    timezone,
+)
 
 
 class ContentManageable(models.Model):

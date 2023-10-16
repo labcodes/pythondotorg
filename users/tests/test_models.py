@@ -1,8 +1,14 @@
 import datetime
 
-from django.contrib.auth import get_user_model
-from django.test import TestCase
-from django.utils import timezone
+from django.contrib.auth import (
+    get_user_model,
+)
+from django.test import (
+    TestCase,
+)
+from django.utils import (
+    timezone,
+)
 
 from ..factories import (
     MembershipFactory,
@@ -21,7 +27,7 @@ class UsersModelsTestCase(TestCase):
         user = User.objects.create_superuser(
             username='username',
             password='password',
-            email='user@domain.com'
+            email='user@domain.com',
         )
         self.assertNotEqual(user, None)
         self.assertTrue(user.is_active)

@@ -1,10 +1,24 @@
-from django.contrib.auth import get_user_model
-from tastypie.authentication import ApiKeyAuthentication
-from tastypie.authorization import Authorization
-from tastypie.exceptions import Unauthorized
-from tastypie.http import HttpUnauthorized
-from tastypie.resources import ModelResource
-from tastypie.throttle import CacheThrottle
+from django.contrib.auth import (
+    get_user_model,
+)
+from tastypie.authentication import (
+    ApiKeyAuthentication,
+)
+from tastypie.authorization import (
+    Authorization,
+)
+from tastypie.exceptions import (
+    Unauthorized,
+)
+from tastypie.http import (
+    HttpUnauthorized,
+)
+from tastypie.resources import (
+    ModelResource,
+)
+from tastypie.throttle import (
+    CacheThrottle,
+)
 
 
 class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):
@@ -48,7 +62,10 @@ class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):
             return super().get_identifier(request)
         else:
             # returns a combination of IP address and hostname.
-            return "{}_{}".format(request.META.get('REMOTE_ADDR', 'noaddr'), request.META.get('REMOTE_HOST', 'nohost'))
+            return "{}_{}".format(
+                request.META.get('REMOTE_ADDR', 'noaddr'),
+                request.META.get('REMOTE_HOST', 'nohost'),
+            )
 
     def check_active(self, user):
         return True

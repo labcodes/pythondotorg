@@ -1,10 +1,13 @@
-from django.test import TestCase
+from django.test import (
+    TestCase,
+)
 
-from ..models import Post
+from ..models import (
+    Post,
+)
 
 
 class ModelTestCase(TestCase):
-
     def test_json_field(self):
         post = Post.objects.create(
             content='public post',

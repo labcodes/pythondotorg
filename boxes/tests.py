@@ -1,12 +1,16 @@
 import logging
 
-from django import template
+from django import (
+    template,
+)
 from django.test import (
     TestCase,
     override_settings,
 )
 
-from .models import Box
+from .models import (
+    Box,
+)
 
 logging.disable(logging.CRITICAL)
 
@@ -31,7 +35,6 @@ class TemplateTagTests(BaseTestCase):
 
 
 class ViewTests(BaseTestCase):
-
     @override_settings(ROOT_URLCONF='boxes.urls')
     def test_box_view(self):
         r = self.client.get('/test/')

@@ -1,7 +1,15 @@
-from django.contrib import messages
-from django.contrib.auth.mixins import UserPassesTestMixin
-from django.http import Http404
-from django.urls import reverse
+from django.contrib import (
+    messages,
+)
+from django.contrib.auth.mixins import (
+    UserPassesTestMixin,
+)
+from django.http import (
+    Http404,
+)
+from django.urls import (
+    reverse,
+)
 from django.views.generic import (
     CreateView,
     DetailView,
@@ -9,7 +17,10 @@ from django.views.generic import (
     UpdateView,
 )
 
-from pydotorg.mixins import LoginRequiredMixin
+from pydotorg.mixins import (
+    LoginRequiredMixin,
+)
+
 from .forms import (
     NominationAcceptForm,
     NominationCreateForm,
@@ -97,7 +108,8 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
         election = Election.objects.get(slug=self.kwargs["election"])
         if election.nominations_complete:
             messages.error(
-                self.request, f"Nominations for {election.name} Election are closed"
+                self.request,
+                f"Nominations for {election.name} Election are closed",
             )
             raise Http404(f"Nominations for {election.name} Election are closed")
 
@@ -106,7 +118,10 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
     def get_success_url(self):
         return reverse(
             "nominations:nomination_detail",
-            kwargs={"election": self.object.election.slug, "pk": self.object.id},
+            kwargs={
+                "election": self.object.election.slug,
+                "pk": self.object.id,
+            },
         )
 
     def form_valid(self, form):
@@ -115,7 +130,8 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
         if form.cleaned_data.get("self_nomination", False):
             try:
                 nominee = Nominee.objects.get(
-                    user=self.request.user, election=form.instance.election
+                    user=self.request.user,
+                    election=form.instance.election,
                 )
             except Nominee.DoesNotExist:
                 nominee = Nominee.objects.create(
@@ -132,7 +148,12 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
         return context
 
 
-class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, UpdateView):
+class NominationEdit(
+    LoginRequiredMixin,
+    NominationMixin,
+    UserPassesTestMixin,
+    UpdateView,
+):
     model = Nomination
     form_class = NominationForm
 
@@ -147,7 +168,10 @@ class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, U
         elif self.object.pk:
             return reverse(
                 "nominations:nomination_detail",
-                kwargs={"election": self.object.election.slug, "pk": self.object.id},
+                kwargs={
+                    "election": self.object.election.slug,
+                    "pk": self.object.id,
+                },
             )
 
         else:
@@ -158,7 +182,12 @@ class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, U
         return context
 
 
-class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, UpdateView):
+class NominationAccept(
+    LoginRequiredMixin,
+    NominationMixin,
+    UserPassesTestMixin,
+    UpdateView,
+):
     model = Nomination
     form_class = NominationAcceptForm
     template_name_suffix = '_accept_form'
@@ -174,7 +203,10 @@ class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin,
         elif self.object.pk:
             return reverse(
                 "nominations:nomination_detail",
-                kwargs={"election": self.object.election.slug, "pk": self.object.id},
+                kwargs={
+                    "election": self.object.election.slug,
+                    "pk": self.object.id,
+                },
             )
 
         else:

@@ -1,10 +1,23 @@
-from django.conf import settings
-from django.db import models
-from django.urls import reverse
-from markupfield.fields import MarkupField
+from django.conf import (
+    settings,
+)
+from django.db import (
+    models,
+)
+from django.urls import (
+    reverse,
+)
+from markupfield.fields import (
+    MarkupField,
+)
 
-from cms.models import ContentManageable
-from .managers import MinutesQuerySet
+from cms.models import (
+    ContentManageable,
+)
+
+from .managers import (
+    MinutesQuerySet,
+)
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
@@ -24,11 +37,14 @@ class Minutes(ContentManageable):
         return "PSF Meeting Minutes %s" % self.date.strftime("%B %d, %Y")
 
     def get_absolute_url(self):
-        return reverse('minutes_detail', kwargs={
-            'year': self.get_date_year(),
-            'month': self.get_date_month(),
-            'day': self.get_date_day(),
-        })
+        return reverse(
+            'minutes_detail',
+            kwargs={
+                'year': self.get_date_year(),
+                'month': self.get_date_month(),
+                'day': self.get_date_day(),
+            },
+        )
 
     # Helper methods for sitetree
     def get_date_year(self):

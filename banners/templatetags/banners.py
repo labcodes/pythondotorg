@@ -1,7 +1,13 @@
-from django import template
-from django.template.loader import render_to_string
+from django import (
+    template,
+)
+from django.template.loader import (
+    render_to_string,
+)
 
-from banners.models import Banner
+from banners.models import (
+    Banner,
+)
 
 register = template.Library()
 
@@ -10,7 +16,11 @@ def _render_banner(banner=None):
     if banner is not None:
         return render_to_string(
             "banners/banner.html",
-            {"message": banner.message, "title": banner.title, "link": banner.link},
+            {
+                "message": banner.message,
+                "title": banner.title,
+                "link": banner.link,
+            },
         )
 
     return ""

@@ -1,6 +1,10 @@
-from django import template
+from django import (
+    template,
+)
 
-from ..models import Membership
+from ..models import (
+    Membership,
+)
 
 register = template.Library()
 

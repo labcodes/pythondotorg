@@ -1,20 +1,36 @@
-from datetime import date
-from pathlib import Path
+from datetime import (
+    date,
+)
+from pathlib import (
+    Path,
+)
 from unittest.mock import (
     Mock,
     patch,
 )
 
-from django.conf import settings
+from django.conf import (
+    settings,
+)
 from django.http import (
     HttpRequest,
     HttpResponse,
 )
-from django.test import TestCase
-from django.utils.dateformat import format
-from docxtpl import DocxTemplate
-from markupfield_helpers.helpers import render_md
-from model_bakery import baker
+from django.test import (
+    TestCase,
+)
+from django.utils.dateformat import (
+    format,
+)
+from docxtpl import (
+    DocxTemplate,
+)
+from markupfield_helpers.helpers import (
+    render_md,
+)
+from model_bakery import (
+    baker,
+)
 
 from sponsors.pdf import (
     render_contract_to_docx_response,
@@ -25,13 +41,18 @@ from sponsors.pdf import (
 
 class TestRenderContract(TestCase):
     def setUp(self):
-        self.contract = baker.make_recipe("sponsors.tests.empty_contract", sponsorship__start_date=date.today())
+        self.contract = baker.make_recipe(
+            "sponsors.tests.empty_contract",
+            sponsorship__start_date=date.today(),
+        )
         text = f"{self.contract.benefits_list.raw}\n\n**Legal Clauses**\n{self.contract.legal_clauses.raw}"
         html = render_md(text)
         self.context = {
             "contract": self.contract,
             "start_date": self.contract.sponsorship.start_date,
-            "start_day_english_suffix": format(self.contract.sponsorship.start_date, "S"),
+            "start_day_english_suffix": format(
+                self.contract.sponsorship.start_date, "S"
+            ),
             "sponsor": self.contract.sponsorship.sponsor,
             "sponsorship": self.contract.sponsorship,
             "benefits": [],
@@ -63,7 +84,12 @@ class TestRenderContract(TestCase):
     # DOCX unit test
     @patch("sponsors.pdf.DocxTemplate")
     def test_render_response_with_docx_attachment(self, MockDocxTemplate):
-        template = Path(settings.TEMPLATES_DIR) / "sponsors" / "admin" / "contract-template.docx"
+        template = (
+            Path(settings.TEMPLATES_DIR)
+            / "sponsors"
+            / "admin"
+            / "contract-template.docx"
+        )
         self.assertTrue(template.exists())
         mocked_doc = Mock(DocxTemplate)
         MockDocxTemplate.return_value = mocked_doc
@@ -74,8 +100,11 @@ class TestRenderContract(TestCase):
         MockDocxTemplate.assert_called_once_with(str(template.resolve()))
         mocked_doc.render.assert_called_once_with(self.context)
         mocked_doc.save.assert_called_once_with(response)
-        self.assertEqual(response.get("Content-Disposition"), "attachment; filename=contract.docx")
+        self.assertEqual(
+            response.get("Content-Disposition"),
+            "attachment; filename=contract.docx",
+        )
         self.assertEqual(
             response.get("Content-Type"),
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         )

@@ -1,9 +1,12 @@
-from django.contrib import admin
+from django.contrib import (
+    admin,
+)
 
 from cms.admin import (
     ContentManageableModelAdmin,
     NameSlugAdmin,
 )
+
 from .models import (
     Alarm,
     Calendar,

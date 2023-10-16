@@ -1,16 +1,23 @@
-from django.core.management import call_command
-from django.test import TestCase
-from django.urls import reverse
+from django.core.management import (
+    call_command,
+)
+from django.test import (
+    TestCase,
+)
+from django.urls import (
+    reverse,
+)
 
-from .utils import get_test_rss_path
 from ..models import (
     BlogEntry,
     Feed,
 )
+from .utils import (
+    get_test_rss_path,
+)
 
 
 class BlogViewTest(TestCase):
-
     def setUp(self):
         self.test_file_path = get_test_rss_path()
 
@@ -20,8 +27,11 @@ class BlogViewTest(TestCase):
         management command
         """
         Feed.objects.create(
-            id=1, name='psf default', website_url='example.org',
-            feed_url=self.test_file_path)
+            id=1,
+            name='psf default',
+            website_url='example.org',
+            feed_url=self.test_file_path,
+        )
         call_command('update_blogs')
 
         resp = self.client.get(reverse('blog'))
@@ -35,6 +45,4 @@ class BlogViewTest(TestCase):
         Test that when '/blog/' is hit, it redirects '/blogs/'
         """
         response = self.client.get('/blog/')
-        self.assertRedirects(response,
-                             '/blogs/',
-                             status_code=301)
+        self.assertRedirects(response, '/blogs/', status_code=301)

@@ -1,17 +1,32 @@
 import re
 
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.core import mail
-from django.test import TestCase
-from django.urls import reverse
+from django.conf import (
+    settings,
+)
+from django.contrib.auth import (
+    get_user_model,
+)
+from django.core import (
+    mail,
+)
+from django.test import (
+    TestCase,
+)
+from django.urls import (
+    reverse,
+)
 
-from users.factories import UserFactory
+from users.factories import (
+    UserFactory,
+)
+
 from ..factories import (
     StoryCategoryFactory,
     StoryFactory,
 )
-from ..models import Story
+from ..models import (
+    Story,
+)
 
 User = get_user_model()
 
@@ -53,12 +68,18 @@ class StoryViewTests(TestCase):
         self.assertEqual(len(r.context['stories']), 1)
 
     def test_story_category_list(self):
-        url = reverse('success_story_list_category', kwargs={'slug': self.category.slug})
+        url = reverse(
+            'success_story_list_category',
+            kwargs={'slug': self.category.slug},
+        )
         r = self.client.get(url)
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.context['object'], self.category)
         self.assertEqual(len(r.context['object'].success_stories.all()), 2)
-        self.assertEqual(r.context['object'].success_stories.all()[0].pk, self.story2.pk)
+        self.assertEqual(
+            r.context['object'].success_stories.all()[0].pk,
+            self.story2.pk,
+        )
 
     def test_story_create(self):
         mail.outbox = []
@@ -87,7 +108,7 @@ class StoryViewTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject,
-            'New success story submission: {}'.format(post_data['name'])
+            'New success story submission: {}'.format(post_data['name']),
         )
         expected_output = re.compile(
             r'Name: (.*)\n'
@@ -105,7 +126,7 @@ class StoryViewTests(TestCase):
             r'(.*)\n'
             r'\n'
             r'Review URL: (.*)',
-            flags=re.DOTALL
+            flags=re.DOTALL,
         )
         self.assertRegex(mail.outbox[0].body, expected_output)
         # 'content' field should be in reST format so just check that
@@ -153,7 +174,7 @@ class StoryViewTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject,
-            'New success story submission: First line'
+            'New success story submission: First line',
         )
         self.assertNotIn('Second line', mail.outbox[0].subject)
 

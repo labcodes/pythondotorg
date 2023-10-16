@@ -3,14 +3,21 @@ from datetime import (
     timedelta,
 )
 
-from django.conf import settings
-from django.test import TestCase
-from model_bakery import baker
+from django.conf import (
+    settings,
+)
+from django.test import (
+    TestCase,
+)
+from model_bakery import (
+    baker,
+)
 
 from sponsors.models.enums import (
     LogoPlacementChoices,
     PublisherChoices,
 )
+
 from ..models import (
     BenefitFeature,
     LogoPlacement,
@@ -26,19 +33,34 @@ from ..models import (
 
 
 class SponsorshipQuerySetTests(TestCase):
-
     def setUp(self):
         self.user = baker.make(settings.AUTH_USER_MODEL)
         self.contact = baker.make('sponsors.SponsorContact', user=self.user)
 
     def test_visible_to_user(self):
         visible = [
-            baker.make(Sponsorship, submited_by=self.user, status=Sponsorship.APPLIED),
-            baker.make(Sponsorship, sponsor=self.contact.sponsor, status=Sponsorship.APPROVED),
-            baker.make(Sponsorship, submited_by=self.user, status=Sponsorship.FINALIZED),
+            baker.make(
+                Sponsorship,
+                submited_by=self.user,
+                status=Sponsorship.APPLIED,
+            ),
+            baker.make(
+                Sponsorship,
+                sponsor=self.contact.sponsor,
+                status=Sponsorship.APPROVED,
+            ),
+            baker.make(
+                Sponsorship,
+                submited_by=self.user,
+                status=Sponsorship.FINALIZED,
+            ),
         ]
         baker.make(Sponsorship)  # should not be visible because it's from other sponsor
-        baker.make(Sponsorship, submited_by=self.user, status=Sponsorship.REJECTED)  # don't list rejected
+        baker.make(
+            Sponsorship,
+            submited_by=self.user,
+            status=Sponsorship.REJECTED,
+        )  # don't list rejected
 
         qs = Sponsorship.objects.visible_to(self.user)
 
@@ -65,19 +87,19 @@ class SponsorshipQuerySetTests(TestCase):
             Sponsorship,
             status=Sponsorship.APPLIED,
             start_date=today - two_days,
-            end_date=today + two_days
+            end_date=today + two_days,
         )
         baker.make(
             Sponsorship,
             status=Sponsorship.FINALIZED,
             start_date=today + two_days,
-            end_date=today + 2 * two_days
+            end_date=today + 2 * two_days,
         )
         baker.make(
             Sponsorship,
             status=Sponsorship.FINALIZED,
             start_date=today - 2 * two_days,
-            end_date=today - two_days
+            end_date=today - two_days,
         )
         # shouldn't list overlapped sponsorships
         baker.make(
@@ -94,14 +116,28 @@ class SponsorshipQuerySetTests(TestCase):
         self.assertIn(enabled, qs)
 
     def test_filter_sponsorship_with_logo_placement_benefits(self):
-        sponsorship_with_download_logo = baker.make_recipe('sponsors.tests.finalized_sponsorship')
-        sponsorship_with_sponsors_logo = baker.make_recipe('sponsors.tests.finalized_sponsorship')
+        sponsorship_with_download_logo = baker.make_recipe(
+            'sponsors.tests.finalized_sponsorship'
+        )
+        sponsorship_with_sponsors_logo = baker.make_recipe(
+            'sponsors.tests.finalized_sponsorship'
+        )
         simple_sponsorship = baker.make_recipe('sponsors.tests.finalized_sponsorship')
 
-        download_logo_benefit = baker.make(SponsorBenefit, sponsorship=sponsorship_with_download_logo)
-        baker.make_recipe('sponsors.tests.logo_at_download_feature', sponsor_benefit=download_logo_benefit)
-        sponsors_logo_benefit = baker.make(SponsorBenefit, sponsorship=sponsorship_with_sponsors_logo)
-        baker.make_recipe('sponsors.tests.logo_at_sponsors_feature', sponsor_benefit=sponsors_logo_benefit)
+        download_logo_benefit = baker.make(
+            SponsorBenefit, sponsorship=sponsorship_with_download_logo
+        )
+        baker.make_recipe(
+            'sponsors.tests.logo_at_download_feature',
+            sponsor_benefit=download_logo_benefit,
+        )
+        sponsors_logo_benefit = baker.make(
+            SponsorBenefit, sponsorship=sponsorship_with_sponsors_logo
+        )
+        baker.make_recipe(
+            'sponsors.tests.logo_at_sponsors_feature',
+            sponsor_benefit=sponsors_logo_benefit,
+        )
         regular_benefit = baker.make(SponsorBenefit, sponsorship=simple_sponsorship)
 
         with self.assertNumQueries(1):
@@ -122,10 +158,20 @@ class SponsorshipQuerySetTests(TestCase):
         self.assertIn(sponsorship_with_download_logo, qs)
 
     def test_filter_sponsorship_by_benefit_feature_type(self):
-        sponsorship_feature_1 = baker.make_recipe('sponsors.tests.finalized_sponsorship')
-        sponsorship_feature_2 = baker.make_recipe('sponsors.tests.finalized_sponsorship')
-        baker.make(LogoPlacement, sponsor_benefit__sponsorship=sponsorship_feature_1)
-        baker.make(TieredBenefit, sponsor_benefit__sponsorship=sponsorship_feature_2)
+        sponsorship_feature_1 = baker.make_recipe(
+            'sponsors.tests.finalized_sponsorship'
+        )
+        sponsorship_feature_2 = baker.make_recipe(
+            'sponsors.tests.finalized_sponsorship'
+        )
+        baker.make(
+            LogoPlacement,
+            sponsor_benefit__sponsorship=sponsorship_feature_1,
+        )
+        baker.make(
+            TieredBenefit,
+            sponsor_benefit__sponsorship=sponsorship_feature_2,
+        )
 
         with self.assertNumQueries(1):
             qs = list(Sponsorship.objects.includes_benefit_feature(LogoPlacement))
@@ -162,18 +208,25 @@ class BenefitFeatureQuerySet(TestCase):
 
 
 class SponsorshipBenefitManagerTests(TestCase):
-
     def setUp(self):
         package = baker.make(SponsorshipPackage)
         current_year = SponsorshipCurrentYear.get_year()
         self.regular_benefit = baker.make(SponsorshipBenefit, year=current_year)
-        self.regular_benefit_unavailable = baker.make(SponsorshipBenefit, year=current_year, unavailable=True)
+        self.regular_benefit_unavailable = baker.make(
+            SponsorshipBenefit, year=current_year, unavailable=True
+        )
         self.regular_benefit.packages.add(package)
         self.regular_benefit.packages.add(package)
         self.a_la_carte = baker.make(SponsorshipBenefit, year=current_year - 1)
-        self.a_la_carte_unavail = baker.make(SponsorshipBenefit, year=current_year - 1, unavailable=True)
+        self.a_la_carte_unavail = baker.make(
+            SponsorshipBenefit,
+            year=current_year - 1,
+            unavailable=True,
+        )
         self.standalone = baker.make(SponsorshipBenefit, standalone=True)
-        self.standalone_unavail = baker.make(SponsorshipBenefit, standalone=True, unavailable=True)
+        self.standalone_unavail = baker.make(
+            SponsorshipBenefit, standalone=True, unavailable=True
+        )
 
     def test_a_la_carte_queryset(self):
         qs = SponsorshipBenefit.objects.a_la_carte()
@@ -192,7 +245,6 @@ class SponsorshipBenefitManagerTests(TestCase):
 
 
 class SponsorshipPackageManagerTests(TestCase):
-
     def test_filter_packages_by_current_year(self):
         current_year = SponsorshipCurrentYear.get_year()
         active_package = baker.make(SponsorshipPackage, year=current_year)

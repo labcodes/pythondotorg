@@ -1,4 +1,6 @@
-from django import template
+from django import (
+    template,
+)
 
 from ..models import (
     Story,

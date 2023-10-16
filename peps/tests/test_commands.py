@@ -1,24 +1,36 @@
 import io
 
 import responses
-from bs4 import BeautifulSoup
-from django.conf import settings
-from django.core import serializers
-from django.core.management import call_command
+from bs4 import (
+    BeautifulSoup,
+)
+from django.conf import (
+    settings,
+)
+from django.core import (
+    serializers,
+)
+from django.core.management import (
+    call_command,
+)
 from django.test import (
     TestCase,
     override_settings,
 )
 
-from pages.models import Image
-from . import FAKE_PEP_ARTIFACT
+from pages.models import (
+    Image,
+)
+
+from . import (
+    FAKE_PEP_ARTIFACT,
+)
 
 PEP_ARTIFACT_URL = 'https://example.net/fake-peps.tar.gz'
 
 
 @override_settings(PEP_ARTIFACT_URL=PEP_ARTIFACT_URL)
 class PEPManagementCommandTests(TestCase):
-
     def setUp(self):
         responses.add(
             responses.GET,

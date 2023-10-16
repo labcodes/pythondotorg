@@ -1,11 +1,16 @@
-from django.test import TestCase
+from django.test import (
+    TestCase,
+)
 
-from ..factories import StoryCategoryFactory
-from ..forms import StoryForm
+from ..factories import (
+    StoryCategoryFactory,
+)
+from ..forms import (
+    StoryForm,
+)
 
 
 class StoryFormTests(TestCase):
-
     def test_duplicate_name(self):
         category = StoryCategoryFactory()
         data = {
@@ -25,10 +30,7 @@ class StoryFormTests(TestCase):
 
         form2 = StoryForm(data=data)
         self.assertFalse(form2.is_valid())
-        self.assertEqual(
-            form2.errors,
-            {'name': ['Please use a unique name.']}
-        )
+        self.assertEqual(form2.errors, {'name': ['Please use a unique name.']})
 
     def test_author_email(self):
         category = StoryCategoryFactory()
@@ -52,5 +54,5 @@ class StoryFormTests(TestCase):
         self.assertFalse(form2.is_valid())
         self.assertEqual(
             form2.errors,
-            {'author_email': ['Enter a valid email address.']}
+            {'author_email': ['Enter a valid email address.']},
         )

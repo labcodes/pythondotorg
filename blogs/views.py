@@ -1,10 +1,15 @@
-from django.views.generic import TemplateView
+from django.views.generic import (
+    TemplateView,
+)
 
-from .models import BlogEntry
+from .models import (
+    BlogEntry,
+)
 
 
 class BlogHome(TemplateView):
-    """ Main blog view """
+    """Main blog view"""
+
     template_name = 'blogs/index.html'
 
     def get_context_data(self, **kwargs):
@@ -18,9 +23,11 @@ class BlogHome(TemplateView):
             latest_entry = entries[0]
             other_entries = entries[1:]
 
-        context.update({
-            'latest_entry': latest_entry,
-            'entries': other_entries,
-        })
+        context.update(
+            {
+                'latest_entry': latest_entry,
+                'entries': other_entries,
+            }
+        )
 
         return context

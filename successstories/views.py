@@ -1,15 +1,27 @@
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse
-from django.utils.decorators import method_decorator
+from django.contrib import (
+    messages,
+)
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+)
+from django.urls import (
+    reverse,
+)
+from django.utils.decorators import (
+    method_decorator,
+)
 from django.views.generic import (
     CreateView,
     DetailView,
     ListView,
 )
-from honeypot.decorators import check_honeypot
+from honeypot.decorators import (
+    check_honeypot,
+)
 
-from .forms import StoryForm
+from .forms import (
+    StoryForm,
+)
 from .models import (
     Story,
     StoryCategory,
@@ -17,7 +29,6 @@ from .models import (
 
 
 class ContextMixin:
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category_list'] = StoryCategory.objects.all()

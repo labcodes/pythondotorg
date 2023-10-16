@@ -1,6 +1,11 @@
-from django.contrib import admin
+from django.contrib import (
+    admin,
+)
 
-from cms.admin import ContentManageableModelAdmin
+from cms.admin import (
+    ContentManageableModelAdmin,
+)
+
 from .models import (
     DocumentFile,
     Image,
@@ -19,12 +24,13 @@ class DocumentFileInlineAdmin(admin.StackedInline):
 
 
 class PagePathFilter(admin.SimpleListFilter):
-    """ Admin list filter to allow drilling down by first two levels of pages """
+    """Admin list filter to allow drilling down by first two levels of pages"""
+
     title = 'Path'
     parameter_name = 'pathlimiter'
 
     def lookups(self, request, model_admin):
-        """ Determine the lookups we want to use """
+        """Determine the lookups we want to use"""
         path_values = Page.objects.order_by('path').values_list('path', flat=True)
         path_set = []
 
@@ -48,24 +54,31 @@ class PagePathFilter(admin.SimpleListFilter):
 @admin.register(Page)
 class PageAdmin(ContentManageableModelAdmin):
     search_fields = ['title', 'path']
-    list_display = ('get_title', 'path', 'is_published',)
+    list_display = (
+        'get_title',
+        'path',
+        'is_published',
+    )
     list_filter = [PagePathFilter, 'is_published']
     inlines = [ImageInlineAdmin, DocumentFileInlineAdmin]
     fieldsets = [
-        (None, {
-            'fields': (
-                'title',
-                'keywords',
-                'description',
-                'path',
-                'content',
-                'content_markup_type',
-                'is_published'
-            )
-        }),
-        ('Advanced options', {
-            'classes': ('collapse',),
-            'fields': ('template_name',)
-        }),
+        (
+            None,
+            {
+                'fields': (
+                    'title',
+                    'keywords',
+                    'description',
+                    'path',
+                    'content',
+                    'content_markup_type',
+                    'is_published',
+                )
+            },
+        ),
+        (
+            'Advanced options',
+            {'classes': ('collapse',), 'fields': ('template_name',)},
+        ),
     ]
     save_as = True

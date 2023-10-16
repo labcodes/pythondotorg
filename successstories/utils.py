@@ -8,13 +8,17 @@ successstories/migrations/0006_auto_20170726_0824.py:
 """
 
 import datetime
-from xml.etree.ElementTree import fromstring
+from xml.etree.ElementTree import (
+    fromstring,
+)
 
 from django.utils.timezone import (
     get_current_timezone,
     make_aware,
 )
-from docutils.core import publish_doctree
+from docutils.core import (
+    publish_doctree,
+)
 
 
 def convert_to_datetime(string):
@@ -25,8 +29,10 @@ def convert_to_datetime(string):
     ]
     for fmt in formats:
         try:
-            return make_aware(datetime.datetime.strptime(string, fmt),
-                              get_current_timezone())
+            return make_aware(
+                datetime.datetime.strptime(string, fmt),
+                get_current_timezone(),
+            )
         except ValueError:
             continue
 

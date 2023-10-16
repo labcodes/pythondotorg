@@ -1,9 +1,12 @@
-from django.db import migrations, models
+from django.db import (
+    migrations,
+    models,
+)
+
 import events.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('events', '0003_auto_20150416_1853'),
     ]

@@ -1,7 +1,10 @@
+from rest_framework import (
+    serializers,
+)
 
-from rest_framework import serializers
-
-from sponsors.models import GenericAsset
+from sponsors.models import (
+    GenericAsset,
+)
 from sponsors.models.enums import (
     LogoPlacementChoices,
     PublisherChoices,
@@ -30,7 +33,14 @@ class AssetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GenericAsset
-        fields = ["internal_name", "uuid", "value", "content_type", "sponsor", "sponsor_slug"]
+        fields = [
+            "internal_name",
+            "uuid",
+            "value",
+            "content_type",
+            "sponsor",
+            "sponsor_slug",
+        ]
 
     def _get_sponsor_object(self, asset):
         if asset.from_sponsorship:
@@ -59,7 +69,9 @@ class FilterLogoPlacementsSerializer(serializers.Serializer):
         required=False,
     )
     flight = serializers.ChoiceField(
-        choices=[(c.value, c.name.replace("_", " ").title()) for c in LogoPlacementChoices],
+        choices=[
+            (c.value, c.name.replace("_", " ").title()) for c in LogoPlacementChoices
+        ],
         required=False,
     )
 

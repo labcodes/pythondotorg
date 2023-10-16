@@ -1,8 +1,16 @@
-from django import forms
-from django.utils.safestring import mark_safe
-from markupfield.widgets import MarkupTextarea
+from django import (
+    forms,
+)
+from django.utils.safestring import (
+    mark_safe,
+)
+from markupfield.widgets import (
+    MarkupTextarea,
+)
 
-from .models import Nomination
+from .models import (
+    Nomination,
+)
 
 
 class NominationForm(forms.ModelForm):
@@ -62,9 +70,7 @@ class NominationCreateForm(NominationForm):
 class NominationAcceptForm(forms.ModelForm):
     class Meta:
         model = Nomination
-        fields = (
-            "accepted",
-        )
+        fields = ("accepted",)
         help_texts = {
             "accepted": (
                 "If selected, this nomination will be considered "

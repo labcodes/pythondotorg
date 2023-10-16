@@ -1,5 +1,9 @@
-from django.core.management.base import BaseCommand
-from django.utils.timezone import now
+from django.core.management.base import (
+    BaseCommand,
+)
+from django.utils.timezone import (
+    now,
+)
 
 from ...models import (
     BlogEntry,
@@ -13,7 +17,7 @@ from ...parser import (
 
 
 class Command(BaseCommand):
-    """ Update blog entries and related blog feed data """
+    """Update blog entries and related blog feed data"""
 
     def handle(self, **options):
         for feed in Feed.objects.all():
@@ -22,7 +26,9 @@ class Command(BaseCommand):
             for entry in entries:
                 url = entry.pop('url')
                 BlogEntry.objects.update_or_create(
-                    feed=feed, url=url, defaults=entry,
+                    feed=feed,
+                    url=url,
+                    defaults=entry,
                 )
 
             feed.last_import = now()

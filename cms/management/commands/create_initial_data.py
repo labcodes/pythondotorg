@@ -2,7 +2,9 @@ import importlib
 import inspect
 import pprint
 
-from django.apps import apps
+from django.apps import (
+    apps,
+)
 from django.core.management import (
     BaseCommand,
     call_command,
@@ -10,7 +12,6 @@ from django.core.management import (
 
 
 class Command(BaseCommand):
-
     help = 'Create initial data by using factories.'
 
     def add_arguments(self, parser):
@@ -32,7 +33,11 @@ class Command(BaseCommand):
             try:
                 app_list = [apps.get_app_config(app_label)]
             except LookupError:
-                self.stdout.write(self.style.ERROR('The app label provided does not exist as an application.'))
+                self.stdout.write(
+                    self.style.ERROR(
+                        'The app label provided does not exist as an application.'
+                    )
+                )
                 return
         else:
             app_list = apps.get_app_configs()
@@ -42,7 +47,9 @@ class Command(BaseCommand):
             except ImportError:
                 continue
             else:
-                for name, function in inspect.getmembers(factory_module, inspect.isfunction):
+                for name, function in inspect.getmembers(
+                    factory_module, inspect.isfunction
+                ):
                     if name == 'initial_data':
                         functions[app.name] = function
                         break
@@ -53,7 +60,10 @@ class Command(BaseCommand):
             if done:
                 self.stdout.write(self.style.SUCCESS('DONE'))
             else:
-                self.stdout.write(f'Creating initial data for {app_name!r}... ', ending='')
+                self.stdout.write(
+                    f'Creating initial data for {app_name!r}... ',
+                    ending='',
+                )
         if verbosity >= 2 and result:
             pprint.pprint(result)
 

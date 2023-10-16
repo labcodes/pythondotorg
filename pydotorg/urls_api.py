@@ -1,6 +1,12 @@
-from django.conf.urls import url
-from rest_framework import routers
-from tastypie.api import Api
+from django.conf.urls import (
+    url,
+)
+from rest_framework import (
+    routers,
+)
+from tastypie.api import (
+    Api,
+)
 
 from downloads.api import (
     OSResource,
@@ -32,6 +38,14 @@ router.register(r'downloads/release', ReleaseViewSet, basename='release')
 router.register(r'downloads/release_file', ReleaseFileViewSet)
 
 urlpatterns = [
-    url(r'sponsors/logo-placement/', LogoPlacementeAPIList.as_view(), name="logo_placement_list"),
-    url(r'sponsors/sponsorship-assets/', SponsorshipAssetsAPIList.as_view(), name="assets_list"),
+    url(
+        r'sponsors/logo-placement/',
+        LogoPlacementeAPIList.as_view(),
+        name="logo_placement_list",
+    ),
+    url(
+        r'sponsors/sponsorship-assets/',
+        SponsorshipAssetsAPIList.as_view(),
+        name="assets_list",
+    ),
 ]

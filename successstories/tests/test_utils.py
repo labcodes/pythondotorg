@@ -1,6 +1,8 @@
 import datetime
 
-from django.test import SimpleTestCase
+from django.test import (
+    SimpleTestCase,
+)
 
 from ..utils import (
     convert_to_datetime,
@@ -9,7 +11,6 @@ from ..utils import (
 
 
 class UtilsTestCase(SimpleTestCase):
-
     def test_convert_to_datetime(self):
         tests = [
             ('%Y-%m-%d %H:%M:%S', '2017-02-24 21:05:24'),
@@ -32,5 +33,9 @@ class UtilsTestCase(SimpleTestCase):
         """
         self.assertEqual(
             list(get_field_list(source)),
-            [('spam', 'Eggs'), ('author', 'Guido'), ('date', '2017-02-24')]
+            [
+                ('spam', 'Eggs'),
+                ('author', 'Guido'),
+                ('date', '2017-02-24'),
+            ],
         )

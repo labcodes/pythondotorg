@@ -26,9 +26,12 @@ def read_content_file(dirpath):
 
     elif os.path.exists(c_rst):
         rst_text = open(c_rst).read()
-        rst_msg = """Content-type: text/x-rst
+        rst_msg = (
+            """Content-type: text/x-rst
 
-%s""" % rst_text.lstrip()
+%s"""
+            % rst_text.lstrip()
+        )
         msg = email.message_from_string(rst_msg)
         filename = c_rst
 
@@ -39,8 +42,17 @@ def read_content_file(dirpath):
 
 
 def determine_page_content_type(content):
-    """ Attempt to determine if content is ReST or HTML """
-    tags = ['<p>', '<ul>', '<h1>', '<h2>', '<h3>', '<pre>', '<br', '<table>']
+    """Attempt to determine if content is ReST or HTML"""
+    tags = [
+        '<p>',
+        '<ul>',
+        '<h1>',
+        '<h2>',
+        '<h3>',
+        '<pre>',
+        '<br',
+        '<table>',
+    ]
     content_type = 'restructuredtext'
     content = content.lower()
 
@@ -52,7 +64,7 @@ def determine_page_content_type(content):
 
 
 def parse_page(dirpath):
-    """ Parse a page given a relative file path """
+    """Parse a page given a relative file path"""
     filename, msg = read_content_file(dirpath)
 
     content = msg.get_payload()

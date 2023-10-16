@@ -2,9 +2,15 @@ import datetime
 import os
 import re
 
-from bs4 import BeautifulSoup
-from django.core.files import File
-from django.db.models import Max
+from bs4 import (
+    BeautifulSoup,
+)
+from django.core.files import (
+    File,
+)
+from django.db.models import (
+    Max,
+)
 
 from pages.models import (
     Image,
@@ -16,14 +22,19 @@ pep_url = lambda num: f'dev/peps/pep-{num}/'
 
 
 def get_peps_last_updated():
-    last_update = Page.objects.filter(
-        path__startswith='dev/peps',
-    ).aggregate(Max('updated')).get('updated__max')
+    last_update = (
+        Page.objects.filter(
+            path__startswith='dev/peps',
+        )
+        .aggregate(Max('updated'))
+        .get('updated__max')
+    )
     if last_update is None:
         return datetime.datetime(
-            1970, 1, 1, tzinfo=datetime.timezone(
-                datetime.timedelta(0)
-            )
+            1970,
+            1,
+            1,
+            tzinfo=datetime.timezone(datetime.timedelta(0)),
         )
     return last_update
 
@@ -66,7 +77,7 @@ def get_pep0_page(artifact_path, commit=True):
 
 
 def fix_headers(soup, data):
-    """ Remove empty or unwanted headers and find our title """
+    """Remove empty or unwanted headers and find our title"""
     header_rows = soup.find_all('th')
     for t in header_rows:
         if 'Version:' in t.text:
@@ -116,10 +127,7 @@ def convert_pep_page(pep_number, content):
         main_content = soup.body.find('div', class_="content")
 
         data['main_content'] = str(main_content)
-        data['content'] = ''.join([
-            data['header'],
-            data['main_content']
-        ])
+        data['content'] = ''.join([data['header'], data['main_content']])
 
     else:
         soup = BeautifulSoup(content, 'lxml')
@@ -177,11 +185,13 @@ def get_pep_page(artifact_path, pep_number, commit=True):
     if pep_content is None:
         return None
     pep_rst_source = os.path.join(
-        artifact_path, f'pep-{pep_number}.rst',
+        artifact_path,
+        f'pep-{pep_number}.rst',
     )
     pep_ext = '.rst' if os.path.exists(pep_rst_source) else '.txt'
     source_link = 'https://github.com/python/peps/blob/master/pep-{}{}'.format(
-        pep_number, pep_ext)
+        pep_number, pep_ext
+    )
     pep_content['content'] += """Source: <a href="{0}">{0}</a>""".format(source_link)
 
     pep_page, _ = Page.objects.get_or_create(path=pep_url(pep_number))

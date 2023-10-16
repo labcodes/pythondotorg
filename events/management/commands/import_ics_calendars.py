@@ -1,6 +1,10 @@
-from django.core.management import BaseCommand
+from django.core.management import (
+    BaseCommand,
+)
 
-from events.models import Calendar
+from events.models import (
+    Calendar,
+)
 
 
 class Command(BaseCommand):

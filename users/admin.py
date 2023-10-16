@@ -1,10 +1,22 @@
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.utils.translation import gettext_lazy as _
-from rest_framework.authtoken.admin import TokenAdmin
-from tastypie.admin import ApiKeyInline as TastypieApiKeyInline
+from django.contrib import (
+    admin,
+)
+from django.contrib.auth.admin import (
+    UserAdmin as BaseUserAdmin,
+)
+from django.utils.translation import (
+    gettext_lazy as _,
+)
+from rest_framework.authtoken.admin import (
+    TokenAdmin,
+)
+from tastypie.admin import (
+    ApiKeyInline as TastypieApiKeyInline,
+)
 
-from .actions import export_csv
+from .actions import (
+    export_csv,
+)
 from .models import (
     Membership,
     User,
@@ -29,14 +41,41 @@ class UserAdmin(BaseUserAdmin):
     inlines = BaseUserAdmin.inlines + [ApiKeyInline, MembershipInline]
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        (_('Personal info'), {'fields': (
-            'first_name', 'last_name', 'email', 'bio',
-        )}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
-                                       'groups', 'user_permissions')}),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+        (
+            _('Personal info'),
+            {
+                'fields': (
+                    'first_name',
+                    'last_name',
+                    'email',
+                    'bio',
+                )
+            },
+        ),
+        (
+            _('Permissions'),
+            {
+                'fields': (
+                    'is_active',
+                    'is_staff',
+                    'is_superuser',
+                    'groups',
+                    'user_permissions',
+                )
+            },
+        ),
+        (
+            _('Important dates'),
+            {'fields': ('last_login', 'date_joined')},
+        ),
     )
-    list_display = ('username', 'email', 'full_name', 'is_staff', 'is_active')
+    list_display = (
+        'username',
+        'email',
+        'full_name',
+        'is_staff',
+        'is_active',
+    )
     list_editable = ('is_active',)
     search_fields = BaseUserAdmin.search_fields + ('bio',)
     show_full_result_count = False
@@ -46,17 +85,14 @@ class UserAdmin(BaseUserAdmin):
 
     def full_name(self, obj):
         return obj.get_full_name()
+
     full_name.short_description = 'Name'
 
 
 @admin.register(Membership)
 class MembershipAdmin(admin.ModelAdmin):
     actions = [export_csv]
-    list_display = (
-        '__str__',
-        'created',
-        'updated'
-    )
+    list_display = ('__str__', 'created', 'updated')
     date_hierarchy = 'created'
     search_fields = ['creator__username']
     list_filter = ['membership_type']

@@ -1,4 +1,6 @@
-from django.contrib import admin
+from django.contrib import (
+    admin,
+)
 
 
 class ContentManageableAdmin:
@@ -26,7 +28,12 @@ class ContentManageableAdmin:
 
     def get_readonly_fields(self, request, obj=None):
         fields = list(super().get_readonly_fields(request, obj))
-        return fields + ['created', 'updated', 'creator', 'last_modified_by']
+        return fields + [
+            'created',
+            'updated',
+            'creator',
+            'last_modified_by',
+        ]
 
     def get_list_filter(self, request):
         fields = list(super().get_list_filter(request))
@@ -45,16 +52,29 @@ class ContentManageableAdmin:
         # be there if the child class didn't manually declare fieldsets.
         fieldsets = super().get_fieldsets(request, obj)
         for name, fieldset in fieldsets:
-            for f in ('created', 'updated', 'creator', 'last_modified_by'):
+            for f in (
+                'created',
+                'updated',
+                'creator',
+                'last_modified_by',
+            ):
                 if f in fieldset['fields']:
                     fieldset['fields'].remove(f)
 
         # Now add these fields to a collapsed fieldset at the end.
         # FIXME: better name than "CMS metadata", that sucks.
-        return fieldsets + [("CMS metadata", {
-            'fields': [('creator', 'created'), ('last_modified_by', 'updated')],
-            'classes': ('collapse',),
-        })]
+        return fieldsets + [
+            (
+                "CMS metadata",
+                {
+                    'fields': [
+                        ('creator', 'created'),
+                        ('last_modified_by', 'updated'),
+                    ],
+                    'classes': ('collapse',),
+                },
+            )
+        ]
 
 
 class ContentManageableModelAdmin(ContentManageableAdmin, admin.ModelAdmin):

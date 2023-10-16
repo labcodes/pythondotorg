@@ -2,8 +2,12 @@ from django.template.defaultfilters import (
     striptags,
     truncatewords_html,
 )
-from django.urls import reverse
-from haystack import indexes
+from django.urls import (
+    reverse,
+)
+from haystack import (
+    indexes,
+)
 
 from .models import (
     Job,

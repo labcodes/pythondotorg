@@ -1,4 +1,6 @@
-from rest_framework import serializers
+from rest_framework import (
+    serializers,
+)
 
 from downloads.models import (
     OS,
@@ -8,14 +10,12 @@ from downloads.models import (
 
 
 class OSSerializer(serializers.HyperlinkedModelSerializer):
-
     class Meta:
         model = OS
         fields = ('name', 'slug', 'resource_uri')
 
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
-
     class Meta:
         model = Release
         fields = (
@@ -34,7 +34,6 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ReleaseFileSerializer(serializers.HyperlinkedModelSerializer):
-
     class Meta:
         model = ReleaseFile
         fields = (

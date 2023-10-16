@@ -1,7 +1,16 @@
-from django.apps import apps as global_apps
-from django.contrib.contenttypes.management import create_contenttypes
-from django.db import models, migrations
-from django.utils.timezone import now
+from django.apps import (
+    apps as global_apps,
+)
+from django.contrib.contenttypes.management import (
+    create_contenttypes,
+)
+from django.db import (
+    migrations,
+    models,
+)
+from django.utils.timezone import (
+    now,
+)
 
 MARKER = '.. Migrated from django_comments_xtd.Comment model.\n\n'
 
@@ -27,7 +36,9 @@ def migrate_old_content(apps, schema_editor):
     except ContentType.DoesNotExist:
         return
     old_comments = Comment.objects.using(db_alias).filter(
-        content_type=job_contenttype.pk, is_public=True, is_removed=False,
+        content_type=job_contenttype.pk,
+        is_public=True,
+        is_removed=False,
     )
     found_jobs = {}
     comments = []
@@ -58,7 +69,6 @@ def delete_migrated_content(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('contenttypes', '0001_initial'),
         ('jobs', '0011_jobreviewcomment'),

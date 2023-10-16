@@ -6,15 +6,25 @@ from urllib.parse import (
     urldefrag,
 )
 
-from django.conf import settings
+from django.conf import (
+    settings,
+)
 from django.contrib.staticfiles.storage import (
     ManifestFilesMixin,
     StaticFilesStorage,
 )
-from django.contrib.staticfiles.utils import matches_patterns
-from django.core.files.base import ContentFile
-from pipeline.storage import PipelineMixin
-from storages.backends.s3boto3 import S3Boto3Storage
+from django.contrib.staticfiles.utils import (
+    matches_patterns,
+)
+from django.core.files.base import (
+    ContentFile,
+)
+from pipeline.storage import (
+    PipelineMixin,
+)
+from storages.backends.s3boto3 import (
+    S3Boto3Storage,
+)
 
 
 class MediaStorage(S3Boto3Storage):
@@ -73,7 +83,7 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
             if url_path.startswith('/'):
                 # Otherwise the condition above would have returned prematurely.
                 assert url_path.startswith(settings.STATIC_URL)
-                target_name = url_path[len(settings.STATIC_URL):]
+                target_name = url_path[len(settings.STATIC_URL) :]
             else:
                 # We're using the posixpath module to mix paths and URLs conveniently.
                 source_name = name if os.sep == '/' else name.replace(os.sep, '/')
@@ -81,11 +91,15 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
 
             # Determine the hashed name of the target file with the storage backend.
             hashed_url = self._url(
-                self._stored_name, unquote(target_name),
-                force=True, hashed_files=hashed_files,
+                self._stored_name,
+                unquote(target_name),
+                force=True,
+                hashed_files=hashed_files,
             )
 
-            transformed_url = '/'.join(url_path.split('/')[:-1] + hashed_url.split('/')[-1:])
+            transformed_url = '/'.join(
+                url_path.split('/')[:-1] + hashed_url.split('/')[-1:]
+            )
 
             # Restore the fragment that was stripped off earlier.
             if fragment:
@@ -140,7 +154,12 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                         if matches_patterns(path, (extension,)):
                             comment_blocks = self.get_comment_blocks(content)
                             for pattern, template in patterns:
-                                converter = self.url_converter(name, hashed_files, template, comment_blocks)
+                                converter = self.url_converter(
+                                    name,
+                                    hashed_files,
+                                    template,
+                                    comment_blocks,
+                                )
                                 try:
                                     content = pattern.sub(converter, content)
                                 except ValueError as exc:

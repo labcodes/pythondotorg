@@ -1,7 +1,14 @@
-from django.contrib import admin
+from django.contrib import (
+    admin,
+)
 
-from cms.admin import NameSlugAdmin
-from .models import Company
+from cms.admin import (
+    NameSlugAdmin,
+)
+
+from .models import (
+    Company,
+)
 
 
 @admin.register(Company)

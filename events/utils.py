@@ -13,7 +13,11 @@ def seconds_resolution(dt):
 
 
 def minutes_resolution(dt):
-    return dt - dt.second * datetime.timedelta(0, 1, 0) - dt.microsecond * datetime.timedelta(0, 0, 1)
+    return (
+        dt
+        - dt.second * datetime.timedelta(0, 1, 0)
+        - dt.microsecond * datetime.timedelta(0, 0, 1)
+    )
 
 
 def date_to_datetime(date, tzinfo=None):
@@ -72,7 +76,7 @@ def timedelta_nice_repr(timedelta, display='long', sep=', '):
             'h': hours,
             'H': hours if hours > 9 else '0%s' % hours,
             'i': minutes if minutes > 9 else '0%s' % minutes,
-            's': seconds if seconds > 9 else '0%s' % seconds
+            's': seconds if seconds > 9 else '0%s' % seconds,
         }
     values = [weeks, days, hours, minutes, seconds]
     for i in range(len(values)):
@@ -102,7 +106,7 @@ def timedelta_parse(string):
     d = re.match(
         r'^((?P<days>[-+]?\d+) days?,? )?(?P<sign>[-+]?)(?P<hours>\d+):'
         r'(?P<minutes>\d+)(:(?P<seconds>\d+(\.\d+)?))?$',
-        string
+        string,
     )
     if d:
         d = d.groupdict(0)
@@ -118,7 +122,7 @@ def timedelta_parse(string):
             r'((?P<hours>-?((\d*\.\d+)|\d+))\W*h(ou)?(r(s)?)?(,)?\W*)?'
             r'((?P<minutes>-?((\d*\.\d+)|\d+))\W*m(in(ute)?(s)?)?(,)?\W*)?'
             r'((?P<seconds>-?((\d*\.\d+)|\d+))\W*s(ec(ond)?(s)?)?)?\W*$',
-            string
+            string,
         )
         if not d:
             raise TypeError(f'{string!r} is not a valid time interval')

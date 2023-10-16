@@ -1,4 +1,6 @@
-from django.contrib import messages
+from django.contrib import (
+    messages,
+)
 from django.http import (
     Http404,
     HttpResponse,
@@ -8,7 +10,9 @@ from django.shortcuts import (
     get_object_or_404,
     redirect,
 )
-from django.urls import reverse
+from django.urls import (
+    reverse,
+)
 from django.views.generic import (
     CreateView,
     DetailView,
@@ -22,6 +26,7 @@ from pydotorg.mixins import (
     GroupRequiredMixin,
     LoginRequiredMixin,
 )
+
 from .forms import (
     JobForm,
     JobReviewCommentForm,
@@ -70,19 +75,23 @@ class JobMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        active_locations = Job.objects.visible().distinct(
-            'location_slug'
-        ).order_by(
-            'location_slug',
+        active_locations = (
+            Job.objects.visible()
+            .distinct('location_slug')
+            .order_by(
+                'location_slug',
+            )
         )
 
-        context.update({
-            'jobs_count': Job.objects.visible().count(),
-            'active_types': JobType.objects.with_active_jobs(),
-            'active_categories': JobCategory.objects.with_active_jobs(),
-            'active_locations': active_locations,
-            'jobs_board_admin': self.has_jobs_board_admin_access(),
-        })
+        context.update(
+            {
+                'jobs_count': Job.objects.visible().count(),
+                'active_types': JobType.objects.with_active_jobs(),
+                'active_categories': JobCategory.objects.with_active_jobs(),
+                'active_locations': active_locations,
+                'jobs_board_admin': self.has_jobs_board_admin_access(),
+            }
+        )
 
         return context
 
@@ -120,10 +129,12 @@ class JobListType(JobTypeMenu, JobMixin, ListView):
     template_name = 'jobs/job_type_list.html'
 
     def get_queryset(self):
-        self.current_type = get_object_or_404(JobType,
-                                              slug=self.kwargs['slug'])
-        return Job.objects.visible().select_related().filter(
-            job_types__slug=self.kwargs['slug'])
+        self.current_type = get_object_or_404(JobType, slug=self.kwargs['slug'])
+        return (
+            Job.objects.visible()
+            .select_related()
+            .filter(job_types__slug=self.kwargs['slug'])
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -136,10 +147,12 @@ class JobListCategory(JobCategoryMenu, JobMixin, ListView):
     template_name = 'jobs/job_category_list.html'
 
     def get_queryset(self):
-        self.current_category = get_object_or_404(JobCategory,
-                                                  slug=self.kwargs['slug'])
-        return Job.objects.visible().select_related().filter(
-            category__slug=self.kwargs['slug'])
+        self.current_category = get_object_or_404(JobCategory, slug=self.kwargs['slug'])
+        return (
+            Job.objects.visible()
+            .select_related()
+            .filter(category__slug=self.kwargs['slug'])
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -152,47 +165,54 @@ class JobListLocation(JobLocationMenu, JobMixin, ListView):
     template_name = 'jobs/job_location_list.html'
 
     def get_queryset(self):
-        return Job.objects.visible().select_related().filter(
-            location_slug=self.kwargs['slug'])
+        return (
+            Job.objects.visible()
+            .select_related()
+            .filter(location_slug=self.kwargs['slug'])
+        )
 
 
 class JobTypes(JobTypeMenu, JobMixin, ListView):
-    """ View to simply list JobType instances that have current jobs """
+    """View to simply list JobType instances that have current jobs"""
+
     template_name = "jobs/job_types.html"
     queryset = JobType.objects.with_active_jobs().order_by('name')
     context_object_name = 'types'
 
 
 class JobCategories(JobCategoryMenu, JobMixin, ListView):
-    """ View to simply list JobCategory instances that have current jobs """
+    """View to simply list JobCategory instances that have current jobs"""
+
     template_name = "jobs/job_categories.html"
     queryset = JobCategory.objects.with_active_jobs().order_by('name')
     context_object_name = 'categories'
 
 
 class JobLocations(JobLocationMenu, JobMixin, TemplateView):
-    """ View to simply list distinct Countries that have current jobs """
+    """View to simply list distinct Countries that have current jobs"""
+
     template_name = "jobs/job_locations.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['jobs'] = Job.objects.visible().distinct(
-            'country', 'city'
-        ).order_by(
-            'country', 'city'
+        context['jobs'] = (
+            Job.objects.visible()
+            .distinct('country', 'city')
+            .order_by('country', 'city')
         )
 
         return context
 
 
 class JobTelecommute(JobLocationMenu, JobList):
-    """ Specific view for telecommute jobs """
+    """Specific view for telecommute jobs"""
+
     template_name = 'jobs/job_telecommute_list.html'
 
     def get_queryset(self):
-        return super().get_queryset().visible().select_related().filter(
-            telecommuting=True
+        return (
+            super().get_queryset().visible().select_related().filter(telecommuting=True)
         )
 
     def get_context_data(self, **kwargs):
@@ -246,7 +266,6 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
 
 
 class JobRemove(LoginRequiredMixin, View):
-
     def get(self, request, pk):
         try:
             job = Job.objects.get(id=pk, creator=request.user)
@@ -275,7 +294,6 @@ class JobModerateList(JobReview):
 
 
 class JobDetail(JobMixin, DetailView):
-
     def get_queryset(self):
         queryset = Job.objects.select_related()
         if self.has_jobs_board_admin_access():
@@ -288,10 +306,12 @@ class JobDetail(JobMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['category_jobs'] = self.object.category.jobs.select_related('category')[:5]
+        context['category_jobs'] = self.object.category.jobs.select_related('category')[
+            :5
+        ]
         context['user_can_edit'] = (
-            self.object.creator == self.request.user or
-            self.has_jobs_board_admin_access()
+            self.object.creator == self.request.user
+            or self.has_jobs_board_admin_access()
         ) and self.object.editable
         context['job_review_form'] = JobReviewCommentForm(initial={'job': self.object})
         return context
@@ -317,7 +337,7 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
             return self.get(request)
 
     def get_object(self, queryset=None):
-        """ Show only approved jobs to the public, staff can see all jobs """
+        """Show only approved jobs to the public, staff can see all jobs"""
         job = super().get_object(queryset=queryset)
         # Only allow creator to preview and only while in draft status
         if job.creator == self.request.user and job.editable:
@@ -333,8 +353,8 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user_can_edit'] = (
-            self.object.creator == self.request.user or
-            self.has_jobs_board_admin_access()
+            self.object.creator == self.request.user
+            or self.has_jobs_board_admin_access()
         ) and self.object.editable
         context['under_preview'] = True
         # TODO: why we pass this?
@@ -347,26 +367,38 @@ class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
     form_class = JobReviewCommentForm
 
     def get_success_url(self):
-        return reverse('jobs:job_detail', kwargs={'pk': self.request.POST.get('job')})
+        return reverse(
+            'jobs:job_detail',
+            kwargs={'pk': self.request.POST.get('job')},
+        )
 
     def form_valid(self, form):
-        if (self.request.user.username != form.instance.job.creator.username and not
-                self.has_jobs_board_admin_access()):
+        if (
+            self.request.user.username != form.instance.job.creator.username
+            and not self.has_jobs_board_admin_access()
+        ):
             return HttpResponse('Unauthorized', status=401)
         action = self.request.POST.get('action')
-        valid_actions = {'approve': Job.STATUS_APPROVED, 'reject': Job.STATUS_REJECTED}
+        valid_actions = {
+            'approve': Job.STATUS_APPROVED,
+            'reject': Job.STATUS_REJECTED,
+        }
         if action is not None and action in valid_actions:
             if not self.has_jobs_board_admin_access():
                 return HttpResponse('Unauthorized', status=401)
             action_status = valid_actions.get(action)
             getattr(form.instance.job, action)(self.request.user)
             messages.add_message(
-                self.request, messages.SUCCESS,
-                f"'{form.instance.job}' {action_status}."
+                self.request,
+                messages.SUCCESS,
+                f"'{form.instance.job}' {action_status}.",
             )
         else:
-            messages.add_message(self.request, messages.SUCCESS,
-                                 'Your comment has been posted.')
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                'Your comment has been posted.',
+            )
         form.instance.creator = self.request.user
         return super().form_valid(form)
 
@@ -407,7 +439,7 @@ class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
         return self.request.user.jobs_job_creator.editable()
 
     def form_valid(self, form):
-        """ set last_modified_by to the current user """
+        """set last_modified_by to the current user"""
         form.instance.last_modified_by = self.request.user
         return super().form_valid(form)
 

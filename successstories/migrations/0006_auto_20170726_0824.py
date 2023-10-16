@@ -1,8 +1,18 @@
-from django.db import models, migrations
-from django.utils.text import slugify
-from django.utils.timezone import now
+from django.db import (
+    migrations,
+    models,
+)
+from django.utils.text import (
+    slugify,
+)
+from django.utils.timezone import (
+    now,
+)
 
-from successstories.utils import get_field_list, convert_to_datetime
+from successstories.utils import (
+    convert_to_datetime,
+    get_field_list,
+)
 
 MARKER = '.. Migrated from Pages model.\n\n'
 DEFAULT_URL = 'https://www.python.org/'
@@ -49,7 +59,7 @@ def migrate_old_content(apps, schema_editor):
     db_alias = schema_editor.connection.alias
     pages = Page.objects.using(db_alias).filter(
         path__startswith='about/success/',
-        content_markup_type='restructuredtext'
+        content_markup_type='restructuredtext',
     )
     stories = []
     for page in pages.iterator():
@@ -63,16 +73,14 @@ def migrate_old_content(apps, schema_editor):
         if check_story:
             # Move to the next one if story is already in the table.
             continue
-        company_url = field_list.get('website',
-                                     field_list.get('web site', DEFAULT_URL))
+        company_url = field_list.get('website', field_list.get('web site', DEFAULT_URL))
         category_cleaned = field_list['category'].strip().split(',')[0].strip()
-        category_cleaned = fix_category_names.get(category_cleaned,
-                                                  category_cleaned)
+        category_cleaned = fix_category_names.get(category_cleaned, category_cleaned)
         category, _ = StoryCategory.objects.get_or_create(
             name=category_cleaned,
             defaults={
                 'slug': slugify(category_cleaned),
-            }
+            },
         )
         story = Story(
             name=field_list['title'],
@@ -98,7 +106,6 @@ def delete_migrated_content(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('successstories', '0005_auto_20170726_0645'),
         # Added dependency to enable using models from pages

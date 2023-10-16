@@ -1,8 +1,10 @@
-from django.db import models, migrations
+from django.db import (
+    migrations,
+    models,
+)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('jobs', '0004_auto_20150216_1544'),
     ]
@@ -11,7 +13,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='job',
             name='other_job_type',
-            field=models.CharField(max_length=100, verbose_name='Other Job Technologies', blank=True),
+            field=models.CharField(
+                max_length=100,
+                verbose_name='Other Job Technologies',
+                blank=True,
+            ),
             preserve_default=True,
         ),
     ]

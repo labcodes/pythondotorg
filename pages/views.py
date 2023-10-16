@@ -1,11 +1,22 @@
 import re
 
-from django.http import HttpResponsePermanentRedirect
-from django.urls import reverse
-from django.views.generic import DetailView
+from django.http import (
+    HttpResponsePermanentRedirect,
+)
+from django.urls import (
+    reverse,
+)
+from django.views.generic import (
+    DetailView,
+)
 
-from downloads.models import Release
-from .models import Page
+from downloads.models import (
+    Release,
+)
+
+from .models import (
+    Page,
+)
 
 
 class PageView(DetailView):
@@ -18,7 +29,7 @@ class PageView(DetailView):
     slug_field = 'path'
 
     def get_template_names(self):
-        """ Use the template defined in the model or a default """
+        """Use the template defined in the model or a default"""
         names = [self.template_name]
 
         if self.object and self.template_name_field:

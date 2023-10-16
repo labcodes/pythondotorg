@@ -1,14 +1,21 @@
 import datetime
 import re
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import (
+    BaseCommand,
+)
 
-from pages.models import Page
-from ...models import Minutes
+from pages.models import (
+    Page,
+)
+
+from ...models import (
+    Minutes,
+)
 
 
 class Command(BaseCommand):
-    """ Move meeting notes from Pages to Minutes app """
+    """Move meeting notes from Pages to Minutes app"""
 
     def parse_date_from_path(self, path):
         # Build our date from the URL
@@ -25,7 +32,9 @@ class Command(BaseCommand):
         return d
 
     def handle(self, *args, **kwargs):
-        meeting_pages = Page.objects.filter(path__startswith='psf/records/board/minutes/')
+        meeting_pages = Page.objects.filter(
+            path__startswith='psf/records/board/minutes/'
+        )
 
         for p in meeting_pages:
             date = self.parse_date_from_path(p.path)

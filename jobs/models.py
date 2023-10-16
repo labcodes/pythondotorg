@@ -1,20 +1,41 @@
 import datetime
 
-from django.conf import settings
-from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.template.defaultfilters import slugify
-from django.urls import reverse
-from django.utils import timezone
-from markupfield.fields import MarkupField
+from django.conf import (
+    settings,
+)
+from django.db import (
+    models,
+)
+from django.db.models.signals import (
+    post_save,
+)
+from django.dispatch import (
+    receiver,
+)
+from django.template.defaultfilters import (
+    slugify,
+)
+from django.urls import (
+    reverse,
+)
+from django.utils import (
+    timezone,
+)
+from markupfield.fields import (
+    MarkupField,
+)
 
 from cms.models import (
     ContentManageable,
     NameSlugModel,
 )
-from fastly.utils import purge_url
-from users.models import User
+from fastly.utils import (
+    purge_url,
+)
+from users.models import (
+    User,
+)
+
 from .managers import (
     JobCategoryQuerySet,
     JobQuerySet,
@@ -38,7 +59,7 @@ class JobType(NameSlugModel):
     class Meta:
         verbose_name = 'job technologies'
         verbose_name_plural = 'job technologies'
-        ordering = ('name', )
+        ordering = ('name',)
 
 
 class JobCategory(NameSlugModel):
@@ -49,7 +70,7 @@ class JobCategory(NameSlugModel):
     class Meta:
         verbose_name = 'job category'
         verbose_name_plural = 'job categories'
-        ordering = ('name', )
+        ordering = ('name',)
 
 
 class Job(ContentManageable):
@@ -73,49 +94,39 @@ class Job(ContentManageable):
         max_length=100,
         blank=True,
     )
-    company_name = models.CharField(
-        max_length=100,
-        null=True)
+    company_name = models.CharField(max_length=100, null=True)
     company_description = MarkupField(
-        blank=True,
-        default_markup_type=DEFAULT_MARKUP_TYPE)
-    job_title = models.CharField(
-        max_length=100)
+        blank=True, default_markup_type=DEFAULT_MARKUP_TYPE
+    )
+    job_title = models.CharField(max_length=100)
 
-    city = models.CharField(
-        max_length=100)
+    city = models.CharField(max_length=100)
     region = models.CharField(
         verbose_name='State, Province or Region',
         blank=True,
-        max_length=100)
-    country = models.CharField(
         max_length=100,
-        db_index=True)
-    location_slug = models.SlugField(
-        max_length=350,
-        editable=False)
-    country_slug = models.SlugField(
-        max_length=100,
-        editable=False)
+    )
+    country = models.CharField(max_length=100, db_index=True)
+    location_slug = models.SlugField(max_length=350, editable=False)
+    country_slug = models.SlugField(max_length=100, editable=False)
 
     description = MarkupField(
         verbose_name='Job description',
-        default_markup_type=DEFAULT_MARKUP_TYPE)
+        default_markup_type=DEFAULT_MARKUP_TYPE,
+    )
     requirements = MarkupField(
         verbose_name='Job requirements',
-        default_markup_type=DEFAULT_MARKUP_TYPE)
+        default_markup_type=DEFAULT_MARKUP_TYPE,
+    )
 
     contact = models.CharField(
         verbose_name='Contact name',
         null=True,
         blank=True,
-        max_length=100)
-    email = models.EmailField(
-        verbose_name='Contact email')
-    url = models.URLField(
-        verbose_name='URL',
-        null=True,
-        blank=False)
+        max_length=100,
+    )
+    email = models.EmailField(verbose_name='Contact email')
+    url = models.URLField(verbose_name='URL', null=True, blank=False)
 
     submitted_by = models.ForeignKey(
         User,
@@ -144,18 +155,20 @@ class Job(ContentManageable):
         max_length=20,
         choices=STATUS_CHOICES,
         default=STATUS_REVIEW,
-        db_index=True)
+        db_index=True,
+    )
     expires = models.DateTimeField(
         verbose_name='Job Listing Expiration Date',
         blank=True,
-        null=True)
+        null=True,
+    )
 
     telecommuting = models.BooleanField(
-        verbose_name='Telecommuting allowed?',
-        default=False)
+        verbose_name='Telecommuting allowed?', default=False
+    )
     agencies = models.BooleanField(
-        verbose_name='Agencies are OK to contact?',
-        default=True)
+        verbose_name='Agencies are OK to contact?', default=True
+    )
 
     is_featured = models.BooleanField(default=False, db_index=True)
 
@@ -202,8 +215,11 @@ class Job(ContentManageable):
         """
         self.status = Job.STATUS_APPROVED
         self.save()
-        job_was_approved.send(sender=self.__class__, job=self,
-                              approving_user=approving_user)
+        job_was_approved.send(
+            sender=self.__class__,
+            job=self,
+            approving_user=approving_user,
+        )
 
     def reject(self, rejecting_user):
         """Updates job status to Job.STATUS_REJECTED after rejection was issued
@@ -211,8 +227,11 @@ class Job(ContentManageable):
         """
         self.status = Job.STATUS_REJECTED
         self.save()
-        job_was_rejected.send(sender=self.__class__, job=self,
-                              rejecting_user=rejecting_user)
+        job_was_rejected.send(
+            sender=self.__class__,
+            job=self,
+            rejecting_user=rejecting_user,
+        )
 
     def get_absolute_url(self):
         return reverse('jobs:job_detail', kwargs={'pk': self.pk})
@@ -227,8 +246,9 @@ class Job(ContentManageable):
 
     @property
     def display_location(self):
-        location_parts = [part for part in (self.city, self.region, self.country)
-                          if part]
+        location_parts = [
+            part for part in (self.city, self.region, self.country) if part
+        ]
         location_str = ', '.join(location_parts)
         return location_str
 
@@ -241,7 +261,7 @@ class Job(ContentManageable):
         return self.status in (
             self.STATUS_DRAFT,
             self.STATUS_REVIEW,
-            self.STATUS_REJECTED
+            self.STATUS_REJECTED,
         )
 
     def get_previous_listing(self):
@@ -252,7 +272,9 @@ class Job(ContentManageable):
 
 
 class JobReviewComment(ContentManageable):
-    job = models.ForeignKey(Job, related_name='review_comments', on_delete=models.CASCADE)
+    job = models.ForeignKey(
+        Job, related_name='review_comments', on_delete=models.CASCADE
+    )
     comment = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
 
     class Meta:

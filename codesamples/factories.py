@@ -1,14 +1,20 @@
 import textwrap
 
 import factory
-from factory.django import DjangoModelFactory
+from factory.django import (
+    DjangoModelFactory,
+)
 
-from users.factories import UserFactory
-from .models import CodeSample
+from users.factories import (
+    UserFactory,
+)
+
+from .models import (
+    CodeSample,
+)
 
 
 class CodeSampleFactory(DjangoModelFactory):
-
     class Meta:
         model = CodeSample
         django_get_or_create = ('code',)
@@ -44,7 +50,7 @@ def initial_data():
             easy to learn.
             <a href=\"https://docs.python.org/3/tutorial/\">Whet your appetite</a>
             with our Python overview.</p>
-            """
+            """,
         ),
         (
             """\
@@ -67,7 +73,7 @@ def initial_data():
             <a href=\"https://docs.python.org/3/tutorial/introduction.html
             #using-python-as-a-calculator\">More about simple math functions</a>.
             </p>
-            """
+            """,
         ),
         (
             """\
@@ -88,7 +94,7 @@ def initial_data():
             sliced and manipulated with other built-in functions.
             <a href=\"https://docs.python.org/3/tutorial/introduction.html
             #lists\">More about lists</a></p>
-            """
+            """,
         ),
         (
             """\
@@ -113,7 +119,7 @@ def initial_data():
             its own twists, of course.
             <a href=\"https://docs.python.org/3/tutorial/controlflow.html\">
             More control flow tools</a></p>
-            """
+            """,
         ),
         (
             """\
@@ -138,13 +144,15 @@ def initial_data():
             and even arbitrary argument lists.
             <a href=\"https://docs.python.org/3/tutorial/controlflow.html
             #defining-functions\">More about defining functions</a></p>
-            """
+            """,
         ),
     ]
     return {
         'boxes': [
             CodeSampleFactory(
-                code=textwrap.dedent(code), copy=textwrap.dedent(copy),
-            ) for code, copy in code_samples
+                code=textwrap.dedent(code),
+                copy=textwrap.dedent(copy),
+            )
+            for code, copy in code_samples
         ],
     }

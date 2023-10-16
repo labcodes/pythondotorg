@@ -1,8 +1,9 @@
-from django.apps import AppConfig
+from django.apps import (
+    AppConfig,
+)
 
 
 class JobsAppConfig(AppConfig):
-
     name = 'jobs'
     verbose_name = 'Jobs Application'
 

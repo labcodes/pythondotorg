@@ -1,8 +1,18 @@
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.test import TestCase
-from django.urls import reverse
-from model_bakery import baker
+from django.conf import (
+    settings,
+)
+from django.contrib.auth import (
+    get_user_model,
+)
+from django.test import (
+    TestCase,
+)
+from django.urls import (
+    reverse,
+)
+from model_bakery import (
+    baker,
+)
 
 from sponsors.forms import (
     SponsorRequiredAssetsForm,
@@ -13,10 +23,18 @@ from sponsors.models import (
     SponsorBenefit,
     Sponsorship,
 )
-from sponsors.models.enums import AssetsRelatedTo
-from sponsors.tests.utils import get_static_image_file_as_upload
-from users.factories import UserFactory
-from users.models import Membership
+from sponsors.models.enums import (
+    AssetsRelatedTo,
+)
+from sponsors.tests.utils import (
+    get_static_image_file_as_upload,
+)
+from users.factories import (
+    UserFactory,
+)
+from users.models import (
+    Membership,
+)
 
 User = get_user_model()
 
@@ -38,7 +56,11 @@ class UsersViewsTestCase(TestCase):
             public_profile=False,
         )
 
-    def assertUserCreated(self, data=None, template_name='account/verification_sent.html'):
+    def assertUserCreated(
+        self,
+        data=None,
+        template_name='account/verification_sent.html',
+    ):
         post_data = {
             'username': 'guido',
             'email': 'montyopython@python.org',
@@ -228,12 +250,14 @@ class UsersViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_user_new_account(self):
-        self.assertUserCreated(data={
-            'username': 'thisusernamedoesntexist',
-            'email': 'thereisnoemail@likesthis.com',
-            'password1': 'password',
-            'password2': 'password',
-        })
+        self.assertUserCreated(
+            data={
+                'username': 'thisusernamedoesntexist',
+                'email': 'thereisnoemail@likesthis.com',
+                'password1': 'password',
+                'password2': 'password',
+            }
+        )
 
     def test_user_duplicate_username_email(self):
         post_data = {
@@ -246,17 +270,18 @@ class UsersViewsTestCase(TestCase):
         response = self.assertUserCreated(
             data=post_data, template_name='account/signup.html'
         )
+        self.assertContains(response, 'A user with that username already exists.')
         self.assertContains(
-            response, 'A user with that username already exists.'
-        )
-        self.assertContains(
-            response, 'A user is already registered with this e-mail address.'
+            response,
+            'A user is already registered with this e-mail address.',
         )
 
     def test_usernames(self):
         url = reverse('account_signup')
         usernames = [
-            'foaso+bar', 'foo.barahgs', 'foo@barbazbaz',
+            'foaso+bar',
+            'foo.barahgs',
+            'foo@barbazbaz',
             'foo.baarBAZ',
         ]
         post_data = {
@@ -268,10 +293,12 @@ class UsersViewsTestCase(TestCase):
         }
         for i, username in enumerate(usernames):
             with self.subTest(i=i, username=username):
-                post_data.update({
-                    'username': username,
-                    'email': f'foo{i}@example.com'
-                })
+                post_data.update(
+                    {
+                        'username': username,
+                        'email': f'foo{i}@example.com',
+                    }
+                )
                 response = self.client.post(url, post_data, follow=True)
                 self.assertEqual(response.status_code, 200)
                 self.assertTemplateUsed(response, 'account/verification_sent.html')
@@ -294,7 +321,7 @@ class UsersViewsTestCase(TestCase):
         # Ensure that an inactive user didn't get logged in.
         self.assertRedirects(
             response,
-            '{}?next={}'.format(reverse('account_login'), url)
+            '{}?next={}'.format(reverse('account_login'), url),
         )
 
     def test_user_delete_needs_to_be_logged_in(self):
@@ -302,7 +329,7 @@ class UsersViewsTestCase(TestCase):
         response = self.client.delete(url)
         self.assertRedirects(
             response,
-            '{}?next={}'.format(reverse('account_login'), url)
+            '{}?next={}'.format(reverse('account_login'), url),
         )
 
     def test_user_delete_invalid_request_method(self):
@@ -322,19 +349,33 @@ class UsersViewsTestCase(TestCase):
         self.client.login(username=self.user.username, password='password')
         response = self.client.delete(url)
         self.assertRedirects(response, reverse('home'))
-        self.assertRaises(User.DoesNotExist, User.objects.get, username=self.user.username)
-        self.assertRaises(Membership.DoesNotExist, Membership.objects.get, creator=self.user)
+        self.assertRaises(
+            User.DoesNotExist,
+            User.objects.get,
+            username=self.user.username,
+        )
+        self.assertRaises(
+            Membership.DoesNotExist,
+            Membership.objects.get,
+            creator=self.user,
+        )
 
     def test_membership_delete_needs_to_be_logged_in(self):
-        url = reverse('users:user_membership_delete', kwargs={'slug': self.user2.username})
+        url = reverse(
+            'users:user_membership_delete',
+            kwargs={'slug': self.user2.username},
+        )
         response = self.client.delete(url)
         self.assertRedirects(
             response,
-            '{}?next={}'.format(reverse('account_login'), url)
+            '{}?next={}'.format(reverse('account_login'), url),
         )
 
     def test_membership_delete_invalid_request_method(self):
-        url = reverse('users:user_membership_delete', kwargs={'slug': self.user2.username})
+        url = reverse(
+            'users:user_membership_delete',
+            kwargs={'slug': self.user2.username},
+        )
         self.client.login(username=self.user2.username, password='password')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 405)
@@ -342,26 +383,38 @@ class UsersViewsTestCase(TestCase):
     def test_membership_delete_different_user_membership(self):
         user = UserFactory()
         self.assertTrue(user.has_membership)
-        url = reverse('users:user_membership_delete', kwargs={'slug': user.username})
+        url = reverse(
+            'users:user_membership_delete',
+            kwargs={'slug': user.username},
+        )
         self.client.login(username=self.user2.username, password='password')
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 403)
 
     def test_membership_does_not_exist(self):
         self.assertFalse(self.user.has_membership)
-        url = reverse('users:user_membership_delete', kwargs={'slug': self.user.username})
+        url = reverse(
+            'users:user_membership_delete',
+            kwargs={'slug': self.user.username},
+        )
         self.client.login(username=self.user.username, password='password')
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 404)
 
     def test_membership_delete(self):
         self.assertTrue(self.user2.has_membership)
-        url = reverse('users:user_membership_delete', kwargs={'slug': self.user2.username})
+        url = reverse(
+            'users:user_membership_delete',
+            kwargs={'slug': self.user2.username},
+        )
         self.client.login(username=self.user2.username, password='password')
         response = self.client.delete(url)
         self.assertRedirects(
             response,
-            reverse('users:user_detail', kwargs={'slug': self.user2.username})
+            reverse(
+                'users:user_detail',
+                kwargs={'slug': self.user2.username},
+            ),
         )
         # TODO: We can't use 'self.user2.refresh_from_db()' because
         # of https://code.djangoproject.com/ticket/27846.
@@ -384,21 +437,25 @@ class UsersViewsTestCase(TestCase):
         response = self.client.post(url, data, follow=True)
         self.assertRedirects(response, reverse('users:user_profile_edit'))
         self.client.logout()
-        logged_in = self.client.login(username=self.user.username,
-                                      password='newpassword')
+        logged_in = self.client.login(
+            username=self.user.username, password='newpassword'
+        )
         self.assertTrue(logged_in)
 
 
 class SponsorshipDetailViewTests(TestCase):
-
     def setUp(self):
         self.user = baker.make(settings.AUTH_USER_MODEL)
         self.client.force_login(self.user)
         self.sponsorship = baker.make(
-            Sponsorship, submited_by=self.user, status=Sponsorship.APPLIED, _fill_optional=True
+            Sponsorship,
+            submited_by=self.user,
+            status=Sponsorship.APPLIED,
+            _fill_optional=True,
         )
         self.url = reverse(
-            "users:sponsorship_application_detail", args=[self.sponsorship.pk]
+            "users:sponsorship_application_detail",
+            args=[self.sponsorship.pk],
         )
 
     def test_display_template_with_sponsorship_info(self):
@@ -423,7 +480,9 @@ class SponsorshipDetailViewTests(TestCase):
         self.assertRedirects(r, redirect_url)
 
     def test_404_if_sponsorship_does_not_belong_to_user(self):
-        self.client.force_login(baker.make(settings.AUTH_USER_MODEL))  # log in with a new user
+        self.client.force_login(
+            baker.make(settings.AUTH_USER_MODEL)
+        )  # log in with a new user
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 404)
 
@@ -457,18 +516,18 @@ class SponsorshipDetailViewTests(TestCase):
 
 
 class UpdateSponsorInfoViewTests(TestCase):
-
     def setUp(self):
         self.user = baker.make(settings.AUTH_USER_MODEL)
         self.client.force_login(self.user)
         self.sponsorship = baker.make(
-            Sponsorship, submited_by=self.user, status=Sponsorship.APPLIED, _fill_optional=True
+            Sponsorship,
+            submited_by=self.user,
+            status=Sponsorship.APPLIED,
+            _fill_optional=True,
         )
         self.sponsor = self.sponsorship.sponsor
         self.contact = baker.make("sponsors.SponsorContact", sponsor=self.sponsor)
-        self.url = reverse(
-            "users:edit_sponsor_info", args=[self.sponsor.pk]
-        )
+        self.url = reverse("users:edit_sponsor_info", args=[self.sponsor.pk])
         self.data = {
             "description": "desc",
             "name": "CompanyX",
@@ -487,7 +546,9 @@ class UpdateSponsorInfoViewTests(TestCase):
             "contact-MIN_NUM_FORMS": 1,
             "contact-INITIAL_FORMS": 1,
             "web_logo": get_static_image_file_as_upload("psf-logo.png", "logo.png"),
-            "print_logo": get_static_image_file_as_upload("psf-logo_print.png", "logo_print.png"),
+            "print_logo": get_static_image_file_as_upload(
+                "psf-logo_print.png", "logo_print.png"
+            ),
         }
 
     def test_display_template_with_sponsor_info(self):
@@ -505,9 +566,7 @@ class UpdateSponsorInfoViewTests(TestCase):
 
     def test_404_if_sponsor_from_sponsorship_from_another_user(self):
         sponsorship = baker.make(Sponsorship, _fill_optional=True)
-        self.url = reverse(
-            "users:edit_sponsor_info", args=[sponsorship.sponsor.pk]
-        )
+        self.url = reverse("users:edit_sponsor_info", args=[sponsorship.sponsor.pk])
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 404)
 
@@ -530,10 +589,11 @@ class UpdateSponsorInfoViewTests(TestCase):
 
 
 class UpdateSponsorshipAssetsViewTests(TestCase):
-
     def setUp(self):
         self.user = baker.make(User)
-        self.sponsorship = baker.make(Sponsorship, sponsor__name="foo", submited_by=self.user)
+        self.sponsorship = baker.make(
+            Sponsorship, sponsor__name="foo", submited_by=self.user
+        )
         self.required_text_cfg = baker.make(
             RequiredTextAssetConfiguration,
             related_to=AssetsRelatedTo.SPONSORSHIP.value,
@@ -541,9 +601,14 @@ class UpdateSponsorshipAssetsViewTests(TestCase):
             _fill_optional=True,
         )
         self.benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
-        self.required_asset = self.required_text_cfg.create_benefit_feature(self.benefit)
+        self.required_asset = self.required_text_cfg.create_benefit_feature(
+            self.benefit
+        )
         self.client.force_login(self.user)
-        self.url = reverse("users:update_sponsorship_assets", args=[self.sponsorship.pk])
+        self.url = reverse(
+            "users:update_sponsorship_assets",
+            args=[self.sponsorship.pk],
+        )
 
     def test_render_expected_html_and_context(self):
         response = self.client.get(self.url)
@@ -555,7 +620,9 @@ class UpdateSponsorshipAssetsViewTests(TestCase):
         self.assertEqual(self.sponsorship, context["form"].sponsorship)
         self.assertIsInstance(context["form"], SponsorRequiredAssetsForm)
 
-    def test_render_form_for_specific_asset_if_informed_via_querystring(self):
+    def test_render_form_for_specific_asset_if_informed_via_querystring(
+        self,
+    ):
         extra_required_text_cfg = baker.make(
             RequiredTextAssetConfiguration,
             related_to=AssetsRelatedTo.SPONSORSHIP.value,
@@ -574,11 +641,21 @@ class UpdateSponsorshipAssetsViewTests(TestCase):
         response = self.client.post(self.url, data={"text_input": "information"})
         context = response.context
 
-        self.assertRedirects(response, reverse("users:sponsorship_application_detail", args=[self.sponsorship.pk]))
+        self.assertRedirects(
+            response,
+            reverse(
+                "users:sponsorship_application_detail",
+                args=[self.sponsorship.pk],
+            ),
+        )
         self.assertEqual(self.required_asset.value, "information")
 
-    def test_render_form_with_errors_when_updating_info_with_invalid_post(self):
-        self.client.post(self.url, data={"text_input": "information"})  # first post updates the asset value
+    def test_render_form_with_errors_when_updating_info_with_invalid_post(
+        self,
+    ):
+        self.client.post(
+            self.url, data={"text_input": "information"}
+        )  # first post updates the asset value
 
         response = self.client.post(self.url, {})
         context = response.context

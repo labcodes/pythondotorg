@@ -1,11 +1,18 @@
-from django import forms
+from django import (
+    forms,
+)
 from django.forms.widgets import (
     CheckboxSelectMultiple,
     HiddenInput,
 )
-from markupfield.widgets import MarkupTextarea
+from markupfield.widgets import (
+    MarkupTextarea,
+)
 
-from cms.forms import ContentManageableModelForm
+from cms.forms import (
+    ContentManageableModelForm,
+)
+
 from .models import (
     Job,
     JobReviewComment,

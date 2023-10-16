@@ -1,5 +1,9 @@
-from django.test import TestCase
-from django.utils import timezone
+from django.test import (
+    TestCase,
+)
+from django.utils import (
+    timezone,
+)
 
 from ..models import (
     BlogEntry,
@@ -8,7 +12,6 @@ from ..models import (
 
 
 class BlogModelTest(TestCase):
-
     def test_blog_entry(self):
         now = timezone.now()
 
@@ -21,7 +24,7 @@ class BlogModelTest(TestCase):
                 name='psf blog',
                 website_url='psf.example.org',
                 feed_url='feed.psf.example.org',
-            )
+            ),
         )
 
         self.assertEqual(str(b), b.title)

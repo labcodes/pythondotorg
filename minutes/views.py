@@ -1,11 +1,17 @@
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
+from django.core.exceptions import (
+    ObjectDoesNotExist,
+)
+from django.http import (
+    Http404,
+)
 from django.views.generic import (
     DetailView,
     ListView,
 )
 
-from .models import Minutes
+from .models import (
+    Minutes,
+)
 
 
 class MinutesList(ListView):

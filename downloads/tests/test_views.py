@@ -1,22 +1,39 @@
 import unittest.mock as mock
 
-from django.conf import settings
-from django.contrib.auth import get_user_model
+from django.conf import (
+    settings,
+)
+from django.contrib.auth import (
+    get_user_model,
+)
 from django.test import (
     TestCase,
     override_settings,
 )
-from django.urls import reverse
-from rest_framework.test import APITestCase
+from django.urls import (
+    reverse,
+)
+from rest_framework.test import (
+    APITestCase,
+)
 
-from pages.factories import PageFactory
-from pydotorg.drf import BaseAPITestCase
-from users.factories import UserFactory
+from pages.factories import (
+    PageFactory,
+)
+from pydotorg.drf import (
+    BaseAPITestCase,
+)
+from users.factories import (
+    UserFactory,
+)
+
+from ..models import (
+    Release,
+)
 from .base import (
     BaseDownloadTests,
     DownloadMixin,
 )
-from ..models import Release
 
 User = get_user_model()
 
@@ -40,16 +57,25 @@ class DownloadViewsTests(BaseDownloadTests):
         self.assertEqual(response.status_code, 200)
 
     def test_download_release_detail(self):
-        url = reverse('download:download_release_detail', kwargs={'release_slug': self.release_275.slug})
+        url = reverse(
+            'download:download_release_detail',
+            kwargs={'release_slug': self.release_275.slug},
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        url = reverse('download:download_release_detail', kwargs={'release_slug': 'fake_slug'})
+        url = reverse(
+            'download:download_release_detail',
+            kwargs={'release_slug': 'fake_slug'},
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
     def test_download_os_list(self):
-        url = reverse('download:download_os_list', kwargs={'slug': self.linux.slug})
+        url = reverse(
+            'download:download_os_list',
+            kwargs={'slug': self.linux.slug},
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -118,7 +144,9 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
     def test_invalid_token(self):
         url = self.create_url('os', self.linux.pk)
         response = self.json_client(
-            'delete', url, HTTP_AUTHORIZATION=self.Authorization_invalid,
+            'delete',
+            url,
+            HTTP_AUTHORIZATION=self.Authorization_invalid,
         )
         self.assertEqual(response.status_code, 401)
 
@@ -136,7 +164,7 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         self.assertEqual(len(content), 3)
         self.assertIn(
             self.create_url('os', self.linux.pk),
-            content[0]['resource_uri']
+            content[0]['resource_uri'],
         )
         self.assertEqual(content[0]['name'], self.linux.name)
         self.assertEqual(content[0]['slug'], self.linux.slug)
@@ -155,7 +183,9 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         response = self.json_client('post', url, data)
         self.assertEqual(response.status_code, 401)
 
-        response = self.json_client('post', url, data, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.json_client(
+            'post', url, data, HTTP_AUTHORIZATION=self.Authorization
+        )
         self.assertEqual(response.status_code, 201)
 
         # Get the new created OS object via API.
@@ -178,7 +208,9 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         response = self.json_client('delete', url)
         self.assertEqual(response.status_code, 401)
 
-        response = self.json_client('delete', url, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.json_client(
+            'delete', url, HTTP_AUTHORIZATION=self.Authorization
+        )
         self.assertEqual(response.status_code, 204)
 
         # Test that the OS doesn't exist.
@@ -209,7 +241,9 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         self.assertEqual(len(content), 0)
 
         # Test uppercase 'self.linux.name'.
-        response = self.client.get(self.create_url('os', filters={'name': self.linux.name.upper()}))
+        response = self.client.get(
+            self.create_url('os', filters={'name': self.linux.name.upper()})
+        )
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         self.assertEqual(len(content), 0)
@@ -233,7 +267,7 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         release_page = PageFactory(
             title='python 3.3',
             path='/rels/3-3/',
-            content='python 3.3. released'
+            content='python 3.3. released',
         )
         release_page_url = self.create_url('page', release_page.pk, app_label='pages')
         response = self.client.get(release_page_url)
@@ -249,7 +283,9 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         response = self.json_client('post', url, data)
         self.assertEqual(response.status_code, 401)
 
-        response = self.json_client('post', url, data, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.json_client(
+            'post', url, data, HTTP_AUTHORIZATION=self.Authorization
+        )
         self.assertEqual(response.status_code, 201)
 
         # Test that the release is created.
@@ -279,7 +315,9 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         response = self.json_client('delete', url)
         self.assertEqual(response.status_code, 401)
 
-        response = self.json_client('delete', url, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.json_client(
+            'delete', url, HTTP_AUTHORIZATION=self.Authorization
+        )
         self.assertEqual(response.status_code, 204)
 
         # Test that the OS doesn't exist.
@@ -287,13 +325,15 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_filter_release(self):
-        response = self.client.get(self.create_url('release', filters={'pre_release': True}))
+        response = self.client.get(
+            self.create_url('release', filters={'pre_release': True})
+        )
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         self.assertEqual(len(content), 1)
         self.assertIn(
             self.create_url('release', self.pre_release.pk),
-            content[0]['resource_uri']
+            content[0]['resource_uri'],
         )
         self.assertEqual(content[0]['name'], self.pre_release.name)
         self.assertEqual(content[0]['slug'], self.pre_release.slug)
@@ -303,7 +343,7 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         self.assertEqual(content[0]['version'], self.pre_release.version)
         self.assertEqual(
             content[0]['release_notes_url'],
-            self.pre_release.release_notes_url
+            self.pre_release.release_notes_url,
         )
 
     def test_get_release_file(self):
@@ -340,7 +380,9 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         response = self.json_client('post', url, data)
         self.assertEqual(response.status_code, 401)
 
-        response = self.json_client('post', url, data, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.json_client(
+            'post', url, data, HTTP_AUTHORIZATION=self.Authorization
+        )
         self.assertEqual(response.status_code, 201)
 
         # Test that the file is created.
@@ -363,7 +405,9 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         response = self.json_client('delete', url)
         self.assertEqual(response.status_code, 401)
 
-        response = self.json_client('delete', url, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.json_client(
+            'delete', url, HTTP_AUTHORIZATION=self.Authorization
+        )
         self.assertEqual(response.status_code, 204)
 
         # Test that the OS doesn't exist.
@@ -380,18 +424,24 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         self.assertIn('error', content)
         self.assertIn(
             '\'exact\' is not an allowed filter on the \'description\' field.',
-            content['error']
+            content['error'],
         )
 
         response = self.client.get(
-            self.create_url('release_file', filters={'description__contains': 'Windows'})
+            self.create_url(
+                'release_file',
+                filters={'description__contains': 'Windows'},
+            )
         )
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         self.assertEqual(len(content), 2)
 
         response = self.client.get(
-            self.create_url('release_file', filters={'name': self.release_275_linux.name})
+            self.create_url(
+                'release_file',
+                filters={'name': self.release_275_linux.name},
+            )
         )
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
@@ -405,7 +455,10 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         self.assertEqual(len(content), 2)
 
         response = self.client.get(
-            self.create_url('release_file', filters={'release': self.release_275.pk})
+            self.create_url(
+                'release_file',
+                filters={'release': self.release_275.pk},
+            )
         )
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
@@ -418,7 +471,7 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
                 filters={
                     'release': self.release_275.pk,
                     'os': self.linux.pk,
-                }
+                },
             )
         )
         self.assertEqual(response.status_code, 200)
@@ -428,7 +481,10 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         # Files for a draft release should be shown to users.
         # TODO: We may deprecate this behavior when we drop API v1.
         response = self.client.get(
-            self.create_url('release_file', filters={'release': self.draft_release.pk})
+            self.create_url(
+                'release_file',
+                filters={'release': self.draft_release.pk},
+            )
         )
         self.assertFalse(self.draft_release.is_published)
         self.assertEqual(response.status_code, 200)
@@ -444,7 +500,9 @@ class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests):
         self.staff_key = self.staff_user.api_key.key
         self.token_header = 'ApiKey'
         self.Authorization = '{} {}:{}'.format(
-            self.token_header, self.staff_user.username, self.staff_key,
+            self.token_header,
+            self.staff_user.username,
+            self.staff_key,
         )
         self.Authorization_invalid = '%s invalid:token' % self.token_header
 
@@ -464,7 +522,8 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
         )
         self.normal_user_key = self.normal_user.auth_token.key
         self.Authorization_normal = '{} {}'.format(
-            self.token_header, self.normal_user_key,
+            self.token_header,
+            self.normal_user_key,
         )
 
     def get_json(self, response):
@@ -520,7 +579,10 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
 
         # Making a GET request after the deletion shouldn't return any results.
         response = self.client.get(
-            self.create_url('release_file', filters={'release': self.release_275.pk})
+            self.create_url(
+                'release_file',
+                filters={'release': self.release_275.pk},
+            )
         )
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)

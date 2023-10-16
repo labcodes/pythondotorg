@@ -1,13 +1,21 @@
 import factory
-from django.template.defaultfilters import slugify
-from factory.django import DjangoModelFactory
+from django.template.defaultfilters import (
+    slugify,
+)
+from factory.django import (
+    DjangoModelFactory,
+)
 
-from users.factories import UserFactory
-from .models import Page
+from users.factories import (
+    UserFactory,
+)
+
+from .models import (
+    Page,
+)
 
 
 class PageFactory(DjangoModelFactory):
-
     class Meta:
         model = Page
         django_get_or_create = ('path',)

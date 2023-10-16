@@ -1,28 +1,42 @@
-from django.test import TestCase
+from unittest import (
+    mock,
+)
 
-from model_bakery import baker
-
-from unittest import mock
-
-from sponsors.models import ProvidedTextAssetConfiguration, ProvidedTextAsset
-from sponsors.models.enums import AssetsRelatedTo
+from django.test import (
+    TestCase,
+)
+from model_bakery import (
+    baker,
+)
 
 from sponsors.management.commands.create_pycon_vouchers_for_sponsors import (
-    generate_voucher_codes,
     BENEFITS,
+    generate_voucher_codes,
+)
+from sponsors.models import (
+    ProvidedTextAsset,
+    ProvidedTextAssetConfiguration,
+)
+from sponsors.models.enums import (
+    AssetsRelatedTo,
 )
 
 
 class CreatePyConVouchersForSponsorsTestCase(TestCase):
     @mock.patch(
         "sponsors.management.commands.create_pycon_vouchers_for_sponsors.api_call",
-        return_value={"code": 200, "data": {"promo_code": "test-promo-code"}},
+        return_value={
+            "code": 200,
+            "data": {"promo_code": "test-promo-code"},
+        },
     )
     def test_generate_voucher_codes(self, mock_api_call):
         for benefit_id, code in BENEFITS.items():
             sponsor = baker.make("sponsors.Sponsor", name="Foo")
             sponsorship = baker.make(
-                "sponsors.Sponsorship", status="finalized", sponsor=sponsor
+                "sponsors.Sponsorship",
+                status="finalized",
+                sponsor=sponsor,
             )
             sponsorship_benefit = baker.make(
                 "sponsors.SponsorshipBenefit", id=benefit_id
@@ -49,6 +63,7 @@ class CreatePyConVouchersForSponsorsTestCase(TestCase):
 
         for benefit_id, code in BENEFITS.items():
             asset = ProvidedTextAsset.objects.get(
-                sponsor_benefit__id=benefit_id, internal_name=code["internal_name"]
+                sponsor_benefit__id=benefit_id,
+                internal_name=code["internal_name"],
             )
             self.assertEqual(asset.value, "test-promo-code")

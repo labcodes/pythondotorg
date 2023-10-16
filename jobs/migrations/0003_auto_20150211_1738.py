@@ -1,4 +1,7 @@
-from django.db import models, migrations
+from django.db import (
+    migrations,
+    models,
+)
 
 
 def remove_job_submit_sidebar_box(apps, schema_editor):
@@ -14,7 +17,6 @@ def remove_job_submit_sidebar_box(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('jobs', '0002_auto_20150211_1634'),
         ('boxes', '0001_initial'),

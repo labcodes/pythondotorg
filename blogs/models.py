@@ -1,9 +1,17 @@
 import feedparser
-from bs4 import BeautifulSoup
-from bs4.element import Comment
-from django.db import models
+from bs4 import (
+    BeautifulSoup,
+)
+from bs4.element import (
+    Comment,
+)
+from django.db import (
+    models,
+)
 
-from cms.models import ContentManageable
+from cms.models import (
+    ContentManageable,
+)
 
 
 def tag_visible(element):

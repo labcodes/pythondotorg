@@ -1,7 +1,11 @@
 import datetime
 
-from django.test import TestCase
-from django.utils import timezone
+from django.test import (
+    TestCase,
+)
+from django.utils import (
+    timezone,
+)
 
 from ..utils import (
     minutes_resolution,
@@ -28,8 +32,11 @@ class EventsUtilsTests(TestCase):
 
     def test_timedelta_nice_repr(self):
         tests = [
-            (dict(days=1, hours=2, minutes=3, seconds=4), (),
-             '1 day, 2 hours, 3 minutes, 4 seconds'),
+            (
+                dict(days=1, hours=2, minutes=3, seconds=4),
+                (),
+                '1 day, 2 hours, 3 minutes, 4 seconds',
+            ),
             (dict(days=1, seconds=1), ('minimal',), '1d, 1s'),
             (dict(days=1), (), '1 day'),
             (dict(days=0), (), '0 seconds'),
@@ -53,7 +60,7 @@ class EventsUtilsTests(TestCase):
             with self.subTest(timedelta=timedelta, arguments=arguments):
                 self.assertEqual(
                     timedelta_nice_repr(datetime.timedelta(**timedelta), *arguments),
-                    expected
+                    expected,
                 )
         self.assertRaises(TypeError, timedelta_nice_repr, '')
 
@@ -89,8 +96,10 @@ class EventsUtilsTests(TestCase):
             ('-2 days', datetime.timedelta(-2)),
             ('-1 day 0:00:01', datetime.timedelta(-1, 1)),
             ('-1 day, -1:01:01', datetime.timedelta(-2, 82739)),
-            ('-1 weeks, 2 days, -3 hours, 4 minutes, -5 seconds',
-             datetime.timedelta(-5, 11045)),
+            (
+                '-1 weeks, 2 days, -3 hours, 4 minutes, -5 seconds',
+                datetime.timedelta(-5, 11045),
+            ),
             ('0 seconds', datetime.timedelta(0)),
             ('0 days', datetime.timedelta(0)),
             ('0 weeks', datetime.timedelta(0)),

@@ -1,8 +1,14 @@
 import os
 
-from decouple import config
-from dj_database_url import parse as dj_database_url_parser
-from django.contrib.messages import constants
+from decouple import (
+    config,
+)
+from dj_database_url import (
+    parse as dj_database_url_parser,
+)
+from django.contrib.messages import (
+    constants,
+)
 
 ### Basic config
 
@@ -27,7 +33,7 @@ DATABASES = {
     'default': config(
         'DATABASE_URL',
         default='postgres:///python.org',
-        cast=dj_database_url_parser
+        cast=dj_database_url_parser,
     )
 }
 
@@ -69,7 +75,6 @@ STATICFILES_FINDERS = (
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
     "django.contrib.auth.backends.ModelBackend",
-
     # `allauth` specific authentication methods, such as login by e-mail
     "allauth.account.auth_backends.AuthenticationBackend",
 )
@@ -157,12 +162,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-
     'admin_interface',
     'colorfield',
     'django.contrib.admin',
     'django.contrib.admindocs',
-
     'django_translation_aliases',
     'pipeline',
     'sitetree',
@@ -175,7 +178,6 @@ INSTALLED_APPS = [
     'django_countries',
     'easy_pdf',
     'sorl.thumbnail',
-
     'banners',
     'blogs',
     'boxes',
@@ -195,7 +197,6 @@ INSTALLED_APPS = [
     'successstories',
     'users',
     'work_groups',
-
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -203,10 +204,8 @@ INSTALLED_APPS = [
     # 'allauth.socialaccount.providers.github',
     # 'allauth.socialaccount.providers.openid',
     # 'allauth.socialaccount.providers.twitter',
-
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
-
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
@@ -217,25 +216,19 @@ INSTALLED_APPS = [
 
 # Fixtures
 
-FIXTURE_DIRS = (
-    os.path.join(BASE, 'fixtures'),
-)
+FIXTURE_DIRS = (os.path.join(BASE, 'fixtures'),)
 
 ### Logging
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
+    'filters': {'require_debug_false': {'()': 'django.utils.log.RequireDebugFalse'}},
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
+            'class': 'django.utils.log.AdminEmailHandler',
         }
     },
     'loggers': {
@@ -244,7 +237,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-    }
+    },
 }
 
 ### Honeypot
@@ -260,10 +253,14 @@ MAILING_LIST_PSF_MEMBERS = "psf-members-announce-request@python.org"
 
 ### PEP Repo Location
 PEP_REPO_PATH = None
-PEP_ARTIFACT_URL = 'https://pythondotorg-assets-staging.s3.amazonaws.com/fake-peps.tar.gz'
+PEP_ARTIFACT_URL = (
+    'https://pythondotorg-assets-staging.s3.amazonaws.com/fake-peps.tar.gz'
+)
 
 ### Fastly ###
-FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to be purged on save
+FASTLY_API_KEY = (
+    False  # Set to Fastly API key in production to allow pages to be purged on save
+)
 
 # Jobs
 JOB_THRESHOLD_DAYS = 90
@@ -274,10 +271,12 @@ EVENTS_TO_EMAIL = 'events@python.org'
 
 # Sponsors
 SPONSORSHIP_NOTIFICATION_FROM_EMAIL = config(
-    "SPONSORSHIP_NOTIFICATION_FROM_EMAIL", default="sponsors@python.org"
+    "SPONSORSHIP_NOTIFICATION_FROM_EMAIL",
+    default="sponsors@python.org",
 )
 SPONSORSHIP_NOTIFICATION_TO_EMAIL = config(
-    "SPONSORSHIP_NOTIFICATION_TO_EMAIL", default="psf-sponsors@python.org"
+    "SPONSORSHIP_NOTIFICATION_TO_EMAIL",
+    default="psf-sponsors@python.org",
 )
 PYPI_SPONSORS_CSV = os.path.join(BASE, "data", "pypi-sponsors.csv")
 
@@ -286,7 +285,9 @@ DEFAULT_FROM_EMAIL = 'noreply@python.org'
 
 ### Pipeline
 
-from .pipeline import PIPELINE  # noqa
+from .pipeline import (  # noqa
+    PIPELINE,
+)
 
 ### contrib.messages
 
@@ -305,13 +306,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     ),
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    ),
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
     'URL_FIELD_NAME': 'resource_uri',
-    'DEFAULT_FILTER_BACKENDS': (
-        'django_filters.rest_framework.DjangoFilterBackend',
-    ),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle',
@@ -328,5 +325,7 @@ GLOBAL_SURROGATE_KEY = 'pydotorg-app'
 
 ### PyCon Integration for Sponsor Voucher Codes
 PYCON_API_KEY = config("PYCON_API_KEY", default="deadbeef-dead-beef-dead-beefdeadbeef")
-PYCON_API_SECRET = config("PYCON_API_SECRET", default="deadbeef-dead-beef-dead-beefdeadbeef")
+PYCON_API_SECRET = config(
+    "PYCON_API_SECRET", default="deadbeef-dead-beef-dead-beefdeadbeef"
+)
 PYCON_API_HOST = config("PYCON_API_HOST", default="localhost:8000")

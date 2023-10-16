@@ -4,10 +4,16 @@ from django.template.defaultfilters import (
     striptags,
     truncatewords_html,
 )
-from django.utils import timezone
-from haystack import indexes
+from django.utils import (
+    timezone,
+)
+from haystack import (
+    indexes,
+)
 
-from .models import Release
+from .models import (
+    Release,
+)
 
 
 class ReleaseIndex(indexes.SearchIndex, indexes.Indexable):
@@ -25,7 +31,7 @@ class ReleaseIndex(indexes.SearchIndex, indexes.Indexable):
         return Release
 
     def index_queryset(self, using=None):
-        """ Only index published Releases """
+        """Only index published Releases"""
         return self.get_model().objects.filter(is_published=True)
 
     def prepare_include_template(self, obj):
@@ -41,7 +47,7 @@ class ReleaseIndex(indexes.SearchIndex, indexes.Indexable):
         return striptags(truncatewords_html(obj.content.rendered, 50))
 
     def prepare(self, obj):
-        """ Boost recent releases """
+        """Boost recent releases"""
         data = super().prepare(obj)
 
         now = timezone.now()

@@ -1,8 +1,10 @@
-from django.db import models, migrations
+from django.db import (
+    migrations,
+    models,
+)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('jobs', '0006_region_nullable'),
     ]
@@ -19,7 +21,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='job',
             name='expires',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Job Listing Expiration Date'),
+            field=models.DateTimeField(
+                blank=True,
+                null=True,
+                verbose_name='Job Listing Expiration Date',
+            ),
             preserve_default=True,
         ),
     ]

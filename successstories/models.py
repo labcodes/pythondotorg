@@ -1,28 +1,54 @@
-from django.conf import settings
-from django.contrib.sites.models import Site
-from django.core.mail import EmailMessage
-from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.template.loader import render_to_string
-from django.urls import reverse
-from markupfield.fields import MarkupField
+from django.conf import (
+    settings,
+)
+from django.contrib.sites.models import (
+    Site,
+)
+from django.core.mail import (
+    EmailMessage,
+)
+from django.db import (
+    models,
+)
+from django.db.models.signals import (
+    post_save,
+)
+from django.dispatch import (
+    receiver,
+)
+from django.template.loader import (
+    render_to_string,
+)
+from django.urls import (
+    reverse,
+)
+from markupfield.fields import (
+    MarkupField,
+)
 
-from boxes.models import Box
+from boxes.models import (
+    Box,
+)
 from cms.models import (
     ContentManageable,
     NameSlugModel,
 )
-from companies.models import Company
-from fastly.utils import purge_url
-from .managers import StoryManager
+from companies.models import (
+    Company,
+)
+from fastly.utils import (
+    purge_url,
+)
+
+from .managers import (
+    StoryManager,
+)
 
 PSF_TO_EMAILS = ['psf-staff@python.org']
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
 
 class StoryCategory(NameSlugModel):
-
     class Meta:
         ordering = ('name',)
         verbose_name = 'story category'
@@ -55,10 +81,17 @@ class Story(NameSlugModel, ContentManageable):
     pull_quote = models.TextField()
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=False, db_index=True)
-    featured = models.BooleanField(default=False, help_text="Set to use story in the supernav")
+    featured = models.BooleanField(
+        default=False, help_text="Set to use story in the supernav"
+    )
     image = models.ImageField(upload_to='successstories', blank=True, null=True)
 
-    submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.SET_NULL)
+    submitted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     objects = StoryManager()
 
@@ -77,7 +110,7 @@ class Story(NameSlugModel, ContentManageable):
         return reverse('admin:successstories_story_change', args=(self.id,))
 
     def get_company_name(self):
-        """ Return company name depending on ForeignKey """
+        """Return company name depending on ForeignKey"""
         if self.company:
             return self.company.name
         else:
@@ -92,22 +125,25 @@ class Story(NameSlugModel, ContentManageable):
 
 @receiver(post_save, sender=Story)
 def update_successstories_supernav(sender, instance, created, **kwargs):
-    """ Update download supernav """
+    """Update download supernav"""
     # Skip in fixtures
     if kwargs.get('raw', False):
         return
 
     if instance.is_published and instance.featured:
-        content = render_to_string('successstories/supernav.html', {
-            'story': instance,
-        })
+        content = render_to_string(
+            'successstories/supernav.html',
+            {
+                'story': instance,
+            },
+        )
 
         box, _ = Box.objects.update_or_create(
             label='supernav-python-success-stories',
             defaults={
                 'content': content,
                 'content_markup_type': 'html',
-            }
+            },
         )
 
         # Purge Fastly cache
@@ -156,7 +192,8 @@ Review URL: {admin_url}
                 pull_quote=instance.pull_quote,
                 content=instance.content.raw,
                 admin_url='https://{}{}'.format(
-                    Site.objects.get_current(), instance.get_admin_url()
+                    Site.objects.get_current(),
+                    instance.get_admin_url(),
                 ),
             ).strip(),
             settings.DEFAULT_FROM_EMAIL,

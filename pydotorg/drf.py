@@ -4,27 +4,28 @@ from urllib.parse import (
     urljoin,
 )
 
-from django.core.exceptions import ImproperlyConfigured
-from django.db.models.constants import LOOKUP_SEP
-from django_filters import rest_framework as filters
+from django.core.exceptions import (
+    ImproperlyConfigured,
+)
+from django.db.models.constants import (
+    LOOKUP_SEP,
+)
+from django_filters import (
+    rest_framework as filters,
+)
 from rest_framework import (
     serializers,
     viewsets,
 )
 from rest_framework.permissions import (
-    IsAuthenticatedOrReadOnly,
     SAFE_METHODS,
+    IsAuthenticatedOrReadOnly,
 )
 
 
 class IsStaffOrReadOnly(IsAuthenticatedOrReadOnly):
-
     def has_permission(self, request, view):
-        return (
-            request.method in SAFE_METHODS or
-            request.user and
-            request.user.is_staff
-        )
+        return request.method in SAFE_METHODS or request.user and request.user.is_staff
 
 
 class BaseAPIViewMixin:
@@ -48,7 +49,6 @@ class BaseReadOnlyAPIViewSet(BaseAPIViewMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class BaseFilterSet(filters.FilterSet):
-
     @property
     def qs(self):
         errors = []
@@ -106,4 +106,9 @@ class BaseAPITestCase:
         if not data:
             data = {}
         client_method = getattr(self.client, method.lower())
-        return client_method(url, json.dumps(data), content_type='application/json', **headers)
+        return client_method(
+            url,
+            json.dumps(data),
+            content_type='application/json',
+            **headers,
+        )

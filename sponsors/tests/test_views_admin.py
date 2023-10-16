@@ -9,31 +9,50 @@ from unittest.mock import (
     PropertyMock,
     patch,
 )
-from uuid import uuid4
+from uuid import (
+    uuid4,
+)
 
-from django.conf import settings
-from django.contrib import messages
-from django.contrib.messages import get_messages
-from django.core import mail
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.handlers.wsgi import WSGIRequest
-from django.http import HttpResponse
+from django.conf import (
+    settings,
+)
+from django.contrib import (
+    messages,
+)
+from django.contrib.messages import (
+    get_messages,
+)
+from django.core import (
+    mail,
+)
+from django.core.files.uploadedfile import (
+    SimpleUploadedFile,
+)
+from django.core.handlers.wsgi import (
+    WSGIRequest,
+)
+from django.http import (
+    HttpResponse,
+)
 from django.test import (
     RequestFactory,
     TestCase,
 )
-from django.urls import reverse
-from model_bakery import baker
+from django.urls import (
+    reverse,
+)
+from model_bakery import (
+    baker,
+)
 
-from sponsors.use_cases import SendSponsorshipNotificationUseCase
+from sponsors.use_cases import (
+    SendSponsorshipNotificationUseCase,
+)
 from sponsors.views_admin import (
     export_assets_as_zipfile,
     send_sponsorship_notifications_action,
 )
-from .utils import (
-    assertMessage,
-    get_static_image_file_as_upload,
-)
+
 from ..forms import (
     CloneApplicationConfigForm,
     SendSponsorshipNotificationForm,
@@ -53,6 +72,10 @@ from ..models import (
     SponsorshipPackage,
     TextAsset,
 )
+from .utils import (
+    assertMessage,
+    get_static_image_file_as_upload,
+)
 
 
 class RollbackSponsorshipToEditingAdminViewTests(TestCase):
@@ -68,7 +91,8 @@ class RollbackSponsorshipToEditingAdminViewTests(TestCase):
             _fill_optional=True,
         )
         self.url = reverse(
-            "admin:sponsors_sponsorship_rollback_to_edit", args=[self.sponsorship.pk]
+            "admin:sponsors_sponsorship_rollback_to_edit",
+            args=[self.sponsorship.pk],
         )
 
     def test_display_confirmation_form_on_get(self):
@@ -77,7 +101,8 @@ class RollbackSponsorshipToEditingAdminViewTests(TestCase):
         self.sponsorship.refresh_from_db()
 
         self.assertTemplateUsed(
-            response, "sponsors/admin/rollback_sponsorship_to_editing.html"
+            response,
+            "sponsors/admin/rollback_sponsorship_to_editing.html",
         )
         self.assertEqual(context["sponsorship"], self.sponsorship)
         self.assertNotEqual(
@@ -90,7 +115,8 @@ class RollbackSponsorshipToEditingAdminViewTests(TestCase):
         self.sponsorship.refresh_from_db()
 
         expected_url = reverse(
-            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+            "admin:sponsors_sponsorship_change",
+            args=[self.sponsorship.pk],
         )
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.APPLIED)
@@ -101,7 +127,8 @@ class RollbackSponsorshipToEditingAdminViewTests(TestCase):
         response = self.client.post(self.url, data={})
         self.sponsorship.refresh_from_db()
         self.assertTemplateUsed(
-            response, "sponsors/admin/rollback_sponsorship_to_editing.html"
+            response,
+            "sponsors/admin/rollback_sponsorship_to_editing.html",
         )
         self.assertNotEqual(
             self.sponsorship.status, Sponsorship.APPLIED
@@ -110,7 +137,8 @@ class RollbackSponsorshipToEditingAdminViewTests(TestCase):
         response = self.client.post(self.url, data={"confirm": "invalid"})
         self.sponsorship.refresh_from_db()
         self.assertTemplateUsed(
-            response, "sponsors/admin/rollback_sponsorship_to_editing.html"
+            response,
+            "sponsors/admin/rollback_sponsorship_to_editing.html",
         )
         self.assertNotEqual(self.sponsorship.status, Sponsorship.APPLIED)
 
@@ -147,13 +175,16 @@ class RollbackSponsorshipToEditingAdminViewTests(TestCase):
         self.sponsorship.refresh_from_db()
 
         expected_url = reverse(
-            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+            "admin:sponsors_sponsorship_change",
+            args=[self.sponsorship.pk],
         )
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
         msg = list(get_messages(response.wsgi_request))[0]
         assertMessage(
-            msg, "Can't rollback to edit a Finalized sponsorship.", messages.ERROR
+            msg,
+            "Can't rollback to edit a Finalized sponsorship.",
+            messages.ERROR,
         )
 
 
@@ -170,7 +201,8 @@ class RejectedSponsorshipAdminViewTests(TestCase):
             _fill_optional=True,
         )
         self.url = reverse(
-            "admin:sponsors_sponsorship_reject", args=[self.sponsorship.pk]
+            "admin:sponsors_sponsorship_reject",
+            args=[self.sponsorship.pk],
         )
 
     def test_display_confirmation_form_on_get(self):
@@ -190,7 +222,8 @@ class RejectedSponsorshipAdminViewTests(TestCase):
         self.sponsorship.refresh_from_db()
 
         expected_url = reverse(
-            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+            "admin:sponsors_sponsorship_change",
+            args=[self.sponsorship.pk],
         )
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertTrue(mail.outbox)
@@ -244,12 +277,17 @@ class RejectedSponsorshipAdminViewTests(TestCase):
         self.sponsorship.refresh_from_db()
 
         expected_url = reverse(
-            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+            "admin:sponsors_sponsorship_change",
+            args=[self.sponsorship.pk],
         )
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
         msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Can't reject a Finalized sponsorship.", messages.ERROR)
+        assertMessage(
+            msg,
+            "Can't reject a Finalized sponsorship.",
+            messages.ERROR,
+        )
 
 
 class ApproveSponsorshipAdminViewTests(TestCase):
@@ -259,10 +297,13 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         )
         self.client.force_login(self.user)
         self.sponsorship = baker.make(
-            Sponsorship, status=Sponsorship.APPLIED, _fill_optional=True
+            Sponsorship,
+            status=Sponsorship.APPLIED,
+            _fill_optional=True,
         )
         self.url = reverse(
-            "admin:sponsors_sponsorship_approve", args=[self.sponsorship.pk]
+            "admin:sponsors_sponsorship_approve",
+            args=[self.sponsorship.pk],
         )
         today = date.today()
         self.package = baker.make("sponsors.SponsorshipPackage")
@@ -287,7 +328,8 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.assertEqual(form.initial["start_date"], self.sponsorship.start_date)
         self.assertEqual(form.initial["end_date"], self.sponsorship.end_date)
         self.assertEqual(
-            form.initial["sponsorship_fee"], self.sponsorship.sponsorship_fee
+            form.initial["sponsorship_fee"],
+            self.sponsorship.sponsorship_fee,
         )
         self.assertNotEqual(
             self.sponsorship.status, Sponsorship.APPROVED
@@ -299,7 +341,8 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.sponsorship.refresh_from_db()
 
         expected_url = reverse(
-            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+            "admin:sponsors_sponsorship_change",
+            args=[self.sponsorship.pk],
         )
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.APPROVED)
@@ -363,12 +406,17 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.sponsorship.refresh_from_db()
 
         expected_url = reverse(
-            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+            "admin:sponsors_sponsorship_change",
+            args=[self.sponsorship.pk],
         )
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
         msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
+        assertMessage(
+            msg,
+            "Can't approve a Finalized sponsorship.",
+            messages.ERROR,
+        )
 
 
 class ApproveSignedSponsorshipAdminViewTests(TestCase):
@@ -378,10 +426,13 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
         )
         self.client.force_login(self.user)
         self.sponsorship = baker.make(
-            Sponsorship, status=Sponsorship.APPLIED, _fill_optional=True
+            Sponsorship,
+            status=Sponsorship.APPLIED,
+            _fill_optional=True,
         )
         self.url = reverse(
-            "admin:sponsors_sponsorship_approve_existing_contract", args=[self.sponsorship.pk]
+            "admin:sponsors_sponsorship_approve_existing_contract",
+            args=[self.sponsorship.pk],
         )
         today = date.today()
         self.package = baker.make("sponsors.SponsorshipPackage")
@@ -391,7 +442,7 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
             "end_date": today + timedelta(days=100),
             "package": self.package.pk,
             "sponsorship_fee": 500,
-            "signed_contract": io.BytesIO(b"Signed contract")
+            "signed_contract": io.BytesIO(b"Signed contract"),
         }
 
     def test_display_confirmation_form_on_get(self):
@@ -407,7 +458,8 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
         self.assertEqual(form.initial["start_date"], self.sponsorship.start_date)
         self.assertEqual(form.initial["end_date"], self.sponsorship.end_date)
         self.assertEqual(
-            form.initial["sponsorship_fee"], self.sponsorship.sponsorship_fee
+            form.initial["sponsorship_fee"],
+            self.sponsorship.sponsorship_fee,
         )
         self.assertNotEqual(
             self.sponsorship.status, Sponsorship.APPROVED
@@ -420,7 +472,8 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
         contract = self.sponsorship.contract
 
         expected_url = reverse(
-            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+            "admin:sponsors_sponsorship_change",
+            args=[self.sponsorship.pk],
         )
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
@@ -486,12 +539,17 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
         self.sponsorship.refresh_from_db()
 
         expected_url = reverse(
-            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+            "admin:sponsors_sponsorship_change",
+            args=[self.sponsorship.pk],
         )
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
         msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
+        assertMessage(
+            msg,
+            "Can't approve a Finalized sponsorship.",
+            messages.ERROR,
+        )
 
 
 class SendContractViewTests(TestCase):
@@ -501,9 +559,7 @@ class SendContractViewTests(TestCase):
         )
         self.client.force_login(self.user)
         self.contract = baker.make_recipe("sponsors.tests.empty_contract")
-        self.url = reverse(
-            "admin:sponsors_contract_send", args=[self.contract.pk]
-        )
+        self.url = reverse("admin:sponsors_contract_send", args=[self.contract.pk])
         self.data = {
             "confirm": "yes",
         }
@@ -516,7 +572,9 @@ class SendContractViewTests(TestCase):
         self.assertEqual(context["contract"], self.contract)
 
     @patch.object(
-        Sponsorship, "verified_emails", PropertyMock(return_value=["email@email.com"])
+        Sponsorship,
+        "verified_emails",
+        PropertyMock(return_value=["email@email.com"]),
     )
     def test_approve_sponsorship_on_post(self):
         response = self.client.post(self.url, data=self.data)
@@ -532,7 +590,9 @@ class SendContractViewTests(TestCase):
         assertMessage(msg, "Contract was sent!", messages.SUCCESS)
 
     @patch.object(
-        Sponsorship, "verified_emails", PropertyMock(return_value=["email@email.com"])
+        Sponsorship,
+        "verified_emails",
+        PropertyMock(return_value=["email@email.com"]),
     )
     def test_display_error_message_to_user_if_invalid_status(self):
         self.contract.status = Contract.AWAITING_SIGNATURE
@@ -598,10 +658,11 @@ class ExecuteContractViewTests(TestCase):
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
         )
         self.client.force_login(self.user)
-        self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
-        self.url = reverse(
-            "admin:sponsors_contract_execute", args=[self.contract.pk]
+        self.contract = baker.make_recipe(
+            "sponsors.tests.empty_contract",
+            status=Contract.AWAITING_SIGNATURE,
         )
+        self.url = reverse("admin:sponsors_contract_execute", args=[self.contract.pk])
         self.data = {
             "confirm": "yes",
             "signed_document": SimpleUploadedFile("contract.txt", b"Contract content"),
@@ -653,7 +714,9 @@ class ExecuteContractViewTests(TestCase):
             messages.ERROR,
         )
 
-    def test_do_not_execute_contract_if_no_confirmation_in_the_post(self):
+    def test_do_not_execute_contract_if_no_confirmation_in_the_post(
+        self,
+    ):
         self.data.pop("confirm")
         response = self.client.post(self.url, data=self.data)
         self.contract.refresh_from_db()
@@ -666,7 +729,9 @@ class ExecuteContractViewTests(TestCase):
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.AWAITING_SIGNATURE)
 
-    def test_display_error_message_to_user_if_no_signed_document(self):
+    def test_display_error_message_to_user_if_no_signed_document(
+        self,
+    ):
         self.data.pop("signed_document")
         response = self.client.post(self.url, data=self.data)
         context = response.context
@@ -707,10 +772,11 @@ class NullifyContractViewTests(TestCase):
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
         )
         self.client.force_login(self.user)
-        self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
-        self.url = reverse(
-            "admin:sponsors_contract_nullify", args=[self.contract.pk]
+        self.contract = baker.make_recipe(
+            "sponsors.tests.empty_contract",
+            status=Contract.AWAITING_SIGNATURE,
         )
+        self.url = reverse("admin:sponsors_contract_nullify", args=[self.contract.pk])
         self.data = {
             "confirm": "yes",
         }
@@ -753,7 +819,9 @@ class NullifyContractViewTests(TestCase):
             messages.ERROR,
         )
 
-    def test_do_not_nullify_contract_if_no_confirmation_in_the_post(self):
+    def test_do_not_nullify_contract_if_no_confirmation_in_the_post(
+        self,
+    ):
         self.data.pop("confirm")
         response = self.client.post(self.url, data=self.data)
         self.contract.refresh_from_db()
@@ -806,7 +874,8 @@ class UpdateRelatedSponsorshipsTests(TestCase):
             added_by_user=True,  # to make sure we keep previous fields
         )
         self.url = reverse(
-            "admin:sponsors_sponsorshipbenefit_update_related", args=[self.benefit.pk]
+            "admin:sponsors_sponsorshipbenefit_update_related",
+            args=[self.benefit.pk],
         )
         self.data = {"sponsorships": [self.sponsor_benefit.sponsorship.pk]}
 
@@ -814,7 +883,10 @@ class UpdateRelatedSponsorshipsTests(TestCase):
         response = self.client.get(self.url)
         context = response.context
 
-        self.assertTemplateUsed(response, "sponsors/admin/update_related_sponsorships.html")
+        self.assertTemplateUsed(
+            response,
+            "sponsors/admin/update_related_sponsorships.html",
+        )
         self.assertEqual(context["benefit"], self.benefit)
         self.assertIsInstance(context["form"], SponsorshipsListForm)
         self.assertEqual(context["form"].sponsorship_benefit, self.benefit)
@@ -831,8 +903,14 @@ class UpdateRelatedSponsorshipsTests(TestCase):
         initial = response.context["form"].initial
 
         self.assertEqual(2, len(initial["sponsorships"]))
-        self.assertIn(self.sponsor_benefit.sponsorship.pk, initial["sponsorships"])
-        self.assertIn(other_sponsor_benefit.sponsorship.pk, initial["sponsorships"])
+        self.assertIn(
+            self.sponsor_benefit.sponsorship.pk,
+            initial["sponsorships"],
+        )
+        self.assertIn(
+            other_sponsor_benefit.sponsorship.pk,
+            initial["sponsorships"],
+        )
 
     def test_bad_request_if_invalid_post_data(self):
         self.data["sponsorships"] = []
@@ -843,7 +921,8 @@ class UpdateRelatedSponsorshipsTests(TestCase):
 
     def test_redirect_back_to_benefit_page_if_success(self):
         redirect_url = reverse(
-            "admin:sponsors_sponsorshipbenefit_change", args=[self.benefit.pk]
+            "admin:sponsors_sponsorshipbenefit_change",
+            args=[self.benefit.pk],
         )
         response = self.client.post(self.url, data=self.data)
 
@@ -859,7 +938,10 @@ class UpdateRelatedSponsorshipsTests(TestCase):
             name=self.benefit.name,
             description=self.benefit.description,
         )
-        prev_name, prev_description = self.benefit.name, self.benefit.description
+        prev_name, prev_description = (
+            self.benefit.name,
+            self.benefit.description,
+        )
         self.benefit.name = 'New name'
         self.benefit.description = 'New description'
         self.benefit.save()
@@ -908,11 +990,10 @@ class PreviewContractViewTests(TestCase):
         )
         self.client.force_login(self.user)
         self.contract = baker.make_recipe(
-            "sponsors.tests.empty_contract", sponsorship__start_date=date.today()
+            "sponsors.tests.empty_contract",
+            sponsorship__start_date=date.today(),
         )
-        self.url = reverse(
-            "admin:sponsors_contract_preview", args=[self.contract.pk]
-        )
+        self.url = reverse("admin:sponsors_contract_preview", args=[self.contract.pk])
 
     @patch("sponsors.views_admin.render_contract_to_pdf_response")
     def test_render_pdf_by_default(self, mocked_render):
@@ -947,7 +1028,10 @@ class PreviewSponsorEmailNotificationTemplateTests(TestCase):
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
         )
         self.client.force_login(self.user)
-        self.sponsor_notification = baker.make(SponsorEmailNotificationTemplate, content="{{'content'|upper}}")
+        self.sponsor_notification = baker.make(
+            SponsorEmailNotificationTemplate,
+            content="{{'content'|upper}}",
+        )
         self.url = self.sponsor_notification.preview_content_url
 
     def test_display_content_on_response(self):
@@ -982,7 +1066,6 @@ class PreviewSponsorEmailNotificationTemplateTests(TestCase):
 
 
 class ClonsSponsorshipYearConfigurationTests(TestCase):
-
     def setUp(self):
         self.user = baker.make(
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
@@ -1025,7 +1108,9 @@ class ClonsSponsorshipYearConfigurationTests(TestCase):
         self.assertEqual(200, response.status_code)
         self.assertTrue(response.context["form"].errors)
 
-    def test_clone_sponsorship_application_config_with_valid_post(self):
+    def test_clone_sponsorship_application_config_with_valid_post(
+        self,
+    ):
         baker.make(SponsorshipBenefit, year=2022)
         data = {"from_year": 2022, "target_year": 2023}
         response = self.client.post(self.url, data=data)
@@ -1041,12 +1126,14 @@ class ClonsSponsorshipYearConfigurationTests(TestCase):
 #######################
 ### TEST CUSTOM ACTIONS
 class SendSponsorshipNotificationTests(TestCase):
-
     def setUp(self):
         self.request_factory = RequestFactory()
         baker.make(Sponsorship, _quantity=3, sponsor__name='foo')
         self.sponsorship = Sponsorship.objects.all()[0]
-        baker.make('sponsors.EmailTargetable', sponsor_benefit__sponsorship=self.sponsorship)
+        baker.make(
+            'sponsors.EmailTargetable',
+            sponsor_benefit__sponsorship=self.sponsorship,
+        )
         self.queryset = Sponsorship.objects.all()
         self.user = baker.make("users.User")
 
@@ -1086,7 +1173,11 @@ class SendSponsorshipNotificationTests(TestCase):
         notification = baker.make("SponsorEmailNotificationTemplate")
         mocked_uc = Mock(SendSponsorshipNotificationUseCase, autospec=True)
         mock_build.return_value = mocked_uc
-        data = {"confirm": "yes", "notification": notification.pk, "contact_types": ["primary"]}
+        data = {
+            "confirm": "yes",
+            "notification": notification.pk,
+            "contact_types": ["primary"],
+        }
         request = self.request_factory.post("/", data=data)
         request.user = self.user
 
@@ -1105,7 +1196,6 @@ class SendSponsorshipNotificationTests(TestCase):
 
 
 class ExportAssetsAsZipTests(TestCase):
-
     def setUp(self):
         self.request_factory = RequestFactory()
         self.request = self.request_factory.get("/")
@@ -1130,9 +1220,13 @@ class ExportAssetsAsZipTests(TestCase):
         self.assertEqual(302, response.status_code)
         self.assertEqual(self.request.path, response["Location"])
         msg = "You have to select at least one asset to export."
-        self.ModelAdmin.message_user.assert_called_once_with(self.request, msg, messages.WARNING)
+        self.ModelAdmin.message_user.assert_called_once_with(
+            self.request, msg, messages.WARNING
+        )
 
-    def test_display_same_page_with_warning_message_if_any_asset_without_value(self):
+    def test_display_same_page_with_warning_message_if_any_asset_without_value(
+        self,
+    ):
         self.text_asset.value = "Foo"
         self.text_asset.save()
 
@@ -1142,11 +1236,17 @@ class ExportAssetsAsZipTests(TestCase):
         self.assertEqual(302, response.status_code)
         self.assertEqual(self.request.path, response["Location"])
         msg = "1 assets from the selection doesn't have data to export. Please review your selection!"
-        self.ModelAdmin.message_user.assert_called_once_with(self.request, msg, messages.WARNING)
+        self.ModelAdmin.message_user.assert_called_once_with(
+            self.request, msg, messages.WARNING
+        )
 
     def test_response_is_configured_to_be_zip_file(self):
         self.text_asset.value = "foo"
-        self.img_asset.value = SimpleUploadedFile(name='test_image.jpg', content=b"content", content_type='image/jpeg')
+        self.img_asset.value = SimpleUploadedFile(
+            name='test_image.jpg',
+            content=b"content",
+            content_type='image/jpeg',
+        )
         self.text_asset.save()
         self.img_asset.save()
 
@@ -1154,9 +1254,14 @@ class ExportAssetsAsZipTests(TestCase):
         response = export_assets_as_zipfile(self.ModelAdmin, self.request, queryset)
 
         self.assertEqual("application/x-zip-compressed", response["Content-Type"])
-        self.assertEqual("attachment; filename=assets.zip", response["Content-Disposition"])
+        self.assertEqual(
+            "attachment; filename=assets.zip",
+            response["Content-Disposition"],
+        )
 
-    def test_zip_file_organize_assets_within_sponsors_directories(self):
+    def test_zip_file_organize_assets_within_sponsors_directories(
+        self,
+    ):
         self.text_asset.value = "foo"
         self.img_asset.value = get_static_image_file_as_upload("psf-logo.png")
         self.text_asset.save()

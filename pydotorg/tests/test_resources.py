@@ -1,8 +1,16 @@
-from django.contrib.auth import get_user_model
-from django.http import HttpRequest
-from django.test import TestCase
+from django.contrib.auth import (
+    get_user_model,
+)
+from django.http import (
+    HttpRequest,
+)
+from django.test import (
+    TestCase,
+)
 
-from pydotorg.resources import ApiKeyOrGuestAuthentication
+from pydotorg.resources import (
+    ApiKeyOrGuestAuthentication,
+)
 
 User = get_user_model()
 

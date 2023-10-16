@@ -1,4 +1,6 @@
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import (
+    TokenAuthentication,
+)
 
 from pydotorg.drf import (
     BaseFilterSet,
@@ -9,8 +11,13 @@ from pydotorg.resources import (
     GenericResource,
     OnlyPublishedAuthorization,
 )
-from .models import Page
-from .serializers import PageSerializer
+
+from .models import (
+    Page,
+)
+from .serializers import (
+    PageSerializer,
+)
 
 
 class PageResource(GenericResource):
@@ -19,11 +26,15 @@ class PageResource(GenericResource):
         queryset = Page.objects.all()
         resource_name = 'pages/page'
         fields = [
-            'creator', 'last_modified_by',
-            'title', 'keywords', 'description',
-            'path', 'content', 'is_published',
-            'template_name'
-
+            'creator',
+            'last_modified_by',
+            'title',
+            'keywords',
+            'description',
+            'path',
+            'content',
+            'is_published',
+            'template_name',
         ]
         filtering = {
             'title': ('exact',),
@@ -35,7 +46,6 @@ class PageResource(GenericResource):
 
 
 class PageFilterSet(BaseFilterSet):
-
     class Meta:
         model = Page
         fields = {

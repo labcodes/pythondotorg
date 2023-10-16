@@ -1,8 +1,10 @@
-from django.db import migrations, models
+from django.db import (
+    migrations,
+    models,
+)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('jobs', '0014_merge'),
     ]

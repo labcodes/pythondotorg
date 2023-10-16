@@ -1,26 +1,39 @@
 import json
 
-from django.conf import settings
-from django.contrib import messages
-from django.contrib.auth.models import Group
-from django.contrib.messages import get_messages
-from django.contrib.sessions.backends.base import SessionBase
-from django.core import mail
-from django.test import TestCase
+from django.conf import (
+    settings,
+)
+from django.contrib import (
+    messages,
+)
+from django.contrib.auth.models import (
+    Group,
+)
+from django.contrib.messages import (
+    get_messages,
+)
+from django.contrib.sessions.backends.base import (
+    SessionBase,
+)
+from django.core import (
+    mail,
+)
+from django.test import (
+    TestCase,
+)
 from django.urls import (
     reverse,
     reverse_lazy,
 )
-from model_bakery import baker
+from model_bakery import (
+    baker,
+)
 
 from sponsors.forms import (
     SponsorshipApplicationForm,
     SponsorshipsBenefitsForm,
 )
-from .utils import (
-    assertMessage,
-    get_static_image_file_as_upload,
-)
+
 from ..models import (
     Sponsor,
     SponsorContact,
@@ -28,6 +41,10 @@ from ..models import (
     SponsorshipBenefit,
     SponsorshipCurrentYear,
     SponsorshipPackage,
+)
+from .utils import (
+    assertMessage,
+    get_static_image_file_as_upload,
 )
 
 
@@ -39,20 +56,37 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
         self.wk = baker.make("sponsors.SponsorshipProgram", name="Working Group")
         self.program_1_benefits = baker.make(
-            SponsorshipBenefit, program=self.psf, _quantity=3, year=self.current_year
+            SponsorshipBenefit,
+            program=self.psf,
+            _quantity=3,
+            year=self.current_year,
         )
         self.program_2_benefits = baker.make(
-            SponsorshipBenefit, program=self.wk, _quantity=5, year=self.current_year
+            SponsorshipBenefit,
+            program=self.wk,
+            _quantity=5,
+            year=self.current_year,
         )
-        self.package = baker.make(SponsorshipPackage, advertise=True, year=self.current_year)
+        self.package = baker.make(
+            SponsorshipPackage, advertise=True, year=self.current_year
+        )
         self.package.benefits.add(*self.program_1_benefits)
-        package_2 = baker.make(SponsorshipPackage, advertise=True, year=self.current_year)
+        package_2 = baker.make(
+            SponsorshipPackage, advertise=True, year=self.current_year
+        )
         package_2.benefits.add(*self.program_2_benefits)
         self.a_la_carte_benefits = baker.make(
-            SponsorshipBenefit, program=self.psf, _quantity=2, year=self.current_year
+            SponsorshipBenefit,
+            program=self.psf,
+            _quantity=2,
+            year=self.current_year,
         )
         self.standalone_benefits = baker.make(
-            SponsorshipBenefit, program=self.psf, _quantity=2, standalone=True, year=self.current_year
+            SponsorshipBenefit,
+            program=self.psf,
+            _quantity=2,
+            standalone=True,
+            year=self.current_year,
         )
 
         self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=False, is_active=True)
@@ -100,7 +134,9 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertIsInstance(form, SponsorshipsBenefitsForm)
         self.assertTrue(form.errors)
 
-    def test_valid_post_redirect_user_to_next_form_step_and_save_info_in_cookies(self):
+    def test_valid_post_redirect_user_to_next_form_step_and_save_info_in_cookies(
+        self,
+    ):
         self.populate_test_cookie()
         response = self.client.post(self.url, data=self.data)
 
@@ -122,7 +158,10 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
 
     def test_capacity_flag_when_needed(self):
         at_capacity_benefit = baker.make(
-            SponsorshipBenefit, program=self.psf, capacity=0, soft_capacity=False
+            SponsorshipBenefit,
+            program=self.psf,
+            capacity=0,
+            soft_capacity=False,
         )
         psf_package = baker.make(SponsorshipPackage, advertise=True)
 
@@ -140,7 +179,9 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
 
         self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
 
-    def test_invalidate_post_even_if_valid_data_but_user_does_not_allow_cookies(self):
+    def test_invalidate_post_even_if_valid_data_but_user_does_not_allow_cookies(
+        self,
+    ):
         # do not set Django's test cookie
         r = self.client.post(self.url, data=self.data)
         form = r.context["form"]
@@ -167,7 +208,9 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         )
         self.assertEqual(self.data, cookie_value)
 
-    def test_do_not_display_application_form_by_year_if_staff_user(self):
+    def test_do_not_display_application_form_by_year_if_staff_user(
+        self,
+    ):
         custom_year = self.current_year + 1
         # move all obects to a new year instead of using the active one
         SponsorshipBenefit.objects.all().update(year=custom_year)
@@ -181,7 +224,9 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertFalse(list(form.fields["benefits_psf"].choices))
         self.assertFalse(list(form.fields["benefits_working_group"].choices))
 
-    def test_display_application_form_by_year_if_staff_user_and_querystring(self):
+    def test_display_application_form_by_year_if_staff_user_and_querystring(
+        self,
+    ):
         self.user.is_staff = True
         self.user.save()
         self.client.force_login(self.user)
@@ -205,21 +250,32 @@ class NewSponsorshipApplicationViewTests(TestCase):
     def setUp(self):
         self.current_year = SponsorshipCurrentYear.get_year()
         self.user = baker.make(
-            settings.AUTH_USER_MODEL, is_staff=True, email="bernardo@companyemail.com"
+            settings.AUTH_USER_MODEL,
+            is_staff=True,
+            email="bernardo@companyemail.com",
         )
         self.client.force_login(self.user)
         self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
         self.program_1_benefits = baker.make(
-            SponsorshipBenefit, program=self.psf, _quantity=3, year=self.current_year
+            SponsorshipBenefit,
+            program=self.psf,
+            _quantity=3,
+            year=self.current_year,
         )
-        self.package = baker.make(SponsorshipPackage, advertise=True, year=self.current_year)
+        self.package = baker.make(
+            SponsorshipPackage, advertise=True, year=self.current_year
+        )
         for benefit in self.program_1_benefits:
             benefit.packages.add(self.package)
 
         # packages without associated packages
         self.a_la_carte = baker.make(SponsorshipBenefit, year=self.current_year)
         # standalone benefit
-        self.standalone = baker.make(SponsorshipBenefit, standalone=True, year=self.current_year)
+        self.standalone = baker.make(
+            SponsorshipBenefit,
+            standalone=True,
+            year=self.current_year,
+        )
 
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
             {
@@ -246,7 +302,9 @@ class NewSponsorshipApplicationViewTests(TestCase):
             "web_logo": get_static_image_file_as_upload("psf-logo.png", "logo.png"),
         }
 
-    def test_display_template_with_form_and_context_without_a_la_carte(self):
+    def test_display_template_with_form_and_context_without_a_la_carte(
+        self,
+    ):
         self.a_la_carte.delete()
         self.standalone.delete()
         r = self.client.get(self.url)
@@ -256,16 +314,20 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertIsInstance(r.context["form"], SponsorshipApplicationForm)
         self.assertEqual(r.context["sponsorship_package"], self.package)
         self.assertEqual(
-            len(r.context["sponsorship_benefits"]), len(self.program_1_benefits)
+            len(r.context["sponsorship_benefits"]),
+            len(self.program_1_benefits),
         )
         self.assertEqual(len(r.context["added_benefits"]), 0)
         self.assertEqual(
-            r.context["sponsorship_price"], self.package.sponsorship_amount
+            r.context["sponsorship_price"],
+            self.package.sponsorship_amount,
         )
         for benefit in self.program_1_benefits:
             self.assertIn(benefit, r.context["sponsorship_benefits"])
 
-    def test_display_template_with_form_and_context_with_a_la_carte(self):
+    def test_display_template_with_form_and_context_with_a_la_carte(
+        self,
+    ):
         r = self.client.get(self.url)
 
         self.assertEqual(r.status_code, 200)
@@ -281,7 +343,10 @@ class NewSponsorshipApplicationViewTests(TestCase):
         r = self.client.get(self.url)
         self.assertIsNone(r.context["sponsorship_package"])
         self.assertIsNone(r.context["sponsorship_price"])
-        self.assertEqual(len(r.context["added_benefits"]), len(self.program_1_benefits))
+        self.assertEqual(
+            len(r.context["added_benefits"]),
+            len(self.program_1_benefits),
+        )
         self.assertEqual(len(r.context["sponsorship_benefits"]), 0)
 
     def test_no_sponsorship_price_if_customized_benefits(self):
@@ -361,7 +426,8 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertTrue(sponsorship.level_name)
         self.assertTrue(sponsorship.submited_by, self.user)
         self.assertEqual(
-            r.client.cookies.get("sponsorship_selected_benefits").value, ""
+            r.client.cookies.get("sponsorship_selected_benefits").value,
+            "",
         )
         self.assertTrue(mail.outbox)
 
@@ -418,5 +484,8 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertTrue(sponsorship.benefits.exists())
         # only the standalone
         self.assertEqual(1, sponsorship.benefits.count())
-        self.assertEqual(self.standalone, sponsorship.benefits.get().sponsorship_benefit)
+        self.assertEqual(
+            self.standalone,
+            sponsorship.benefits.get().sponsorship_benefit,
+        )
         self.assertEqual(sponsorship.package.slug, "standalone-only")

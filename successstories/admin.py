@@ -1,10 +1,15 @@
-from django.contrib import admin
-from django.utils.html import format_html
+from django.contrib import (
+    admin,
+)
+from django.utils.html import (
+    format_html,
+)
 
 from cms.admin import (
     ContentManageableModelAdmin,
     NameSlugAdmin,
 )
+
 from .models import (
     Story,
     StoryCategory,
@@ -32,4 +37,5 @@ class StoryAdmin(ContentManageableModelAdmin):
 
     def show_link(self, obj):
         return format_html(f'<a href="{obj.get_absolute_url()}">\U0001F517</a>')
+
     show_link.short_description = 'View on site'

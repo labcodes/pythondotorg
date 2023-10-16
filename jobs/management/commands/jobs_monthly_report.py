@@ -1,12 +1,24 @@
 import datetime
 
-from django.conf import settings
-from django.core.mail import send_mail
-from django.core.management import BaseCommand
-from django.db.models import Count
-from django.template import loader
+from django.conf import (
+    settings,
+)
+from django.core.mail import (
+    send_mail,
+)
+from django.core.management import (
+    BaseCommand,
+)
+from django.db.models import (
+    Count,
+)
+from django.template import (
+    loader,
+)
 
-from jobs.models import Job
+from jobs.models import (
+    Job,
+)
 
 
 class Command(BaseCommand):

@@ -1,5 +1,9 @@
-from django import template
-from django.utils.dateformat import format
+from django import (
+    template,
+)
+from django.utils.dateformat import (
+    format,
+)
 
 register = template.Library()
 

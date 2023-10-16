@@ -1,9 +1,11 @@
-from django.db import models, migrations
 import markupfield.fields
+from django.db import (
+    migrations,
+    models,
+)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('jobs', '0001_initial'),
     ]
@@ -18,7 +20,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='job',
             name='description_markup_type',
-            field=models.CharField(choices=[('', '--'), ('html', 'html'), ('plain', 'plain'), ('markdown', 'markdown'), ('restructuredtext', 'restructuredtext')], max_length=30, default='restructuredtext'),
+            field=models.CharField(
+                choices=[
+                    ('', '--'),
+                    ('html', 'html'),
+                    ('plain', 'plain'),
+                    ('markdown', 'markdown'),
+                    ('restructuredtext', 'restructuredtext'),
+                ],
+                max_length=30,
+                default='restructuredtext',
+            ),
             preserve_default=True,
         ),
         migrations.AlterField(
@@ -30,7 +42,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='job',
             name='requirements_markup_type',
-            field=models.CharField(choices=[('', '--'), ('html', 'html'), ('plain', 'plain'), ('markdown', 'markdown'), ('restructuredtext', 'restructuredtext')], max_length=30, default='restructuredtext'),
+            field=models.CharField(
+                choices=[
+                    ('', '--'),
+                    ('html', 'html'),
+                    ('plain', 'plain'),
+                    ('markdown', 'markdown'),
+                    ('restructuredtext', 'restructuredtext'),
+                ],
+                max_length=30,
+                default='restructuredtext',
+            ),
             preserve_default=True,
         ),
     ]

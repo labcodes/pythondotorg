@@ -1,6 +1,12 @@
-from django.conf import settings
-from django.db import models
-from markupfield.fields import MarkupField
+from django.conf import (
+    settings,
+)
+from django.db import (
+    models,
+)
+from markupfield.fields import (
+    MarkupField,
+)
 
 from cms.models import (
     ContentManageable,
@@ -14,6 +20,7 @@ class WorkGroup(ContentManageable, NameSlugModel):
     """
     Model to store Python Working Groups
     """
+
     active = models.BooleanField(default=True, db_index=True)
     approved = models.BooleanField(default=False, db_index=True)
 
@@ -66,10 +73,7 @@ class WorkGroup(ContentManageable, NameSlugModel):
 
     url = models.URLField('URL', blank=True, help_text="Main URL for Group")
 
-    organizers = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name="+"
-    )
+    organizers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="+")
 
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,

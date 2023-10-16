@@ -8,25 +8,51 @@ positioned into the URL structure using the nav app.
 
 import os
 import re
-from copy import deepcopy
+from copy import (
+    deepcopy,
+)
 
 import cmarkgfm
-from cmarkgfm.cmark import Options as cmarkgfmOptions
-from django.conf import settings
-from django.core import validators
-from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from markupfield.fields import MarkupField
-from markupfield.markup import DEFAULT_MARKUP_TYPES
+from cmarkgfm.cmark import (
+    Options as cmarkgfmOptions,
+)
+from django.conf import (
+    settings,
+)
+from django.core import (
+    validators,
+)
+from django.db import (
+    models,
+)
+from django.db.models.signals import (
+    post_save,
+)
+from django.dispatch import (
+    receiver,
+)
+from markupfield.fields import (
+    MarkupField,
+)
+from markupfield.markup import (
+    DEFAULT_MARKUP_TYPES,
+)
 
-from cms.models import ContentManageable
-from fastly.utils import purge_url
-from .managers import PageQuerySet
+from cms.models import (
+    ContentManageable,
+)
+from fastly.utils import (
+    purge_url,
+)
+
+from .managers import (
+    PageQuerySet,
+)
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
-PAGE_PATH_RE = re.compile(r"""
+PAGE_PATH_RE = re.compile(
+    r"""
     ^
     /?                      # We can optionally start with a /
     ([a-z0-9-\.]+)            # Then at least one path segment...
@@ -34,8 +60,8 @@ PAGE_PATH_RE = re.compile(r"""
     /?                      # Possibly ending with a slash
     $
     """,
-                          re.X
-                          )
+    re.X,
+)
 
 is_valid_page_path = validators.RegexValidator(
     regex=PAGE_PATH_RE,
@@ -53,7 +79,7 @@ for i, renderer in enumerate(RENDERERS):
 RENDERERS[markdown_index] = (
     'markdown',
     cmarkgfm.github_flavored_markdown_to_html,
-    'Markdown'
+    'Markdown',
 )
 
 # Add our own Github style Markdown parser, which doesn't apply the default
@@ -72,14 +98,13 @@ def unsafe_markdown_to_html(text, options=0):
     # Set options for cmarkgfm for "unsafe" renderer, see
     # https://github.com/theacodes/cmarkgfm#advanced-usage
     options = options | (
-        cmarkgfmOptions.CMARK_OPT_UNSAFE |
-        cmarkgfmOptions.CMARK_OPT_GITHUB_PRE_LANG
+        cmarkgfmOptions.CMARK_OPT_UNSAFE | cmarkgfmOptions.CMARK_OPT_GITHUB_PRE_LANG
     )
     return cmarkgfm.markdown_to_html_with_extensions(
-        text, options=options,
-        extensions=[
-            'table', 'autolink', 'strikethrough', 'tasklist'
-        ])
+        text,
+        options=options,
+        extensions=['table', 'autolink', 'strikethrough', 'tasklist'],
+    )
 
 
 RENDERERS.append(
@@ -93,16 +118,26 @@ RENDERERS.append(
 
 class Page(ContentManageable):
     title = models.CharField(max_length=500)
-    keywords = models.CharField(max_length=1000, blank=True, help_text="HTTP meta-keywords")
+    keywords = models.CharField(
+        max_length=1000, blank=True, help_text="HTTP meta-keywords"
+    )
     description = models.TextField(blank=True, help_text="HTTP meta-description")
-    path = models.CharField(max_length=500, validators=[is_valid_page_path], unique=True, db_index=True)
-    content = MarkupField(markup_choices=RENDERERS, default_markup_type=DEFAULT_MARKUP_TYPE)
+    path = models.CharField(
+        max_length=500,
+        validators=[is_valid_page_path],
+        unique=True,
+        db_index=True,
+    )
+    content = MarkupField(
+        markup_choices=RENDERERS,
+        default_markup_type=DEFAULT_MARKUP_TYPE,
+    )
     is_published = models.BooleanField(default=True, db_index=True)
     content_type = models.CharField(max_length=150, default='text/html')
     template_name = models.CharField(
         max_length=100,
         blank=True,
-        help_text="Example: 'pages/about.html'. If this isn't provided, the system will use 'pages/default.html'."
+        help_text="Example: 'pages/about.html'. If this isn't provided, the system will use 'pages/default.html'.",
     )
 
     objects = PageQuerySet.as_manager()

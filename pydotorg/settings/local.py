@@ -16,13 +16,12 @@ DATABASES = {
     'default': config(
         'DATABASE_URL',
         default='postgres:///pythondotorg',
-        cast=dj_database_url_parser
+        cast=dj_database_url_parser,
     )
 }
 
 HAYSTACK_SEARCHBOX_SSL_URL = config(
-    'SEARCHBOX_SSL_URL',
-    default='http://127.0.0.1:9200/'
+    'SEARCHBOX_SSL_URL', default='http://127.0.0.1:9200/'
 )
 
 HAYSTACK_CONNECTIONS = {

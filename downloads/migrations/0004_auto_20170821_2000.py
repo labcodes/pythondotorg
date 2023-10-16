@@ -1,8 +1,10 @@
-from django.db import migrations, models
+from django.db import (
+    migrations,
+    models,
+)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('downloads', '0003_auto_20150824_1612'),
     ]

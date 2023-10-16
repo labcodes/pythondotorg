@@ -1,9 +1,12 @@
-from django.contrib import admin
+from django.contrib import (
+    admin,
+)
 
 from cms.admin import (
     ContentManageableModelAdmin,
     ContentManageableStackedInline,
 )
+
 from .models import (
     Link,
     Photo,

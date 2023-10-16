@@ -1,21 +1,34 @@
 import datetime
 
-from django.contrib import messages
-from django.core.mail import BadHeaderError
+from django.contrib import (
+    messages,
+)
+from django.core.mail import (
+    BadHeaderError,
+)
 from django.shortcuts import (
     get_object_or_404,
     redirect,
 )
-from django.urls import reverse_lazy
-from django.utils import timezone
+from django.urls import (
+    reverse_lazy,
+)
+from django.utils import (
+    timezone,
+)
 from django.views.generic import (
     DetailView,
     FormView,
     ListView,
 )
 
-from pydotorg.mixins import LoginRequiredMixin
-from .forms import EventForm
+from pydotorg.mixins import (
+    LoginRequiredMixin,
+)
+
+from .forms import (
+    EventForm,
+)
 from .models import (
     Calendar,
     Event,
@@ -50,11 +63,14 @@ class EventListBase(ListView):
 
 
 class EventHomepage(ListView):
-    """ Main Event Landing Page """
+    """Main Event Landing Page"""
+
     template_name = 'events/event_list.html'
 
     def get_queryset(self):
-        return Event.objects.for_datetime(timezone.now()).order_by('occurring_rule__dt_start')
+        return Event.objects.for_datetime(timezone.now()).order_by(
+            'occurring_rule__dt_start'
+        )
 
 
 class EventDetail(DetailView):
@@ -67,30 +83,33 @@ class EventDetail(DetailView):
         data = super().get_context_data(**kwargs)
         if data['object'].next_time:
             dt = data['object'].next_time.dt_start
-            data.update({
-                'next_7': dt + datetime.timedelta(days=7),
-                'next_30': dt + datetime.timedelta(days=30),
-                'next_90': dt + datetime.timedelta(days=90),
-                'next_365': dt + datetime.timedelta(days=365),
-            })
+            data.update(
+                {
+                    'next_7': dt + datetime.timedelta(days=7),
+                    'next_30': dt + datetime.timedelta(days=30),
+                    'next_90': dt + datetime.timedelta(days=90),
+                    'next_365': dt + datetime.timedelta(days=365),
+                }
+            )
         return data
 
 
 class EventList(EventListBase):
-
     def get_queryset(self):
-        return Event.objects.for_datetime(
-            timezone.now()
-        ).filter(
-            calendar__slug=self.kwargs['calendar_slug']
-        ).order_by('occurring_rule__dt_start')
+        return (
+            Event.objects.for_datetime(timezone.now())
+            .filter(calendar__slug=self.kwargs['calendar_slug'])
+            .order_by('occurring_rule__dt_start')
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['events_today'] = Event.objects.until_datetime(
-            timezone.now()
-        ).filter(calendar__slug=self.kwargs['calendar_slug'])[:2]
-        context['calendar'] = get_object_or_404(Calendar, slug=self.kwargs['calendar_slug'])
+        context['events_today'] = Event.objects.until_datetime(timezone.now()).filter(
+            calendar__slug=self.kwargs['calendar_slug']
+        )[:2]
+        context['calendar'] = get_object_or_404(
+            Calendar, slug=self.kwargs['calendar_slug']
+        )
         return context
 
 
@@ -98,9 +117,9 @@ class PastEventList(EventList):
     template_name = 'events/event_list_past.html'
 
     def get_queryset(self):
-        return Event.objects.until_datetime(
-            timezone.now()
-        ).filter(calendar__slug=self.kwargs['calendar_slug'])
+        return Event.objects.until_datetime(timezone.now()).filter(
+            calendar__slug=self.kwargs['calendar_slug']
+        )
 
 
 class EventListByDate(EventList):
@@ -111,9 +130,9 @@ class EventListByDate(EventList):
         return datetime.date(year, month, day)
 
     def get_queryset(self):
-        return Event.objects.for_datetime(
-            self.get_object()
-        ).filter(calendar__slug=self.kwargs['calendar_slug'])
+        return Event.objects.for_datetime(self.get_object()).filter(
+            calendar__slug=self.kwargs['calendar_slug']
+        )
 
 
 class EventListByCategory(EventList):
@@ -121,7 +140,7 @@ class EventListByCategory(EventList):
         return get_object_or_404(
             EventCategory,
             calendar__slug=self.kwargs['calendar_slug'],
-            slug=self.kwargs['slug']
+            slug=self.kwargs['slug'],
         )
 
     def get_queryset(self):
@@ -134,7 +153,7 @@ class EventListByLocation(EventList):
         return get_object_or_404(
             EventLocation,
             calendar__slug=self.kwargs['calendar_slug'],
-            pk=self.kwargs['pk']
+            pk=self.kwargs['pk'],
         )
 
     def get_queryset(self):

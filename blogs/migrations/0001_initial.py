@@ -1,10 +1,14 @@
-from django.db import models, migrations
 import django.utils.timezone
-from django.conf import settings
+from django.conf import (
+    settings,
+)
+from django.db import (
+    migrations,
+    models,
+)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -13,7 +17,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BlogEntry',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        primary_key=True,
+                        auto_created=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('title', models.CharField(max_length=200)),
                 ('summary', models.TextField(blank=True)),
                 ('pub_date', models.DateTimeField()),
@@ -29,12 +41,55 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Contributor',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
-                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_contributor_creator', blank=True, on_delete=models.CASCADE)),
-                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_contributor_modified', blank=True, on_delete=models.CASCADE)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='blog_contributor', on_delete=models.CASCADE)),
+                (
+                    'id',
+                    models.AutoField(
+                        primary_key=True,
+                        auto_created=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'created',
+                    models.DateTimeField(
+                        db_index=True,
+                        default=django.utils.timezone.now,
+                        blank=True,
+                    ),
+                ),
+                (
+                    'updated',
+                    models.DateTimeField(default=django.utils.timezone.now, blank=True),
+                ),
+                (
+                    'creator',
+                    models.ForeignKey(
+                        null=True,
+                        to=settings.AUTH_USER_MODEL,
+                        related_name='blogs_contributor_creator',
+                        blank=True,
+                        on_delete=models.CASCADE,
+                    ),
+                ),
+                (
+                    'last_modified_by',
+                    models.ForeignKey(
+                        null=True,
+                        to=settings.AUTH_USER_MODEL,
+                        related_name='blogs_contributor_modified',
+                        blank=True,
+                        on_delete=models.CASCADE,
+                    ),
+                ),
+                (
+                    'user',
+                    models.ForeignKey(
+                        to=settings.AUTH_USER_MODEL,
+                        related_name='blog_contributor',
+                        on_delete=models.CASCADE,
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'Contributor',
@@ -46,43 +101,117 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Feed',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        primary_key=True,
+                        auto_created=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=200)),
                 ('website_url', models.URLField()),
                 ('feed_url', models.URLField()),
-                ('last_import', models.DateTimeField(null=True, blank=True)),
+                (
+                    'last_import',
+                    models.DateTimeField(null=True, blank=True),
+                ),
             ],
-            options={
-            },
+            options={},
             bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='FeedAggregate',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        primary_key=True,
+                        auto_created=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=200)),
                 ('slug', models.SlugField(unique=True)),
-                ('description', models.TextField(help_text='Where this appears on the site')),
+                (
+                    'description',
+                    models.TextField(help_text='Where this appears on the site'),
+                ),
                 ('feeds', models.ManyToManyField(to='blogs.Feed')),
             ],
-            options={
-            },
+            options={},
             bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='RelatedBlog',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
-                ('name', models.CharField(help_text='Internal Name', max_length=100)),
-                ('feed_url', models.URLField(verbose_name='Feed URL')),
-                ('blog_url', models.URLField(verbose_name='Blog URL')),
-                ('blog_name', models.CharField(help_text='Displayed Name', max_length=200)),
-                ('last_entry_published', models.DateTimeField(db_index=True)),
-                ('last_entry_title', models.CharField(max_length=500)),
-                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_relatedblog_creator', blank=True, on_delete=models.CASCADE)),
-                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_relatedblog_modified', blank=True, on_delete=models.CASCADE)),
+                (
+                    'id',
+                    models.AutoField(
+                        primary_key=True,
+                        auto_created=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'created',
+                    models.DateTimeField(
+                        db_index=True,
+                        default=django.utils.timezone.now,
+                        blank=True,
+                    ),
+                ),
+                (
+                    'updated',
+                    models.DateTimeField(default=django.utils.timezone.now, blank=True),
+                ),
+                (
+                    'name',
+                    models.CharField(help_text='Internal Name', max_length=100),
+                ),
+                (
+                    'feed_url',
+                    models.URLField(verbose_name='Feed URL'),
+                ),
+                (
+                    'blog_url',
+                    models.URLField(verbose_name='Blog URL'),
+                ),
+                (
+                    'blog_name',
+                    models.CharField(help_text='Displayed Name', max_length=200),
+                ),
+                (
+                    'last_entry_published',
+                    models.DateTimeField(db_index=True),
+                ),
+                (
+                    'last_entry_title',
+                    models.CharField(max_length=500),
+                ),
+                (
+                    'creator',
+                    models.ForeignKey(
+                        null=True,
+                        to=settings.AUTH_USER_MODEL,
+                        related_name='blogs_relatedblog_creator',
+                        blank=True,
+                        on_delete=models.CASCADE,
+                    ),
+                ),
+                (
+                    'last_modified_by',
+                    models.ForeignKey(
+                        null=True,
+                        to=settings.AUTH_USER_MODEL,
+                        related_name='blogs_relatedblog_modified',
+                        blank=True,
+                        on_delete=models.CASCADE,
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'Related Blog',
@@ -93,13 +222,49 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Translation',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        primary_key=True,
+                        auto_created=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'created',
+                    models.DateTimeField(
+                        db_index=True,
+                        default=django.utils.timezone.now,
+                        blank=True,
+                    ),
+                ),
+                (
+                    'updated',
+                    models.DateTimeField(default=django.utils.timezone.now, blank=True),
+                ),
                 ('name', models.CharField(max_length=100)),
                 ('url', models.URLField(verbose_name='URL')),
-                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_translation_creator', blank=True, on_delete=models.CASCADE)),
-                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_translation_modified', blank=True, on_delete=models.CASCADE)),
+                (
+                    'creator',
+                    models.ForeignKey(
+                        null=True,
+                        to=settings.AUTH_USER_MODEL,
+                        related_name='blogs_translation_creator',
+                        blank=True,
+                        on_delete=models.CASCADE,
+                    ),
+                ),
+                (
+                    'last_modified_by',
+                    models.ForeignKey(
+                        null=True,
+                        to=settings.AUTH_USER_MODEL,
+                        related_name='blogs_translation_modified',
+                        blank=True,
+                        on_delete=models.CASCADE,
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'Translation',

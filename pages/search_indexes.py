@@ -2,9 +2,13 @@ from django.template.defaultfilters import (
     striptags,
     truncatewords_html,
 )
-from haystack import indexes
+from haystack import (
+    indexes,
+)
 
-from .models import Page
+from .models import (
+    Page,
+)
 
 
 class PageIndex(indexes.SearchIndex, indexes.Indexable):
@@ -21,12 +25,12 @@ class PageIndex(indexes.SearchIndex, indexes.Indexable):
         return "search/includes/pages.page.html"
 
     def prepare_description(self, obj):
-        """ Create a description if none exists """
+        """Create a description if none exists"""
         if obj.description:
             return obj.description
         else:
             return striptags(truncatewords_html(obj.content.rendered, 50))
 
     def index_queryset(self, using=None):
-        """ Only index published pages """
+        """Only index published pages"""
         return self.get_model().objects.filter(is_published=True)

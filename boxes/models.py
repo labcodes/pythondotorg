@@ -8,11 +8,19 @@ admin-editable, use a Box.
 These should also not be used for single pages, for that see the pages app.
 """
 
-from django.conf import settings
-from django.db import models
-from markupfield.fields import MarkupField
+from django.conf import (
+    settings,
+)
+from django.db import (
+    models,
+)
+from markupfield.fields import (
+    MarkupField,
+)
 
-from cms.models import ContentManageable
+from cms.models import (
+    ContentManageable,
+)
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 

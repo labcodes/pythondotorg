@@ -1,4 +1,6 @@
-from django.dispatch import Signal
+from django.dispatch import (
+    Signal,
+)
 
 # Sent after job offer was submitted for review
 job_was_submitted = Signal(providing_args=['job'])

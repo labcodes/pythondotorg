@@ -1,7 +1,13 @@
-from django.test import TestCase
+from django.test import (
+    TestCase,
+)
 
-from . import admin  # noqa: F401 coverage FTW
-from .templatetags.companies import render_email
+from . import (  # noqa: F401 coverage FTW
+    admin,
+)
+from .templatetags.companies import (
+    render_email,
+)
 
 
 class CompaniesTagsTests(TestCase):
@@ -9,5 +15,5 @@ class CompaniesTagsTests(TestCase):
         self.assertEqual(render_email(''), None)
         self.assertEqual(
             render_email('firstname.lastname@domain.com'),
-            'firstname<span>.</span>lastname<span>@</span>domain<span>.</span>com'
+            'firstname<span>.</span>lastname<span>@</span>domain<span>.</span>com',
         )

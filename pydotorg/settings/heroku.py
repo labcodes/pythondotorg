@@ -1,4 +1,6 @@
-from decouple import Csv
+from decouple import (
+    Csv,
+)
 
 from .base import *  # noqa: F403
 
@@ -16,9 +18,7 @@ CACHES = {
     }
 }
 
-HAYSTACK_SEARCHBOX_SSL_URL = config(
-    'SEARCHBOX_SSL_URL'
-)
+HAYSTACK_SEARCHBOX_SSL_URL = config('SEARCHBOX_SSL_URL')
 
 HAYSTACK_CONNECTIONS = {
     'default': {

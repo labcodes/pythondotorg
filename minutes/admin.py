@@ -1,7 +1,14 @@
-from django.contrib import admin
+from django.contrib import (
+    admin,
+)
 
-from cms.admin import ContentManageableModelAdmin
-from .models import Minutes
+from cms.admin import (
+    ContentManageableModelAdmin,
+)
+
+from .models import (
+    Minutes,
+)
 
 
 @admin.register(Minutes)

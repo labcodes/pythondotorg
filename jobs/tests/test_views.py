@@ -1,18 +1,31 @@
-from django.contrib.auth import get_user_model
-from django.core import mail
-from django.test import TestCase
-from django.urls import reverse
+from django.contrib.auth import (
+    get_user_model,
+)
+from django.core import (
+    mail,
+)
+from django.test import (
+    TestCase,
+)
+from django.urls import (
+    reverse,
+)
 
-from users.factories import UserFactory
+from users.factories import (
+    UserFactory,
+)
+
 from ..factories import (
     ApprovedJobFactory,
     DraftJobFactory,
     JobCategoryFactory,
-    JobTypeFactory,
     JobsBoardAdminGroupFactory,
+    JobTypeFactory,
     ReviewJobFactory,
 )
-from ..models import Job
+from ..models import (
+    Job,
+)
 
 
 class JobsViewTests(TestCase):
@@ -28,13 +41,11 @@ class JobsViewTests(TestCase):
         )
 
         self.job_category = JobCategoryFactory(
-            name='Game Production',
-            slug='game-production'
+            name='Game Production', slug='game-production'
         )
 
         self.job_type = JobTypeFactory(
-            name='FrontEnd Developer',
-            slug='frontend-developer'
+            name='FrontEnd Developer', slug='frontend-developer'
         )
 
         self.job = ApprovedJobFactory(
@@ -76,14 +87,20 @@ class JobsViewTests(TestCase):
         self.assertTemplateUsed(response, 'jobs/base.html')
         self.assertTemplateUsed(response, 'jobs/job_list.html')
 
-        url = reverse('jobs:job_list_category', kwargs={'slug': self.job_category.slug})
+        url = reverse(
+            'jobs:job_list_category',
+            kwargs={'slug': self.job_category.slug},
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['object_list']), 1)
         self.assertTemplateUsed(response, 'jobs/base.html')
         self.assertTemplateUsed(response, 'jobs/job_list.html')
 
-        url = reverse('jobs:job_list_location', kwargs={'slug': self.job.location_slug})
+        url = reverse(
+            'jobs:job_list_location',
+            kwargs={'slug': self.job.location_slug},
+        )
         response = self.client.get(url)
         self.assertEqual(len(response.context['object_list']), 1)
         self.assertEqual(response.status_code, 200)
@@ -94,7 +111,10 @@ class JobsViewTests(TestCase):
         url = reverse('jobs:job_list_mine')
 
         response = self.client.get(url)
-        self.assertRedirects(response, '{}?next={}'.format(reverse('account_login'), url))
+        self.assertRedirects(
+            response,
+            '{}?next={}'.format(reverse('account_login'), url),
+        )
 
         username = 'kevinarnold'
         email = 'kevinarnold@example.com'
@@ -111,7 +131,7 @@ class JobsViewTests(TestCase):
             country='USA',
             email='hr@company.com',
             creator=creator,
-            is_featured=True
+            is_featured=True,
         )
 
         self.client.login(username=username, password=password)
@@ -171,7 +191,7 @@ class JobsViewTests(TestCase):
         response = self.client.get(url)
         self.assertRedirects(
             response,
-            '/accounts/login/?next=/jobs/%d/remove/' % self.job.pk
+            '/accounts/login/?next=/jobs/%d/remove/' % self.job.pk,
         )
 
     def test_disallow_editing_approved_jobs(self):
@@ -202,7 +222,7 @@ class JobsViewTests(TestCase):
             country='USA',
             email='hr@company.com',
             creator=creator,
-            is_featured=True
+            is_featured=True,
         )
         job.job_types.add(self.job_type)
 
@@ -353,7 +373,7 @@ class JobsViewTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject,
-            f"Job Submitted for Approval: {job.display_name}"
+            f"Job Submitted for Approval: {job.display_name}",
         )
 
         del mail.outbox[:]
@@ -377,15 +397,14 @@ class JobsViewTests(TestCase):
         creator = User.objects.create_user(**user_data)
 
         # Logged in, email address is prepopulated.
-        self.client.login(username=user_data['username'],
-                          password=user_data['password'])
+        self.client.login(
+            username=user_data['username'],
+            password=user_data['password'],
+        )
         response = self.client.get(create_url)
 
     def test_job_types(self):
-        job_type2 = JobTypeFactory(
-            name='Senior Developer',
-            slug='senior-developer'
-        )
+        job_type2 = JobTypeFactory(name='Senior Developer', slug='senior-developer')
 
         url = reverse('jobs:job_types')
         response = self.client.get(url)
@@ -395,8 +414,7 @@ class JobsViewTests(TestCase):
 
     def test_job_categories(self):
         job_category2 = JobCategoryFactory(
-            name='Web Development',
-            slug='web-development'
+            name='Web Development', slug='web-development'
         )
 
         url = reverse('jobs:job_categories')
@@ -433,23 +451,35 @@ class JobsViewTests(TestCase):
         self.assertIn(self.job, response.context['jobs'])
 
     def test_job_display_name(self):
-        self.assertEqual(self.job.display_name,
-                         f"{self.job.job_title}, {self.job.company_name}")
+        self.assertEqual(
+            self.job.display_name,
+            f"{self.job.job_title}, {self.job.company_name}",
+        )
 
         self.job.company_name = 'ABC'
-        self.assertEqual(self.job.display_name,
-                         f"{self.job.job_title}, {self.job.company_name}")
+        self.assertEqual(
+            self.job.display_name,
+            f"{self.job.job_title}, {self.job.company_name}",
+        )
 
         self.job.company_name = ''
-        self.assertEqual(self.job.display_name,
-                         f"{self.job.job_title}, {self.job.company_name}")
+        self.assertEqual(
+            self.job.display_name,
+            f"{self.job.job_title}, {self.job.company_name}",
+        )
 
     def test_job_display_about(self):
         self.job.company_description.raw = 'XYZ'
-        self.assertEqual(self.job.display_description.raw, self.job.company_description.raw)
+        self.assertEqual(
+            self.job.display_description.raw,
+            self.job.company_description.raw,
+        )
 
         self.job.company_description = '     '
-        self.assertEqual(self.job.display_description.raw, self.job.company_description.raw)
+        self.assertEqual(
+            self.job.display_description.raw,
+            self.job.company_description.raw,
+        )
 
     def test_job_list_type_404(self):
         url = reverse('jobs:job_list_type', kwargs={'slug': 'invalid-type'})
@@ -464,7 +494,6 @@ class JobsViewTests(TestCase):
 
 class JobsReviewTests(TestCase):
     def setUp(self):
-
         self.super_username = 'kevinarnold'
         self.super_email = 'kevinarnold@example.com'
         self.super_password = 'secret'
@@ -482,29 +511,25 @@ class JobsReviewTests(TestCase):
         self.creator = User.objects.create_user(
             self.creator_username,
             self.creator_email,
-            self.creator_password
+            self.creator_password,
         )
 
         self.superuser = User.objects.create_superuser(
-            self.super_username,
-            self.super_email,
-            self.super_password
+            self.super_username, self.super_email, self.super_password
         )
 
         self.another = User.objects.create_user(
             self.another_username,
             self.another_email,
-            self.another_password
+            self.another_password,
         )
 
         self.job_category = JobCategoryFactory(
-            name='Game Production',
-            slug='game-production'
+            name='Game Production', slug='game-production'
         )
 
         self.job_type = JobTypeFactory(
-            name='FrontEnd Developer',
-            slug='frontend-developer'
+            name='FrontEnd Developer', slug='frontend-developer'
         )
 
         self.job1 = ReviewJobFactory(
@@ -516,7 +541,7 @@ class JobsReviewTests(TestCase):
             country='USA',
             email=self.creator.email,
             creator=self.creator,
-            contact=self.contact
+            contact=self.contact,
         )
         self.job1.job_types.add(self.job_type)
 
@@ -529,7 +554,7 @@ class JobsReviewTests(TestCase):
             country='USA',
             email=self.creator.email,
             creator=self.creator,
-            contact=self.contact
+            contact=self.contact,
         )
         self.job2.job_types.add(self.job_type)
 
@@ -542,7 +567,7 @@ class JobsReviewTests(TestCase):
             country='USA',
             email=self.creator.email,
             creator=self.creator,
-            contact=self.contact
+            contact=self.contact,
         )
         self.job3.job_types.add(self.job_type)
 
@@ -552,9 +577,15 @@ class JobsReviewTests(TestCase):
         job = ApprovedJobFactory()
 
         response = self.client.get(url)
-        self.assertRedirects(response, '{}?next={}'.format(reverse('account_login'), url))
+        self.assertRedirects(
+            response,
+            '{}?next={}'.format(reverse('account_login'), url),
+        )
 
-        self.client.login(username=self.another_username, password=self.another_password)
+        self.client.login(
+            username=self.another_username,
+            password=self.another_password,
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
         self.assertTemplateUsed(response, '403.html')
@@ -589,9 +620,15 @@ class JobsReviewTests(TestCase):
         url = reverse('jobs:job_review')
 
         response = self.client.get(url)
-        self.assertRedirects(response, '{}?next={}'.format(reverse('account_login'), url))
+        self.assertRedirects(
+            response,
+            '{}?next={}'.format(reverse('account_login'), url),
+        )
 
-        self.client.login(username=self.another_username, password=self.another_password)
+        self.client.login(
+            username=self.another_username,
+            password=self.another_password,
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
         self.assertTemplateUsed(response, '403.html')
@@ -633,7 +670,9 @@ class JobsReviewTests(TestCase):
         self.assertIn(self.contact, message.body)
         mail.outbox = []
 
-        response = self.client.post(url, data={'job_id': self.job2.pk, 'action': 'archive'})
+        response = self.client.post(
+            url, data={'job_id': self.job2.pk, 'action': 'archive'}
+        )
         self.assertRedirects(response, reverse('jobs:job_review'))
         j2 = Job.objects.get(pk=self.job2.pk)
         self.assertEqual(j2.status, Job.STATUS_ARCHIVED)
@@ -646,12 +685,17 @@ class JobsReviewTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
         # Invalid action should raise a 404 error.
-        response = self.client.post(url, data={'job_id': self.job2.pk, 'action': 'invalid'})
+        response = self.client.post(
+            url, data={'job_id': self.job2.pk, 'action': 'invalid'}
+        )
         self.assertEqual(response.status_code, 404)
 
     def test_job_comment(self):
         mail.outbox = []
-        self.client.login(username=self.creator_username, password=self.creator_password)
+        self.client.login(
+            username=self.creator_username,
+            password=self.creator_password,
+        )
         url = reverse('jobs:job_review_comment_create')
         form_data = {
             'job': self.job1.pk,
@@ -677,12 +721,15 @@ class JobsReviewTests(TestCase):
         self.assertEqual(mail.outbox[0].to, ['jobs@python.org', self.creator_email])
         self.assertIn(
             'There is a new review comment available for your job posting.',
-            mail.outbox[0].body
+            mail.outbox[0].body,
         )
 
     def test_job_comment_401(self):
         mail.outbox = []
-        self.client.login(username=self.another_username, password=self.another_password)
+        self.client.login(
+            username=self.another_username,
+            password=self.another_password,
+        )
         url = reverse('jobs:job_review_comment_create')
         form_data = {
             'job': self.job1.pk,
@@ -695,7 +742,10 @@ class JobsReviewTests(TestCase):
 
     def test_job_comment_401_approve(self):
         mail.outbox = []
-        self.client.login(username=self.creator_username, password=self.creator_password)
+        self.client.login(
+            username=self.creator_username,
+            password=self.creator_password,
+        )
         url = reverse('jobs:job_review_comment_create')
         form_data = {
             'job': self.job1.pk,

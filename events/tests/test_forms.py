@@ -1,12 +1,15 @@
 import datetime
 
-from django.test import SimpleTestCase
+from django.test import (
+    SimpleTestCase,
+)
 
-from ..forms import EventForm
+from ..forms import (
+    EventForm,
+)
 
 
 class EventFormTests(SimpleTestCase):
-
     def test_valid_form(self):
         data = {
             'event_name': 'PyConES17',
@@ -38,7 +41,4 @@ class EventFormTests(SimpleTestCase):
         }
         form = EventForm(data=data)
         self.assertFalse(form.is_valid(), form.errors)
-        self.assertEqual(
-            form.errors,
-            {'date_from': ['This field is required.']}
-        )
+        self.assertEqual(form.errors, {'date_from': ['This field is required.']})

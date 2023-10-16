@@ -1,12 +1,12 @@
 import os  # noqa: F401
 
-from .base import BASE  # noqa: F401
+from .base import (  # noqa: F401
+    BASE,
+)
 
 PIPELINE_CSS = {
     'style': {
-        'source_filenames': (
-            'sass/style.css',
-        ),
+        'source_filenames': ('sass/style.css',),
         'output_filename': 'stylesheets/style.css',
         'extra_context': {
             'title': 'default',
@@ -14,27 +14,21 @@ PIPELINE_CSS = {
         },
     },
     'mq': {
-        'source_filenames': (
-            'sass/mq.css',
-        ),
+        'source_filenames': ('sass/mq.css',),
         'output_filename': 'stylesheets/mq.css',
         'extra_context': {
             'media': 'not print, braille, embossed, speech, tty',
         },
     },
     'no-mq': {
-        'source_filenames': (
-            'sass/no-mq.css',
-        ),
+        'source_filenames': ('sass/no-mq.css',),
         'output_filename': 'stylesheets/no-mq.css',
         'extra_context': {
             'media': 'screen',
         },
     },
     'font-awesome': {
-        'source_filenames': (
-            'stylesheets/font-awesome.min.css',
-        ),
+        'source_filenames': ('stylesheets/font-awesome.min.css',),
         'output_filename': 'stylesheets/no-mq.css',
         'extra_context': {
             'media': 'screen',
@@ -51,21 +45,15 @@ PIPELINE_JS = {
         'output_filename': 'js/main-min.js',
     },
     'sponsors': {
-        'source_filenames': (
-            'js/sponsors/applicationForm.js',
-        ),
+        'source_filenames': ('js/sponsors/applicationForm.js',),
         'output_filename': 'js/sponsors-min.js',
     },
     'IE8': {
-        'source_filenames': (
-            'js/plugins/IE8.js',
-        ),
+        'source_filenames': ('js/plugins/IE8.js',),
         'output_filename': 'js/plugins/IE8-min.js',
     },
     'getComputedStyle': {
-        'source_filenames': (
-            'js/plugins/getComputedStyle-min.js',
-        ),
+        'source_filenames': ('js/plugins/getComputedStyle-min.js',),
         'output_filename': 'js/plugins/getComputedStyle-min.js',
     },
 }

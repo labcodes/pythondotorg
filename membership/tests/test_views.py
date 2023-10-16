@@ -1,10 +1,12 @@
-from django.test import TestCase
-
-from waffle.testutils import override_flag
+from django.test import (
+    TestCase,
+)
+from waffle.testutils import (
+    override_flag,
+)
 
 
 class MembershipViewTests(TestCase):
-
     @override_flag('psf_membership', active=False)
     def test_membership_landing_ensure_404(self):
         response = self.client.get('/membership/')

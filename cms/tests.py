@@ -1,15 +1,23 @@
 import datetime
 import unittest
-from unittest import mock
+from unittest import (
+    mock,
+)
 
 from django.template import (
     Context,
     Template,
 )
-from django.test import TestCase
+from django.test import (
+    TestCase,
+)
 
-from .admin import ContentManageableModelAdmin
-from .views import legacy_path
+from .admin import (
+    ContentManageableModelAdmin,
+)
+from .views import (
+    legacy_path,
+)
 
 
 class ContentManageableAdminTests(unittest.TestCase):
@@ -25,21 +33,27 @@ class ContentManageableAdminTests(unittest.TestCase):
         admin = self.make_admin(readonly_fields=['f1'])
         self.assertEqual(
             admin.get_readonly_fields(request=mock.Mock()),
-            ['f1', 'created', 'updated', 'creator', 'last_modified_by']
+            [
+                'f1',
+                'created',
+                'updated',
+                'creator',
+                'last_modified_by',
+            ],
         )
 
     def test_list_filter(self):
         admin = self.make_admin(list_filter=['f1'])
         self.assertEqual(
             admin.get_list_filter(request=mock.Mock()),
-            ['f1', 'created', 'updated']
+            ['f1', 'created', 'updated'],
         )
 
     def test_list_display(self):
         admin = self.make_admin(list_display=['f1'])
         self.assertEqual(
             admin.get_list_display(request=mock.Mock()),
-            ['f1', 'created', 'updated']
+            ['f1', 'created', 'updated'],
         )
 
     def test_get_fieldsets(self):
@@ -50,11 +64,19 @@ class ContentManageableAdminTests(unittest.TestCase):
         # into the automatic one.
         self.assertEqual(
             fieldsets,
-            [(None, {'fields': ['foo']}),
-             ('CMS metadata', {
-                 'fields': [('creator', 'created'), ('last_modified_by', 'updated')],
-                 'classes': ('collapse',)
-             })]
+            [
+                (None, {'fields': ['foo']}),
+                (
+                    'CMS metadata',
+                    {
+                        'fields': [
+                            ('creator', 'created'),
+                            ('last_modified_by', 'updated'),
+                        ],
+                        'classes': ('collapse',),
+                    },
+                ),
+            ],
         )
 
     def test_save_model(self):
@@ -65,7 +87,7 @@ class ContentManageableAdminTests(unittest.TestCase):
         self.assertEqual(
             obj.creator,
             request.user,
-            "save_model didn't set obj.creator to request.user"
+            "save_model didn't set obj.creator to request.user",
         )
 
     def test_update_model(self):
@@ -76,7 +98,7 @@ class ContentManageableAdminTests(unittest.TestCase):
         self.assertEqual(
             obj.last_modified_by,
             request.user,
-            "save_model didn't set obj.last_modified_by to request.user"
+            "save_model didn't set obj.last_modified_by to request.user",
         )
 
 
@@ -89,21 +111,20 @@ class TemplateTagsTest(unittest.TestCase):
             '<time datetime="2014-01-01T12:00:00">'
             '<span class="say-no-more">2014-</span>01-01</time>'
         )
-        self.assertIn(
-            expected,
-            rendered
-        )
+        self.assertIn(expected, rendered)
 
 
 class Test404(TestCase):
     def test_legacy_path(self):
-        self.assertEqual(legacy_path('/any/thing'), 'http://legacy.python.org/any/thing')
+        self.assertEqual(
+            legacy_path('/any/thing'),
+            'http://legacy.python.org/any/thing',
+        )
 
     def test_custom_404(self):
-        """ Ensure custom 404 is set to 5 minutes """
+        """Ensure custom 404 is set to 5 minutes"""
         response = self.client.get('/foo-bar/baz/9876')
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response['Cache-Control'], 'max-age=300')
         self.assertTemplateUsed('404.html')
-        self.assertContains(response, 'Try using the search box.',
-                            status_code=404)
+        self.assertContains(response, 'Try using the search box.', status_code=404)

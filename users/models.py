@@ -1,15 +1,33 @@
 import datetime
 
-from django.conf import settings
-from django.contrib.auth.models import AbstractUser
-from django.db import models
-from django.urls import reverse
-from django.utils import timezone
-from markupfield.fields import MarkupField
-from rest_framework.authtoken.models import Token
-from tastypie.models import create_api_key
+from django.conf import (
+    settings,
+)
+from django.contrib.auth.models import (
+    AbstractUser,
+)
+from django.db import (
+    models,
+)
+from django.urls import (
+    reverse,
+)
+from django.utils import (
+    timezone,
+)
+from markupfield.fields import (
+    MarkupField,
+)
+from rest_framework.authtoken.models import (
+    Token,
+)
+from tastypie.models import (
+    create_api_key,
+)
 
-from .managers import UserManager
+from .managers import (
+    UserManager,
+)
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'markdown')
 
@@ -21,28 +39,41 @@ class CustomUserManager(UserManager):
 
 
 class User(AbstractUser):
-    bio = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE, escape_html=True)
+    bio = MarkupField(
+        blank=True,
+        default_markup_type=DEFAULT_MARKUP_TYPE,
+        escape_html=True,
+    )
 
     SEARCH_PRIVATE = 0
     SEARCH_PUBLIC = 1
     SEARCH_CHOICES = (
-        (SEARCH_PUBLIC, 'Allow search engines to index my profile page (recommended)'),
-        (SEARCH_PRIVATE, "Don't allow search engines to index my profile page"),
+        (
+            SEARCH_PUBLIC,
+            'Allow search engines to index my profile page (recommended)',
+        ),
+        (
+            SEARCH_PRIVATE,
+            "Don't allow search engines to index my profile page",
+        ),
     )
-    search_visibility = models.IntegerField(choices=SEARCH_CHOICES, default=SEARCH_PUBLIC)
+    search_visibility = models.IntegerField(
+        choices=SEARCH_CHOICES, default=SEARCH_PUBLIC
+    )
 
     EMAIL_PUBLIC = 0
     EMAIL_PRIVATE = 1
     EMAIL_NEVER = 2
     EMAIL_CHOICES = (
         (EMAIL_PUBLIC, 'Anyone can see my e-mail address'),
-        (EMAIL_PRIVATE, 'Only logged-in users can see my e-mail address'),
+        (
+            EMAIL_PRIVATE,
+            'Only logged-in users can see my e-mail address',
+        ),
         (EMAIL_NEVER, 'No one can ever see my e-mail address'),
     )
     email_privacy = models.IntegerField(
-        'E-mail privacy',
-        choices=EMAIL_CHOICES,
-        default=EMAIL_NEVER
+        'E-mail privacy', choices=EMAIL_CHOICES, default=EMAIL_NEVER
     )
 
     public_profile = models.BooleanField('Make my profile public', default=True)
@@ -62,7 +93,10 @@ class User(AbstractUser):
 
     @property
     def sponsorships(self):
-        from sponsors.models import Sponsorship
+        from sponsors.models import (
+            Sponsorship,
+        )
+
         return Sponsorship.objects.visible_to(self)
 
     @property
@@ -104,14 +138,12 @@ class Membership(models.Model):
 
     # PSF fields
     psf_code_of_conduct = models.BooleanField(
-        'I agree to the PSF Code of Conduct',
-        blank=True,
-        null=True
+        'I agree to the PSF Code of Conduct', blank=True, null=True
     )
     psf_announcements = models.BooleanField(
         'I would like to receive occasional PSF email announcements',
         blank=True,
-        null=True
+        null=True,
     )
 
     # Voting

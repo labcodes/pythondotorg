@@ -3,16 +3,26 @@ import re
 import shutil
 import traceback
 
-from bs4 import BeautifulSoup
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
-from django.core.management.base import BaseCommand
+from bs4 import (
+    BeautifulSoup,
+)
+from django.conf import (
+    settings,
+)
+from django.core.exceptions import (
+    ImproperlyConfigured,
+)
+from django.core.management.base import (
+    BaseCommand,
+)
 
 from ...models import (
     Image,
     Page,
 )
-from ...parser import parse_page
+from ...parser import (
+    parse_page,
+)
 
 
 def fix_image_path(src):
@@ -25,7 +35,7 @@ def fix_image_path(src):
 
 
 class Command(BaseCommand):
-    """ Import PSF content from svn repository of ReST content """
+    """Import PSF content from svn repository of ReST content"""
 
     def _build_path(self, filename):
         filename = filename.replace(self.SVN_REPO_PATH, '')
@@ -63,10 +73,7 @@ class Command(BaseCommand):
             dst = fix_image_path(image.get('src'))
             image['src'] = dst
 
-            Image.objects.get_or_create(
-                page=page,
-                image=dst
-            )
+            Image.objects.get_or_create(page=page, image=dst)
         wrapper = BeautifulSoup('<div>', 'lxml')
         [wrapper.div.append(el) for el in soup.body.contents]
         page.content = "%s" % wrapper.div
@@ -76,7 +83,9 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.SVN_REPO_PATH = getattr(settings, 'PYTHON_ORG_CONTENT_SVN_PATH', None)
         if self.SVN_REPO_PATH is None:
-            raise ImproperlyConfigured("PYTHON_ORG_CONTENT_SVN_PATH not defined in settings")
+            raise ImproperlyConfigured(
+                "PYTHON_ORG_CONTENT_SVN_PATH not defined in settings"
+            )
 
         matches = []
         for root, dirnames, filenames in os.walk(self.SVN_REPO_PATH):

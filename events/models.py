@@ -1,5 +1,7 @@
 import datetime
-from operator import itemgetter
+from operator import (
+    itemgetter,
+)
 
 from dateutil.rrule import (
     DAILY,
@@ -8,20 +10,39 @@ from dateutil.rrule import (
     YEARLY,
     rrule,
 )
-from django.conf import settings
-from django.db import models
-from django.db.models import Q
-from django.template.defaultfilters import date
-from django.urls import reverse
-from django.utils import timezone
-from django.utils.functional import cached_property
-from django.utils.translation import gettext_lazy as _
-from markupfield.fields import MarkupField
+from django.conf import (
+    settings,
+)
+from django.db import (
+    models,
+)
+from django.db.models import (
+    Q,
+)
+from django.template.defaultfilters import (
+    date,
+)
+from django.urls import (
+    reverse,
+)
+from django.utils import (
+    timezone,
+)
+from django.utils.functional import (
+    cached_property,
+)
+from django.utils.translation import (
+    gettext_lazy as _,
+)
+from markupfield.fields import (
+    MarkupField,
+)
 
 from cms.models import (
     ContentManageable,
     NameSlugModel,
 )
+
 from .utils import (
     convert_dt_to_aware,
     minutes_resolution,
@@ -50,7 +71,10 @@ class Calendar(ContentManageable):
     def import_events(self):
         if self.url is None:
             raise ValueError("calendar must have a url field set")
-        from .importer import ICSImporter
+        from .importer import (
+            ICSImporter,
+        )
+
         importer = ICSImporter(calendar=self)
         importer.import_events()
 
@@ -69,7 +93,13 @@ class EventCategory(NameSlugModel):
         ordering = ('name',)
 
     def get_absolute_url(self):
-        return reverse('events:eventlist_category', kwargs={'calendar_slug': self.calendar.slug, 'slug': self.slug})
+        return reverse(
+            'events:eventlist_category',
+            kwargs={
+                'calendar_slug': self.calendar.slug,
+                'slug': self.slug,
+            },
+        )
 
 
 class EventLocation(models.Model):
@@ -92,7 +122,13 @@ class EventLocation(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('events:eventlist_location', kwargs={'calendar_slug': self.calendar.slug, 'pk': self.pk})
+        return reverse(
+            'events:eventlist_location',
+            kwargs={
+                'calendar_slug': self.calendar.slug,
+                'pk': self.pk,
+            },
+        )
 
 
 class EventManager(models.Manager):
@@ -101,22 +137,30 @@ class EventManager(models.Manager):
             dt = timezone.now()
         else:
             dt = convert_dt_to_aware(dt)
-        return self.filter(Q(occurring_rule__dt_start__gt=dt) | Q(recurring_rules__finish__gt=dt))
+        return self.filter(
+            Q(occurring_rule__dt_start__gt=dt) | Q(recurring_rules__finish__gt=dt)
+        )
 
     def until_datetime(self, dt=None):
         if dt is None:
             dt = timezone.now()
         else:
             dt = convert_dt_to_aware(dt)
-        return self.filter(Q(occurring_rule__dt_end__lt=dt) | Q(recurring_rules__begin__lt=dt))
+        return self.filter(
+            Q(occurring_rule__dt_end__lt=dt) | Q(recurring_rules__begin__lt=dt)
+        )
 
 
 class Event(ContentManageable):
     uid = models.CharField(max_length=200, null=True, blank=True)
     title = models.CharField(max_length=200)
-    calendar = models.ForeignKey(Calendar, related_name='events', on_delete=models.CASCADE)
+    calendar = models.ForeignKey(
+        Calendar, related_name='events', on_delete=models.CASCADE
+    )
 
-    description = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE, escape_html=False)
+    description = MarkupField(
+        default_markup_type=DEFAULT_MARKUP_TYPE, escape_html=False
+    )
     venue = models.ForeignKey(
         EventLocation,
         related_name='events',
@@ -125,7 +169,9 @@ class Event(ContentManageable):
         on_delete=models.CASCADE,
     )
 
-    categories = models.ManyToManyField(EventCategory, related_name='events', blank=True)
+    categories = models.ManyToManyField(
+        EventCategory, related_name='events', blank=True
+    )
     featured = models.BooleanField(default=False, db_index=True)
 
     objects = EventManager()
@@ -137,7 +183,13 @@ class Event(ContentManageable):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('events:event_detail', kwargs={'calendar_slug': self.calendar.slug, 'pk': self.pk})
+        return reverse(
+            'events:event_detail',
+            kwargs={
+                'calendar_slug': self.calendar.slug,
+                'pk': self.pk,
+            },
+        )
 
     @cached_property
     def previous_event(self):
@@ -173,10 +225,15 @@ class Event(ContentManageable):
             pass
         else:
             if occurring_rule and occurring_rule.dt_start > now:
-                occurring_start = (occurring_rule.dt_start, occurring_rule)
+                occurring_start = (
+                    occurring_rule.dt_start,
+                    occurring_rule,
+                )
 
         rrules = self.recurring_rules.filter(finish__gt=now)
-        recurring_starts = [(rule.dt_start, rule) for rule in rrules if rule.dt_start is not None]
+        recurring_starts = [
+            (rule.dt_start, rule) for rule in rrules if rule.dt_start is not None
+        ]
         recurring_starts.sort(key=itemgetter(0))
 
         try:
@@ -202,10 +259,15 @@ class Event(ContentManageable):
             pass
         else:
             if occurring_rule and occurring_rule.dt_end < now:
-                occurring_end = (occurring_rule.dt_end, occurring_rule)
+                occurring_end = (
+                    occurring_rule.dt_end,
+                    occurring_rule,
+                )
 
         rrules = self.recurring_rules.filter(begin__lt=now)
-        recurring_ends = [(rule.dt_end, rule) for rule in rrules if rule.dt_end is not None]
+        recurring_ends = [
+            (rule.dt_end, rule) for rule in rrules if rule.dt_end is not None
+        ]
         recurring_ends.sort(key=itemgetter(0), reverse=True)
 
         try:
@@ -240,7 +302,10 @@ class OccurringRule(RuleMixin, models.Model):
 
     Shares the same API of `RecurringRule`.
     """
-    event = models.OneToOneField(Event, related_name='occurring_rule', on_delete=models.CASCADE)
+
+    event = models.OneToOneField(
+        Event, related_name='occurring_rule', on_delete=models.CASCADE
+    )
     dt_start = models.DateTimeField(default=timezone.now)
     dt_end = models.DateTimeField(default=timezone.now)
     all_day = models.BooleanField(default=False)
@@ -276,6 +341,7 @@ class RecurringRule(RuleMixin, models.Model):
 
     Shares the same API of `OccurringRule`.
     """
+
     FREQ_CHOICES = (
         (YEARLY, 'year(s)'),
         (MONTHLY, 'month(s)'),
@@ -283,7 +349,11 @@ class RecurringRule(RuleMixin, models.Model):
         (DAILY, 'day(s)'),
     )
 
-    event = models.ForeignKey(Event, related_name='recurring_rules', on_delete=models.CASCADE)
+    event = models.ForeignKey(
+        Event,
+        related_name='recurring_rules',
+        on_delete=models.CASCADE,
+    )
     begin = models.DateTimeField(default=timezone.now)
     finish = models.DateTimeField(default=timezone.now)
     duration_internal = models.DurationField(default=duration_default)
@@ -341,7 +411,9 @@ class RecurringRule(RuleMixin, models.Model):
 
 class Alarm(ContentManageable):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    trigger = models.PositiveSmallIntegerField(_("hours before the event occurs"), default=24)
+    trigger = models.PositiveSmallIntegerField(
+        _("hours before the event occurs"), default=24
+    )
 
     def __str__(self):
         return f'Alarm for {self.event.title} to {self.recipient}'

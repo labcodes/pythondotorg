@@ -1,7 +1,12 @@
-from django import template
-from django.template.defaultfilters import stringfilter
-from django.utils.html import format_html
-
+from django import (
+    template,
+)
+from django.template.defaultfilters import (
+    stringfilter,
+)
+from django.utils.html import (
+    format_html,
+)
 
 register = template.Library()
 

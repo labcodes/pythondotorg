@@ -1,16 +1,26 @@
 import os
 import re
-from contextlib import ExitStack
-from tarfile import TarFile
+from contextlib import (
+    ExitStack,
+)
+from tarfile import (
+    TarFile,
+)
 from tempfile import (
     TemporaryDirectory,
     TemporaryFile,
 )
 
 import requests
-from dateutil.parser import parse as parsedate
-from django.conf import settings
-from django.core.management import BaseCommand
+from dateutil.parser import (
+    parse as parsedate,
+)
+from django.conf import (
+    settings,
+)
+from django.core.management import (
+    BaseCommand,
+)
 
 from peps.converters import (
     add_pep_image,
@@ -35,6 +45,7 @@ class Command(BaseCommand):
 
         ./manage.py generate_pep_pages --verbosity=2
     """
+
     help = "Generate PEP Page objects from rendered HTML"
 
     def is_pep_page(self, path):
@@ -48,7 +59,7 @@ class Command(BaseCommand):
         verbosity = int(options['verbosity'])
 
         def verbose(msg):
-            """ Output wrapper """
+            """Output wrapper"""
             if verbosity > 1:
                 print(msg)
 
@@ -64,7 +75,9 @@ class Command(BaseCommand):
                     verbose("== No update to artifacts, we're done here!")
                     return
                 temp_dir = stack.enter_context(TemporaryDirectory())
-                tar_ball = stack.enter_context(TarFile.open(fileobj=temp_file, mode='r:gz'))
+                tar_ball = stack.enter_context(
+                    TarFile.open(fileobj=temp_file, mode='r:gz')
+                )
                 tar_ball.extractall(path=temp_dir, numeric_owner=False)
 
                 artifacts_path = os.path.join(temp_dir, 'peps')
@@ -84,7 +97,6 @@ class Command(BaseCommand):
 
             # Find pep pages
             for f in os.listdir(artifacts_path):
-
                 if self.is_image(f):
                     verbose(f"- Deferring import of image '{f}'")
                     image_paths.add(f)
@@ -119,8 +131,9 @@ class Command(BaseCommand):
                 pep_match = pep_number_re.match(img)
                 if pep_match:
                     pep_number = pep_match.groups(1)[0]
-                    verbose("Generating image for PEP {} at '{}'".format(
-                        pep_number, img))
+                    verbose(
+                        "Generating image for PEP {} at '{}'".format(pep_number, img)
+                    )
                     add_pep_image(artifacts_path, pep_number, img)
                 else:
                     verbose(f"- Skipping non-PEP related image '{img}'")

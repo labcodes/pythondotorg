@@ -1,13 +1,25 @@
 """
 This module holds models related to the Sponsorship entity.
 """
-from datetime import date
-from itertools import chain
+from datetime import (
+    date,
+)
+from itertools import (
+    chain,
+)
 
-from django.conf import settings
-from django.contrib.contenttypes.fields import GenericRelation
-from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
+from django.conf import (
+    settings,
+)
+from django.contrib.contenttypes.fields import (
+    GenericRelation,
+)
+from django.core.cache import (
+    cache,
+)
+from django.core.exceptions import (
+    ObjectDoesNotExist,
+)
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
@@ -21,27 +33,45 @@ from django.db.models import (
     Subquery,
     Sum,
 )
-from django.template.defaultfilters import truncatechars
-from django.urls import reverse
-from django.utils import timezone
-from django.utils.functional import cached_property
-from num2words import num2words
-from ordered_model.models import OrderedModel
+from django.template.defaultfilters import (
+    truncatechars,
+)
+from django.urls import (
+    reverse,
+)
+from django.utils import (
+    timezone,
+)
+from django.utils.functional import (
+    cached_property,
+)
+from num2words import (
+    num2words,
+)
+from ordered_model.models import (
+    OrderedModel,
+)
 
 from sponsors.exceptions import (
     InvalidStatusException,
-    SponsorWithExistingApplicationException,
     SponsorshipInvalidDateRangeException,
+    SponsorWithExistingApplicationException,
 )
-from sponsors.models.assets import GenericAsset
-from sponsors.models.benefits import TieredBenefitConfiguration
+from sponsors.models.assets import (
+    GenericAsset,
+)
+from sponsors.models.benefits import (
+    TieredBenefitConfiguration,
+)
 from sponsors.models.managers import (
     SponsorshipBenefitQuerySet,
     SponsorshipCurrentYearQuerySet,
     SponsorshipPackageQuerySet,
     SponsorshipQuerySet,
 )
-from sponsors.models.sponsors import SponsorBenefit
+from sponsors.models.sponsors import (
+    SponsorBenefit,
+)
 
 YEAR_VALIDATORS = [
     MinValueValidator(limit_value=2022, message="The min year value is 2022."),
@@ -53,28 +83,47 @@ class SponsorshipPackage(OrderedModel):
     """
     Represent default packages of benefits (visionary, sustainability etc)
     """
+
     objects = SponsorshipPackageQuerySet.as_manager()
 
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
-    advertise = models.BooleanField(default=False, blank=True, help_text="If checked, this package will be advertised "
-                                                                         "in the sponsosrhip application")
-    logo_dimension = models.PositiveIntegerField(default=175, blank=True, help_text="Internal value used to control "
-                                                                                    "logos dimensions at sponsors "
-                                                                                    "page")
-    slug = models.SlugField(db_index=True, blank=False, null=False, help_text="Internal identifier used "
-                                                                              "to reference this package.")
-    year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS, db_index=True)
+    advertise = models.BooleanField(
+        default=False,
+        blank=True,
+        help_text="If checked, this package will be advertised "
+        "in the sponsosrhip application",
+    )
+    logo_dimension = models.PositiveIntegerField(
+        default=175,
+        blank=True,
+        help_text="Internal value used to control "
+        "logos dimensions at sponsors "
+        "page",
+    )
+    slug = models.SlugField(
+        db_index=True,
+        blank=False,
+        null=False,
+        help_text="Internal identifier used " "to reference this package.",
+    )
+    year = models.PositiveIntegerField(
+        null=True, validators=YEAR_VALIDATORS, db_index=True
+    )
 
     allow_a_la_carte = models.BooleanField(
-        default=True, help_text="If disabled, a la carte benefits will be disabled in application form"
+        default=True,
+        help_text="If disabled, a la carte benefits will be disabled in application form",
     )
 
     def __str__(self):
         return f'{self.name} ({self.year})'
 
     class Meta:
-        ordering = ('-year', 'order',)
+        ordering = (
+            '-year',
+            'order',
+        )
 
     def has_user_customization(self, benefits):
         """
@@ -171,11 +220,17 @@ class Sponsorship(models.Model):
     objects = SponsorshipQuerySet.as_manager()
 
     submited_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
     )
     sponsor = models.ForeignKey("Sponsor", null=True, on_delete=models.SET_NULL)
     status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default=APPLIED, db_index=True
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=APPLIED,
+        db_index=True,
     )
     locked = models.BooleanField(default=False)
 
@@ -185,7 +240,9 @@ class Sponsorship(models.Model):
     approved_on = models.DateField(null=True, blank=True)
     rejected_on = models.DateField(null=True, blank=True)
     finalized_on = models.DateField(null=True, blank=True)
-    year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS, db_index=True)
+    year = models.PositiveIntegerField(
+        null=True, validators=YEAR_VALIDATORS, db_index=True
+    )
 
     for_modified_package = models.BooleanField(
         default=False,
@@ -199,9 +256,11 @@ class Sponsorship(models.Model):
         default="",
         blank=True,
         help_text="DEPRECATED: shall be removed after manual data sanity check.",
-        verbose_name="Level name"
+        verbose_name="Level name",
     )
-    package = models.ForeignKey(SponsorshipPackage, null=True, on_delete=models.SET_NULL)
+    package = models.ForeignKey(
+        SponsorshipPackage, null=True, on_delete=models.SET_NULL
+    )
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
     overlapped_by = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
 
@@ -278,7 +337,9 @@ class Sponsorship(models.Model):
         for benefit in benefits:
             added_by_user = for_modified_package and benefit not in package_benefits
             SponsorBenefit.new_copy(
-                benefit, sponsorship=sponsorship, added_by_user=added_by_user
+                benefit,
+                sponsorship=sponsorship,
+                added_by_user=added_by_user,
             )
 
         return sponsorship
@@ -306,18 +367,22 @@ class Sponsorship(models.Model):
         try:
             benefits = [
                 sb.sponsorship_benefit
-                for sb in self.package_benefits.all().select_related('sponsorship_benefit')
+                for sb in self.package_benefits.all().select_related(
+                    'sponsorship_benefit'
+                )
             ]
             if self.package and not self.package.has_user_customization(benefits):
                 return self.sponsorship_fee
-        except SponsorshipPackage.DoesNotExist:  # sponsorship level names can change over time
+        except (
+            SponsorshipPackage.DoesNotExist
+        ):  # sponsorship level names can change over time
             return None
 
     @property
     def is_active(self):
         conditions = [
             self.status == self.FINALIZED,
-            self.end_date and self.end_date > date.today()
+            self.end_date and self.end_date > date.today(),
         ]
 
     def reject(self):
@@ -342,7 +407,11 @@ class Sponsorship(models.Model):
         self.approved_on = timezone.now().date()
 
     def rollback_to_editing(self):
-        accepts_rollback = [self.APPLIED, self.APPROVED, self.REJECTED]
+        accepts_rollback = [
+            self.APPLIED,
+            self.APPROVED,
+            self.REJECTED,
+        ]
         if self.status not in accepts_rollback:
             msg = f"Can't rollback to edit a {self.get_status_display()} sponsorship."
             raise InvalidStatusException(msg)
@@ -350,7 +419,9 @@ class Sponsorship(models.Model):
         try:
             if not self.contract.is_draft:
                 status = self.contract.get_status_display()
-                msg = f"Can't rollback to edit a sponsorship with a { status } Contract."
+                msg = (
+                    f"Can't rollback to edit a sponsorship with a { status } Contract."
+                )
                 raise InvalidStatusException(msg)
             self.contract.delete()
         except ObjectDoesNotExist:
@@ -379,9 +450,7 @@ class Sponsorship(models.Model):
     def contract_admin_url(self):
         if not self.contract:
             return ""
-        return reverse(
-            "admin:sponsors_contract_change", args=[self.contract.pk]
-        )
+        return reverse("admin:sponsors_contract_change", args=[self.contract.pk])
 
     @property
     def detail_url(self):
@@ -507,7 +576,9 @@ class SponsorshipBenefit(OrderedModel):
         verbose_name="Conflicts",
         help_text="For benefits that conflict with one another,",
     )
-    year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS, db_index=True)
+    year = models.PositiveIntegerField(
+        null=True, validators=YEAR_VALIDATORS, db_index=True
+    )
 
     NEW_MESSAGE = "New benefit this year!"
     PACKAGE_ONLY_MESSAGE = "Benefit only available as part of a sponsor package"
@@ -583,7 +654,10 @@ class SponsorshipBenefit(OrderedModel):
             "soft_capacity": self.soft_capacity,
             "order": self.order,
         }
-        new_benefit, created = SponsorshipBenefit.objects.get_or_create(
+        (
+            new_benefit,
+            created,
+        ) = SponsorshipBenefit.objects.get_or_create(
             name=self.name, year=year, defaults=defaults
         )
 
@@ -608,19 +682,22 @@ class SponsorshipCurrentYear(models.Model):
     The sponsorship_current_year_singleton_idx introduced by migration 0079 in sponsors app
     enforces the singleton at DB level.
     """
+
     CACHE_KEY = "current_year"
     objects = SponsorshipCurrentYearQuerySet.as_manager()
 
     year = models.PositiveIntegerField(
         validators=YEAR_VALIDATORS,
-        help_text="Every new sponsorship application will be considered as an application from to the active year."
+        help_text="Every new sponsorship application will be considered as an application from to the active year.",
     )
 
     def __str__(self):
         return f"Active year: {self.year}."
 
     def delete(self, *args, **kwargs):
-        raise IntegrityError("Singleton object cannot be delete. Try updating it instead.")
+        raise IntegrityError(
+            "Singleton object cannot be delete. Try updating it instead."
+        )
 
     def save(self, *args, **kwargs):
         cache.delete(self.CACHE_KEY)

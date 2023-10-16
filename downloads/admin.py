@@ -1,9 +1,12 @@
-from django.contrib import admin
+from django.contrib import (
+    admin,
+)
 
 from cms.admin import (
     ContentManageableModelAdmin,
     ContentManageableStackedInline,
 )
+
 from .models import (
     OS,
     Release,
@@ -28,7 +31,11 @@ class ReleaseAdmin(ContentManageableModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     raw_id_fields = ['release_page']
     date_hierarchy = 'release_date'
-    list_display = ['__str__', 'is_published', 'show_on_download_page']
+    list_display = [
+        '__str__',
+        'is_published',
+        'show_on_download_page',
+    ]
     list_filter = ['version', 'is_published', 'show_on_download_page']
     search_fields = ['name', 'slug']
     ordering = ['-release_date']

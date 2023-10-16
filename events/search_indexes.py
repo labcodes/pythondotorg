@@ -2,7 +2,9 @@ from django.template.defaultfilters import (
     striptags,
     truncatewords_html,
 )
-from haystack import indexes
+from haystack import (
+    indexes,
+)
 
 from .models import (
     Calendar,
@@ -65,7 +67,7 @@ class EventIndex(indexes.SearchIndex, indexes.Indexable):
             return None
 
     def prepare(self, obj):
-        """ Boost events """
+        """Boost events"""
         data = super().prepare(obj)
 
         # Reduce boost of past events

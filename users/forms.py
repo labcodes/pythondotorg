@@ -1,5 +1,9 @@
-from django import forms
-from django.forms import ModelForm
+from django import (
+    forms,
+)
+from django.forms import (
+    ModelForm,
+)
 
 from .models import (
     Membership,
@@ -8,7 +12,6 @@ from .models import (
 
 
 class UserProfileForm(ModelForm):
-
     class Meta:
         model = User
         fields = [
@@ -46,17 +49,10 @@ class UserProfileForm(ModelForm):
 
 
 class MembershipForm(ModelForm):
-    """ PSF Membership creation form """
+    """PSF Membership creation form"""
 
-    COC_CHOICES = (
-        ('', ''),
-        (True, 'Yes'),
-        (False, 'No')
-    )
-    ACCOUNCEMENT_CHOICES = (
-        (True, 'Yes'),
-        (False, 'No')
-    )
+    COC_CHOICES = (('', ''), (True, 'Yes'), (False, 'No'))
+    ACCOUNCEMENT_CHOICES = ((True, 'Yes'), (False, 'No'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -102,5 +98,4 @@ class MembershipUpdateForm(MembershipForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        del (self.fields['psf_code_of_conduct'])
-
+        del self.fields['psf_code_of_conduct']

@@ -1,11 +1,21 @@
 """
 This module holds models related to benefits features and configurations
 """
-from django import forms
-from django.db import models
-from django.db.models import UniqueConstraint
-from django.urls import reverse
-from polymorphic.models import PolymorphicModel
+from django import (
+    forms,
+)
+from django.db import (
+    models,
+)
+from django.db.models import (
+    UniqueConstraint,
+)
+from django.urls import (
+    reverse,
+)
+from polymorphic.models import (
+    PolymorphicModel,
+)
 
 from sponsors.models.assets import (
     FileAsset,
@@ -19,9 +29,12 @@ from sponsors.models.enums import (
     LogoPlacementChoices,
     PublisherChoices,
 )
+
 ########################################
 # Benefit features abstract classes
-from sponsors.models.managers import BenefitFeatureQuerySet
+from sponsors.models.managers import (
+    BenefitFeatureQuerySet,
+)
 
 
 ########################################
@@ -31,13 +44,15 @@ class BaseLogoPlacement(models.Model):
         max_length=30,
         choices=[(c.value, c.name.replace("_", " ").title()) for c in PublisherChoices],
         verbose_name="Publisher",
-        help_text="On which site should the logo be displayed?"
+        help_text="On which site should the logo be displayed?",
     )
     logo_place = models.CharField(
         max_length=30,
-        choices=[(c.value, c.name.replace("_", " ").title()) for c in LogoPlacementChoices],
+        choices=[
+            (c.value, c.name.replace("_", " ").title()) for c in LogoPlacementChoices
+        ],
         verbose_name="Logo Placement",
-        help_text="Where the logo should be placed?"
+        help_text="Where the logo should be placed?",
     )
     link_to_sponsors_page = models.BooleanField(
         default=False,
@@ -84,7 +99,7 @@ class BaseAsset(models.Model):
         max_length=30,
         choices=[(c.value, c.name.replace("_", " ").title()) for c in AssetsRelatedTo],
         verbose_name="Related To",
-        help_text="To which instance (Sponsor or Sponsorship) should this asset relate to."
+        help_text="To which instance (Sponsor or Sponsorship) should this asset relate to.",
     )
     internal_name = models.CharField(
         max_length=128,
@@ -98,13 +113,13 @@ class BaseAsset(models.Model):
     )
     label = models.CharField(
         max_length=256,
-        help_text="What's the title used to display the input to the sponsor?"
+        help_text="What's the title used to display the input to the sponsor?",
     )
     help_text = models.CharField(
         max_length=256,
         help_text="Any helper comment on how the input should be populated",
         default="",
-        blank=True
+        blank=True,
     )
 
     class Meta:
@@ -140,7 +155,8 @@ class AssetConfigurationMixin:
     def create_benefit_feature(self, sponsor_benefit, **kwargs):
         if not self.ASSET_CLASS:
             raise NotImplementedError(
-                "Subclasses of AssetConfigurationMixin must define an ASSET_CLASS attribute.")
+                "Subclasses of AssetConfigurationMixin must define an ASSET_CLASS attribute."
+            )
 
         # Super: BenefitFeatureConfiguration.create_benefit_feature
         benefit_feature = super().create_benefit_feature(sponsor_benefit, **kwargs)
@@ -152,7 +168,8 @@ class AssetConfigurationMixin:
         asset_qs = content_object.assets.filter(internal_name=self.internal_name)
         if not asset_qs.exists():
             asset = self.ASSET_CLASS(
-                content_object=content_object, internal_name=self.internal_name,
+                content_object=content_object,
+                internal_name=self.internal_name,
             )
             asset.save()
 
@@ -187,13 +204,13 @@ class BaseRequiredTextAsset(BaseRequiredAsset):
 
     label = models.CharField(
         max_length=256,
-        help_text="What's the title used to display the text input to the sponsor?"
+        help_text="What's the title used to display the text input to the sponsor?",
     )
     help_text = models.CharField(
         max_length=256,
         help_text="Any helper comment on how the input should be populated",
         default="",
-        blank=True
+        blank=True,
     )
     max_length = models.IntegerField(
         default=None,
@@ -218,13 +235,13 @@ class BaseProvidedTextAsset(BaseProvidedAsset):
 
     label = models.CharField(
         max_length=256,
-        help_text="What's the title used to display the text input to the sponsor?"
+        help_text="What's the title used to display the text input to the sponsor?",
     )
     help_text = models.CharField(
         max_length=256,
         help_text="Any helper comment on how the input should be populated",
         default="",
-        blank=True
+        blank=True,
     )
     shared_text = models.TextField(blank=True, null=True)
 
@@ -240,13 +257,13 @@ class BaseProvidedFileAsset(BaseProvidedAsset):
 
     label = models.CharField(
         max_length=256,
-        help_text="What's the title used to display the file to the sponsor?"
+        help_text="What's the title used to display the file to the sponsor?",
     )
     help_text = models.CharField(
         max_length=256,
         help_text="Any helper comment on how the file should be used",
         default="",
-        blank=True
+        blank=True,
     )
     shared_file = models.FileField(blank=True, null=True)
 
@@ -258,7 +275,6 @@ class BaseProvidedFileAsset(BaseProvidedAsset):
 
 
 class AssetMixin:
-
     def __related_asset(self):
         """
         This method exists to avoid FK relationships between the GenericAsset
@@ -285,14 +301,17 @@ class AssetMixin:
 
     @property
     def user_edit_url(self):
-        url = reverse("users:update_sponsorship_assets", args=[self.sponsor_benefit.sponsorship.pk])
+        url = reverse(
+            "users:update_sponsorship_assets",
+            args=[self.sponsor_benefit.sponsorship.pk],
+        )
         return url + f"?required_asset={self.pk}"
 
     @property
     def user_view_url(self):
         url = reverse(
             "users:view_provided_sponsorship_assets",
-            args=[self.sponsor_benefit.sponsorship.pk]
+            args=[self.sponsor_benefit.sponsorship.pk],
         )
         return url + f"?provided_asset={self.pk}"
 
@@ -303,6 +322,7 @@ class RequiredAssetMixin(AssetMixin):
     It's a mixin to get the information submitted by the user
     and which is stored in the related asset class.
     """
+
     pass
 
 
@@ -318,6 +338,7 @@ class ProvidedAssetMixin(AssetMixin):
         if hasattr(self, 'shared') and self.shared:
             return self.shared_value()
         return super().value
+
 
 ######################################################
 # SponsorshipBenefit features configuration models
@@ -479,12 +500,14 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
 class RequiredImgAssetConfiguration(
     AssetConfigurationMixin,
     BaseRequiredImgAsset,
-    BenefitFeatureConfiguration
+    BenefitFeatureConfiguration,
 ):
     class Meta(BaseRequiredImgAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Image Configuration"
         verbose_name_plural = "Require Image Configurations"
-        constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_img_asset_cfg")]
+        constraints = [
+            UniqueConstraint(fields=["internal_name"], name="uniq_img_asset_cfg")
+        ]
 
     def __str__(self):
         return "Require image configuration"
@@ -494,12 +517,17 @@ class RequiredImgAssetConfiguration(
         return RequiredImgAsset
 
 
-class RequiredTextAssetConfiguration(AssetConfigurationMixin, BaseRequiredTextAsset,
-                                     BenefitFeatureConfiguration):
+class RequiredTextAssetConfiguration(
+    AssetConfigurationMixin,
+    BaseRequiredTextAsset,
+    BenefitFeatureConfiguration,
+):
     class Meta(BaseRequiredTextAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Text Configuration"
         verbose_name_plural = "Require Text Configurations"
-        constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_text_asset_cfg")]
+        constraints = [
+            UniqueConstraint(fields=["internal_name"], name="uniq_text_asset_cfg")
+        ]
 
     def __str__(self):
         return "Require text configuration"
@@ -510,13 +538,21 @@ class RequiredTextAssetConfiguration(AssetConfigurationMixin, BaseRequiredTextAs
 
 
 class RequiredResponseAssetConfiguration(
-    AssetConfigurationMixin, BaseRequiredResponseAsset, BenefitFeatureConfiguration
+    AssetConfigurationMixin,
+    BaseRequiredResponseAsset,
+    BenefitFeatureConfiguration,
 ):
-    class Meta(BaseRequiredResponseAsset.Meta, BenefitFeatureConfiguration.Meta):
+    class Meta(
+        BaseRequiredResponseAsset.Meta,
+        BenefitFeatureConfiguration.Meta,
+    ):
         verbose_name = "Require Response Configuration"
         verbose_name_plural = "Require Response Configurations"
         constraints = [
-            UniqueConstraint(fields=["internal_name"], name="uniq_response_asset_cfg")
+            UniqueConstraint(
+                fields=["internal_name"],
+                name="uniq_response_asset_cfg",
+            )
         ]
 
     def __str__(self):
@@ -528,13 +564,18 @@ class RequiredResponseAssetConfiguration(
 
 
 class ProvidedTextAssetConfiguration(
-    AssetConfigurationMixin, BaseProvidedTextAsset, BenefitFeatureConfiguration
+    AssetConfigurationMixin,
+    BaseProvidedTextAsset,
+    BenefitFeatureConfiguration,
 ):
     class Meta(BaseProvidedTextAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Provided Text Configuration"
         verbose_name_plural = "Provided Text Configurations"
         constraints = [
-            UniqueConstraint(fields=["internal_name"], name="uniq_provided_text_asset_cfg")
+            UniqueConstraint(
+                fields=["internal_name"],
+                name="uniq_provided_text_asset_cfg",
+            )
         ]
 
     def __str__(self):
@@ -545,13 +586,19 @@ class ProvidedTextAssetConfiguration(
         return ProvidedTextAsset
 
 
-class ProvidedFileAssetConfiguration(AssetConfigurationMixin, BaseProvidedFileAsset,
-                                     BenefitFeatureConfiguration):
+class ProvidedFileAssetConfiguration(
+    AssetConfigurationMixin,
+    BaseProvidedFileAsset,
+    BenefitFeatureConfiguration,
+):
     class Meta(BaseProvidedFileAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Provided File Configuration"
         verbose_name_plural = "Provided File Configurations"
         constraints = [
-            UniqueConstraint(fields=["internal_name"], name="uniq_provided_file_asset_cfg")
+            UniqueConstraint(
+                fields=["internal_name"],
+                name="uniq_provided_file_asset_cfg",
+            )
         ]
 
     def __str__(self):
@@ -568,10 +615,13 @@ class BenefitFeature(PolymorphicModel):
     """
     Base class for sponsor benefits features.
     """
+
     objects = BenefitFeatureQuerySet.as_manager()
     non_polymorphic = models.Manager()
 
-    sponsor_benefit = models.ForeignKey("sponsors.SponsorBenefit", on_delete=models.CASCADE)
+    sponsor_benefit = models.ForeignKey(
+        "sponsors.SponsorBenefit", on_delete=models.CASCADE
+    )
 
     class Meta:
         verbose_name = "Benefit Feature"
@@ -641,7 +691,7 @@ class RequiredImgAsset(RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature)
             help_text=help_text,
             label=label,
             widget=forms.ClearableFileInput,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -666,11 +716,13 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
             help_text=help_text,
             label=label,
             widget=widget,
-            **kwargs
+            **kwargs,
         )
 
 
-class RequiredResponseAsset(RequiredAssetMixin, BaseRequiredResponseAsset, BenefitFeature):
+class RequiredResponseAsset(
+    RequiredAssetMixin, BaseRequiredResponseAsset, BenefitFeature
+):
     class Meta(BaseRequiredTextAsset.Meta, BenefitFeature.Meta):
         verbose_name = "Require Response"
         verbose_name_plural = "Required Responses"
@@ -688,7 +740,7 @@ class RequiredResponseAsset(RequiredAssetMixin, BaseRequiredResponseAsset, Benef
             widget=forms.RadioSelect,
             help_text=help_text,
             label=label,
-            **kwargs
+            **kwargs,
         )
 
 

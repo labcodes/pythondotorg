@@ -1,10 +1,13 @@
-from pydotorg.tests.test_classes import TemplateTestCase
+from pydotorg.tests.test_classes import (
+    TemplateTestCase,
+)
 
-from ..factories import UserFactory
+from ..factories import (
+    UserFactory,
+)
 
 
 class UsersTagsTest(TemplateTestCase):
-
     def test_parse_location(self):
         user = UserFactory()
         template = "{% load users_tags %}{{ user|user_location }}"
@@ -14,7 +17,9 @@ class UsersTagsTest(TemplateTestCase):
         template = "{% load users_tags %}{{ user|user_location }}"
         rendered = self.render_string(template, {'user': user})
         self.assertEqual(rendered, "")
-        template = "{% load users_tags %}{{ user|user_location|default:'Not Specified' }}"
+        template = (
+            "{% load users_tags %}{{ user|user_location|default:'Not Specified' }}"
+        )
 
         user = UserFactory(membership__city='Lawrence')
         rendered = self.render_string(template, {'user': user})

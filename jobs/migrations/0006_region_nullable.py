@@ -1,8 +1,10 @@
-from django.db import models, migrations
+from django.db import (
+    migrations,
+    models,
+)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('jobs', '0005_job_other_job_type'),
     ]

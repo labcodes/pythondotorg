@@ -1,12 +1,23 @@
 import datetime
 
 import factory
-from django.contrib.auth.models import Group
-from django.utils import timezone
-from factory.django import DjangoModelFactory
-from faker.providers import BaseProvider
+from django.contrib.auth.models import (
+    Group,
+)
+from django.utils import (
+    timezone,
+)
+from factory.django import (
+    DjangoModelFactory,
+)
+from faker.providers import (
+    BaseProvider,
+)
 
-from users.factories import UserFactory
+from users.factories import (
+    UserFactory,
+)
+
 from .models import (
     Job,
     JobCategory,
@@ -15,7 +26,6 @@ from .models import (
 
 
 class JobProvider(BaseProvider):
-
     job_types = [
         'Big Data',
         'Cloud',
@@ -61,7 +71,6 @@ factory.Faker.add_provider(JobProvider)
 
 
 class JobCategoryFactory(DjangoModelFactory):
-
     class Meta:
         model = JobCategory
         django_get_or_create = ('name',)
@@ -70,7 +79,6 @@ class JobCategoryFactory(DjangoModelFactory):
 
 
 class JobTypeFactory(DjangoModelFactory):
-
     class Meta:
         model = JobType
         django_get_or_create = ('name',)
@@ -79,7 +87,6 @@ class JobTypeFactory(DjangoModelFactory):
 
 
 class JobFactory(DjangoModelFactory):
-
     class Meta:
         model = Job
 
@@ -158,7 +165,9 @@ def initial_data():
             ExpiredJobFactory(),
             RejectedJobFactory(),
             RemovedJobFactory(),
-        ] + ApprovedJobFactory.create_batch(size=5) + ReviewJobFactory.create_batch(size=3),
+        ]
+        + ApprovedJobFactory.create_batch(size=5)
+        + ReviewJobFactory.create_batch(size=3),
         'groups': [
             JobsBoardAdminGroupFactory(),
         ],

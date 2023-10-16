@@ -1,16 +1,21 @@
 import logging
-
-from datetime import timedelta
+from datetime import (
+    timedelta,
+)
 
 import requests
-from icalendar import Calendar as ICalendar
+from icalendar import (
+    Calendar as ICalendar,
+)
 
 from .models import (
     Event,
     EventLocation,
     OccurringRule,
 )
-from .utils import extract_date_or_datetime
+from .utils import (
+    extract_date_or_datetime,
+)
 
 DATE_RESOLUTION = timedelta(1)
 TIME_RESOLUTION = timedelta(0, 0, 1)
@@ -31,14 +36,14 @@ class ICSImporter:
 
         # Let's mark those occurrences as 'all-day'.
         all_day = (
-            dt_start.resolution == DATE_RESOLUTION or
-            dt_end.resolution == DATE_RESOLUTION
+            dt_start.resolution == DATE_RESOLUTION
+            or dt_end.resolution == DATE_RESOLUTION
         )
 
         defaults = {
             'dt_start': dt_start,
             'dt_end': dt_end - timedelta(days=1) if all_day else dt_end,
-            'all_day': all_day
+            'all_day': all_day,
         }
 
         OccurringRule.objects.update_or_create(event=event, defaults=defaults)
@@ -48,8 +53,7 @@ class ICSImporter:
         title = event_data['SUMMARY']
         description = event_data.get('DESCRIPTION', '')
         location, _ = EventLocation.objects.get_or_create(
-            calendar=self.calendar,
-            name=event_data['LOCATION']
+            calendar=self.calendar, name=event_data['LOCATION']
         )
         defaults = {
             'title': title,

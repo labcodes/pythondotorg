@@ -1,8 +1,10 @@
-from django.db import models, migrations
+from django.db import (
+    migrations,
+    models,
+)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('work_groups', '0001_initial'),
     ]
@@ -11,7 +13,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='workgroup',
             name='url',
-            field=models.URLField(help_text='Main URL for Group', verbose_name='URL', blank=True),
+            field=models.URLField(
+                help_text='Main URL for Group',
+                verbose_name='URL',
+                blank=True,
+            ),
             preserve_default=True,
         ),
     ]

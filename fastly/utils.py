@@ -1,6 +1,7 @@
 import requests
-
-from django.conf import settings
+from django.conf import (
+    settings,
+)
 
 
 def purge_url(path):

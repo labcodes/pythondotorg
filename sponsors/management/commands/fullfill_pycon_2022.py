@@ -1,12 +1,26 @@
-from calendar import timegm
-from datetime import datetime
-from hashlib import sha1
-from urllib.parse import urlencode
+from calendar import (
+    timegm,
+)
+from datetime import (
+    datetime,
+)
+from hashlib import (
+    sha1,
+)
+from urllib.parse import (
+    urlencode,
+)
 
 import requests
-from django.conf import settings
-from django.core.management import BaseCommand
-from requests.exceptions import RequestException
+from django.conf import (
+    settings,
+)
+from django.core.management import (
+    BaseCommand,
+)
+from requests.exceptions import (
+    RequestException,
+)
 
 from sponsors.models import (
     BenefitFeature,

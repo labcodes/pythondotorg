@@ -1,5 +1,9 @@
-from django.contrib import admin
-from django.db.models.functions import Lower
+from django.contrib import (
+    admin,
+)
+from django.db.models.functions import (
+    Lower,
+)
 
 from nominations.models import (
     Election,
@@ -27,7 +31,13 @@ class NomineeAdmin(admin.ModelAdmin):
 @admin.register(Nomination)
 class NominationAdmin(admin.ModelAdmin):
     raw_id_fields = ("nominee", "nominator")
-    list_display = ("__str__", "election", "accepted", "approved", "nominee")
+    list_display = (
+        "__str__",
+        "election",
+        "accepted",
+        "approved",
+        "nominee",
+    )
     list_filter = ("election", "accepted", "approved")
 
     def get_ordering(self, request):

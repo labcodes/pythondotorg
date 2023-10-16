@@ -1,11 +1,26 @@
-from django.contrib.postgres.fields import JSONField
-from django.db import models
-from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
-from markupfield.fields import MarkupField
+from django.contrib.postgres.fields import (
+    JSONField,
+)
+from django.db import (
+    models,
+)
+from django.urls import (
+    reverse,
+)
+from django.utils.translation import (
+    gettext_lazy as _,
+)
+from markupfield.fields import (
+    MarkupField,
+)
 
-from cms.models import ContentManageable
-from .managers import PostQuerySet
+from cms.models import (
+    ContentManageable,
+)
+
+from .managers import (
+    PostQuerySet,
+)
 
 DEFAULT_MARKUP_TYPE = 'html'
 
@@ -36,7 +51,9 @@ class Post(ContentManageable):
         (STATUS_PRIVATE, 'private'),
         (STATUS_PUBLIC, 'public'),
     )
-    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_PRIVATE, db_index=True)
+    status = models.IntegerField(
+        choices=STATUS_CHOICES, default=STATUS_PRIVATE, db_index=True
+    )
 
     objects = PostQuerySet.as_manager()
 
@@ -105,7 +122,10 @@ class Video(ContentManageable):
         on_delete=models.CASCADE,
     )
     video_embed = models.TextField(blank=True)
-    video_data = models.FileField(upload_to='community/videos/', blank=True, )
+    video_data = models.FileField(
+        upload_to='community/videos/',
+        blank=True,
+    )
     caption = models.TextField(blank=True)
     click_through_url = models.URLField('Click Through URL', blank=True)
 

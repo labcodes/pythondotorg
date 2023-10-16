@@ -2,15 +2,23 @@ import json
 import pathlib
 
 import factory
-from django.conf import settings
-from factory.django import DjangoModelFactory
+from django.conf import (
+    settings,
+)
+from factory.django import (
+    DjangoModelFactory,
+)
 
-from users.factories import UserFactory
-from .models import Box
+from users.factories import (
+    UserFactory,
+)
+
+from .models import (
+    Box,
+)
 
 
 class BoxFactory(DjangoModelFactory):
-
     class Meta:
         model = Box
         django_get_or_create = ('label',)

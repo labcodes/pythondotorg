@@ -1,9 +1,16 @@
 import datetime
 
-from django.test import TestCase
-from django.utils import timezone
+from django.test import (
+    TestCase,
+)
+from django.utils import (
+    timezone,
+)
 
-from pages.models import Page
+from pages.models import (
+    Page,
+)
+
 from ..models import (
     OS,
     Release,
@@ -12,7 +19,6 @@ from ..models import (
 
 
 class DownloadMixin:
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -22,7 +28,6 @@ class DownloadMixin:
 
 
 class BaseDownloadTests(DownloadMixin, TestCase):
-
     def setUp(self):
         self.release_275_page = Page.objects.create(
             title='Python 2.7.5 Release',
@@ -36,7 +41,7 @@ class BaseDownloadTests(DownloadMixin, TestCase):
             is_latest=True,
             is_published=True,
             release_page=self.release_275_page,
-            release_date=timezone.now() - datetime.timedelta(days=-1)
+            release_date=timezone.now() - datetime.timedelta(days=-1),
         )
         self.release_275_windows_32bit = ReleaseFile.objects.create(
             os=self.windows,
@@ -50,7 +55,7 @@ class BaseDownloadTests(DownloadMixin, TestCase):
             release=self.release_275,
             name='Windows X86-64 MSI Installer (2.7.5)',
             description='Windows AMD64 / Intel 64 / X86-64 binary -- does not include source',
-            url='ftp/python/2.7.5/python-2.7.5.amd64.msi'
+            url='ftp/python/2.7.5/python-2.7.5.amd64.msi',
         )
 
         self.release_275_osx = ReleaseFile.objects.create(
@@ -109,5 +114,5 @@ class BaseDownloadTests(DownloadMixin, TestCase):
             is_latest=True,
             is_published=True,
             show_on_download_page=True,
-            release_page=self.release_275_page
+            release_page=self.release_275_page,
         )

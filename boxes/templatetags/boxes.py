@@ -1,9 +1,15 @@
 import logging
 
-from django import template
-from django.utils.html import mark_safe
+from django import (
+    template,
+)
+from django.utils.html import (
+    mark_safe,
+)
 
-from ..models import Box
+from ..models import (
+    Box,
+)
 
 log = logging.getLogger(__name__)
 register = template.Library()
