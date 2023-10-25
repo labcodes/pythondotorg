@@ -1,1 +1,1 @@
-default_app_config = 'codesamples.apps.CodesamplesAppConfig'
+default_app_config = "codesamples.apps.CodesamplesAppConfig"

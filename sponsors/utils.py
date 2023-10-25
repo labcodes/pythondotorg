@@ -1,6 +1,10 @@
-from pathlib import Path
+from pathlib import (
+    Path,
+)
 
-from django.core.files.storage import default_storage
+from django.core.files.storage import (
+    default_storage,
+)
 
 
 def file_from_storage(filename, mode):

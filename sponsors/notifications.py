@@ -1,11 +1,47 @@
-from django.core.mail import EmailMessage
-from django.core.cache import cache
-from django.template.loader import render_to_string
-from django.conf import settings
-from django.contrib.admin.models import LogEntry, CHANGE, ADDITION
-from django.contrib.contenttypes.models import ContentType
+from django.conf import (
+    settings,
+)
+from django.contrib.admin.models import (
+    ADDITION,
+    CHANGE,
+    LogEntry,
+)
+from django.contrib.contenttypes.models import (
+    ContentType,
+)
+from django.core.cache import (
+    cache,
+)
+from django.core.mail import (
+    EmailMessage,
+)
+from django.template.loader import (
+    render_to_string,
+)
 
-from sponsors.models import Sponsorship, Contract, BenefitFeature
+from sponsors.models import (
+    BenefitFeature,
+)
+
+__all__ = (
+    "AppliedSponsorshipNotificationToPSF",
+    "AppliedSponsorshipNotificationToSponsors",
+    "AssetCloseToDueDateNotificationToSponsors",
+    "BaseEmailSponsorshipNotification",
+    "ClonedResourcesLogger",
+    "ContractNotificationToPSF",
+    "ContractNotificationToSponsors",
+    "ExecutedContractLogger",
+    "ExecutedExistingContractLogger",
+    "NullifiedContractLogger",
+    "RefreshSponsorshipsCache",
+    "RejectedSponsorshipNotificationToPSF",
+    "RejectedSponsorshipNotificationToSponsors",
+    "SendSponsorNotificationLogger",
+    "SentContractLogger",
+    "SponsorshipApprovalLogger",
+    "add_log_entry",
+)
 
 
 class BaseEmailSponsorshipNotification:
@@ -65,7 +101,9 @@ class AppliedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification)
 
     def get_email_context(self, **kwargs):
         context = super().get_email_context(**kwargs)
-        context["required_assets"] = BenefitFeature.objects.from_sponsorship(context["sponsorship"]).required_assets()
+        context["required_assets"] = BenefitFeature.objects.from_sponsorship(
+            context["sponsorship"]
+        ).required_assets()
         return context
 
 
@@ -132,43 +170,55 @@ def add_log_entry(request, object, acton_flag, message):
         object_id=object.pk,
         object_repr=str(object),
         action_flag=acton_flag,
-        change_message=message
+        change_message=message,
     )
 
 
 class SponsorshipApprovalLogger:
-
     def notify(self, request, sponsorship, contract, **kwargs):
         add_log_entry(request, sponsorship, CHANGE, "Sponsorship Approval")
-        add_log_entry(request, contract, ADDITION, "Created After Sponsorship Approval")
+        add_log_entry(
+            request,
+            contract,
+            ADDITION,
+            "Created After Sponsorship Approval",
+        )
 
 
 class SentContractLogger:
-
     def notify(self, request, contract, **kwargs):
         add_log_entry(request, contract, CHANGE, "Contract Sent")
 
 
 class ExecutedContractLogger:
-
     def notify(self, request, contract, **kwargs):
         add_log_entry(request, contract, CHANGE, "Contract Executed")
 
 
 class ExecutedExistingContractLogger:
-
     def notify(self, request, contract, **kwargs):
-        add_log_entry(request, contract, CHANGE, "Existing Contract Uploaded and Executed")
+        add_log_entry(
+            request,
+            contract,
+            CHANGE,
+            "Existing Contract Uploaded and Executed",
+        )
 
 
 class NullifiedContractLogger:
-
     def notify(self, request, contract, **kwargs):
         add_log_entry(request, contract, CHANGE, "Contract Nullified")
 
 
 class SendSponsorNotificationLogger:
-    def notify(self, notification, sponsorship, contact_types, request, **kwargs):
+    def notify(
+        self,
+        notification,
+        sponsorship,
+        contact_types,
+        request,
+        **kwargs,
+    ):
         contacts = ", ".join(contact_types)
         msg = f"Notification '{notification.internal_name}' was sent to contacts: {contacts}"
         add_log_entry(request, sponsorship, CHANGE, msg)
@@ -183,19 +233,25 @@ class RefreshSponsorshipsCache:
 class AssetCloseToDueDateNotificationToSponsors(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/sponsor_expiring_assets_subject.txt"
     message_template = "sponsors/email/sponsor_expiring_assets.txt"
-    email_context_keys = ["sponsorship", "required_assets", "due_date", "days"]
+    email_context_keys = [
+        "sponsorship",
+        "required_assets",
+        "due_date",
+        "days",
+    ]
 
     def get_recipient_list(self, context):
         return context["sponsorship"].verified_emails
 
     def get_email_context(self, **kwargs):
         context = super().get_email_context(**kwargs)
-        context["required_assets"] = BenefitFeature.objects.from_sponsorship(context["sponsorship"]).required_assets()
+        context["required_assets"] = BenefitFeature.objects.from_sponsorship(
+            context["sponsorship"]
+        ).required_assets()
         return context
 
 
 class ClonedResourcesLogger:
-
     def notify(self, request, resource, from_year, **kwargs):
         msg = f"Cloned from {from_year} sponsorship application config"
         add_log_entry(request, resource, ADDITION, msg)

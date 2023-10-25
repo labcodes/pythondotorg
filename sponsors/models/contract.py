@@ -2,18 +2,38 @@
 This module holds models related to the process to generate contracts
 """
 import uuid
-from itertools import chain
-from pathlib import Path
+from itertools import (
+    chain,
+)
+from pathlib import (
+    Path,
+)
 
-from django.db import models
-from django.urls import reverse
-from django.utils import timezone
-from markupfield.fields import MarkupField
-from ordered_model.models import OrderedModel
+from django.db import (
+    models,
+)
+from django.urls import (
+    reverse,
+)
+from django.utils import (
+    timezone,
+)
+from markupfield.fields import (
+    MarkupField,
+)
+from ordered_model.models import (
+    OrderedModel,
+)
 
-from sponsors.exceptions import InvalidStatusException
-from sponsors.utils import file_from_storage
-from sponsors.models.sponsorship import Sponsorship
+from sponsors.exceptions import (
+    InvalidStatusException,
+)
+from sponsors.models.sponsorship import (
+    Sponsorship,
+)
+from sponsors.utils import (
+    file_from_storage,
+)
 
 
 class LegalClause(OrderedModel):
@@ -33,7 +53,10 @@ class LegalClause(OrderedModel):
         blank=False,
     )
     notes = models.TextField(
-        verbose_name="Notes", help_text="PSF staff notes", blank=True, default=""
+        verbose_name="Notes",
+        help_text="PSF staff notes",
+        blank=True,
+        default="",
     )
 
     def __str__(self):
@@ -85,7 +108,10 @@ class Contract(models.Model):
     SIGNED_PDF_DIR = FINAL_VERSION_PDF_DIR + "signed/"
 
     status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default=DRAFT, db_index=True
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=DRAFT,
+        db_index=True,
     )
     revision = models.PositiveIntegerField(default=0, verbose_name="Revision nº")
     document = models.FileField(

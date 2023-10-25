@@ -1,6 +1,7 @@
-from django.apps import AppConfig
+from django.apps import (
+    AppConfig,
+)
 
 
 class SponsorsAppConfig(AppConfig):
-
-    name = 'sponsors'
+    name = "sponsors"

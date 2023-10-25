@@ -1,9 +1,20 @@
 import waffle
-
-from django.contrib.auth.mixins import AccessMixin, LoginRequiredMixin as DjangoLoginRequiredMixin
-from django.contrib.auth.views import redirect_to_login
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from django.http import Http404
+from django.contrib.auth.mixins import (
+    AccessMixin,
+)
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin as DjangoLoginRequiredMixin,
+)
+from django.contrib.auth.views import (
+    redirect_to_login,
+)
+from django.core.exceptions import (
+    ImproperlyConfigured,
+    PermissionDenied,
+)
+from django.http import (
+    Http404,
+)
 
 
 class FlagMixin:
@@ -34,8 +45,10 @@ class LoginRequiredMixin(DjangoLoginRequiredMixin):
             self.get_redirect_field_name(),
         )
         if self.raise_exception:
-            if (self.redirect_unauthenticated_users and not
-                    self.request.user.is_authenticated):
+            if (
+                self.redirect_unauthenticated_users
+                and not self.request.user.is_authenticated
+            ):
                 return response
             raise PermissionDenied(self.get_permission_denied_message())
         return response
@@ -46,11 +59,11 @@ class GroupRequiredMixin(AccessMixin):
 
     def get_group_required(self):
         if self.group_required is None or (
-                not isinstance(self.group_required, (str, list, tuple))
+            not isinstance(self.group_required, (str, list, tuple))
         ):
             msg = (
                 '{} requires the "group_required" attribute to be set and be '
-                'one of the following types: string, list or tuple'
+                "one of the following types: string, list or tuple"
             )
             raise ImproperlyConfigured(msg.format(type(self).__name__))
         if not isinstance(self.group_required, (list, tuple)):
@@ -62,7 +75,7 @@ class GroupRequiredMixin(AccessMixin):
             return False
         if self.request.user.is_superuser:
             return True
-        user_groups = self.request.user.groups.values_list('name', flat=True)
+        user_groups = self.request.user.groups.values_list("name", flat=True)
         return set(group).intersection(set(user_groups))
 
     def dispatch(self, request, *args, **kwargs):

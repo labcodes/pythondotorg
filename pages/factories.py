@@ -1,26 +1,32 @@
 import factory
+from django.template.defaultfilters import (
+    slugify,
+)
+from factory.django import (
+    DjangoModelFactory,
+)
 
-from django.template.defaultfilters import slugify
-from factory.django import DjangoModelFactory
+from users.factories import (
+    UserFactory,
+)
 
-from users.factories import UserFactory
-
-from .models import Page
+from .models import (
+    Page,
+)
 
 
 class PageFactory(DjangoModelFactory):
-
     class Meta:
         model = Page
-        django_get_or_create = ('path',)
+        django_get_or_create = ("path",)
 
-    title = factory.Faker('sentence', nb_words=5)
+    title = factory.Faker("sentence", nb_words=5)
     path = factory.LazyAttribute(lambda o: slugify(o.title))
-    content = factory.Faker('paragraph', nb_sentences=5)
+    content = factory.Faker("paragraph", nb_sentences=5)
     creator = factory.SubFactory(UserFactory)
 
 
 def initial_data():
     return {
-        'pages': PageFactory.create_batch(size=50),
+        "pages": PageFactory.create_batch(size=50),
     }

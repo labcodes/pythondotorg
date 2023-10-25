@@ -1,1 +1,1 @@
-default_app_config = 'sponsors.apps.SponsorsAppConfig'
+default_app_config = "sponsors.apps.SponsorsAppConfig"

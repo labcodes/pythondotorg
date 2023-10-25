@@ -1,33 +1,58 @@
 import datetime
-from itertools import chain
-from django import forms
-from django.conf import settings
-from django.contrib.admin.widgets import AdminDateWidget
-from django.db.models import Q
-from django.utils import timezone
-from django.utils.functional import cached_property
-from django.utils.safestring import mark_safe
-from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as _
-from django_countries.fields import CountryField
+from itertools import (
+    chain,
+)
+
+from django import (
+    forms,
+)
+from django.conf import (
+    settings,
+)
+from django.contrib.admin.widgets import (
+    AdminDateWidget,
+)
+from django.db.models import (
+    Q,
+)
+from django.utils import (
+    timezone,
+)
+from django.utils.functional import (
+    cached_property,
+)
+from django.utils.safestring import (
+    mark_safe,
+)
+from django.utils.text import (
+    slugify,
+)
+from django.utils.translation import (
+    gettext_lazy as _,
+)
+from django_countries.fields import (
+    CountryField,
+)
 
 from sponsors.models import (
+    SPONSOR_TEMPLATE_HELP_TEXT,
+    BenefitFeature,
+    RequiredImgAssetConfiguration,
+    Sponsor,
+    SponsorBenefit,
+    SponsorContact,
+    SponsorEmailNotificationTemplate,
+    Sponsorship,
     SponsorshipBenefit,
+    SponsorshipCurrentYear,
     SponsorshipPackage,
     SponsorshipProgram,
-    Sponsor,
-    SponsorContact,
-    Sponsorship,
-    SponsorBenefit,
-    SponsorEmailNotificationTemplate,
-    RequiredImgAssetConfiguration,
-    BenefitFeature,
-    SPONSOR_TEMPLATE_HELP_TEXT, SponsorshipCurrentYear,
 )
 
-SPONSORSHIP_YEAR_SELECT = forms.Select(
-    choices=(((None, '---'),) + tuple(((y, str(y)) for y in range(2021, datetime.date.today().year + 2))))
+SELECTABLE_DATES = tuple(
+    ((y, str(y)) for y in range(2021, datetime.date.today().year + 2))
 )
+SPONSORSHIP_YEAR_SELECT = forms.Select(choices=(((None, "---"),) + SELECTABLE_DATES))
 
 
 class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
@@ -40,7 +65,14 @@ class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
 class SponsorContactForm(forms.ModelForm):
     class Meta:
         model = SponsorContact
-        fields = ["name", "email", "phone", "primary", "administrative", "accounting"]
+        fields = [
+            "name",
+            "email",
+            "phone",
+            "primary",
+            "administrative",
+            "accounting",
+        ]
 
 
 SponsorContactFormSet = forms.formset_factory(
@@ -71,15 +103,21 @@ class SponsorshipsBenefitsForm(forms.Form):
         )
         self.fields["a_la_carte_benefits"] = PickSponsorshipBenefitsField(
             required=False,
-            queryset=SponsorshipBenefit.objects.from_year(year).a_la_carte().select_related("program"),
+            queryset=SponsorshipBenefit.objects.from_year(year)
+            .a_la_carte()
+            .select_related("program"),
         )
         self.fields["standalone_benefits"] = PickSponsorshipBenefitsField(
             required=False,
-            queryset=SponsorshipBenefit.objects.from_year(year).standalone().select_related("program"),
+            queryset=SponsorshipBenefit.objects.from_year(year)
+            .standalone()
+            .select_related("program"),
         )
 
-        benefits_qs = SponsorshipBenefit.objects.from_year(year).with_packages().select_related(
-            "program"
+        benefits_qs = (
+            SponsorshipBenefit.objects.from_year(year)
+            .with_packages()
+            .select_related("program")
         )
 
         for program in SponsorshipProgram.objects.all():
@@ -106,7 +144,12 @@ class SponsorshipsBenefitsForm(forms.Form):
                 conflicts[benefit.id] = list(benefits_conflicts)
         return conflicts
 
-    def get_benefits(self, cleaned_data=None, include_a_la_carte=False, include_standalone=False):
+    def get_benefits(
+        self,
+        cleaned_data=None,
+        include_a_la_carte=False,
+        include_standalone=False,
+    ):
         cleaned_data = cleaned_data or self.cleaned_data
         benefits = list(
             chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs))
@@ -127,7 +170,10 @@ class SponsorshipsBenefitsForm(forms.Form):
         if not pkg_benefits and standalone:  # standalone only
             pkg, _ = SponsorshipPackage.objects.get_or_create(
                 slug="standalone-only",
-                defaults={"name": "Standalone Only", "sponsorship_amount": 0},
+                defaults={
+                    "name": "Standalone Only",
+                    "sponsorship_amount": 0,
+                },
             )
 
         return pkg
@@ -173,13 +219,15 @@ class SponsorshipsBenefitsForm(forms.Form):
                 if not package:
                     raise forms.ValidationError(
                         _(
-                            "The application has 1 or more package only benefits and no sponsor package."
+                            "The application has 1 or more package "
+                            "only benefits and no sponsor package."
                         )
                     )
                 elif not benefit.packages.filter(id=package.id).exists():
                     raise forms.ValidationError(
                         _(
-                            "The application has 1 or more package only benefits but wrong sponsor package."
+                            "The application has 1 or more package only "
+                            "benefits but wrong sponsor package."
                         )
                     )
 
@@ -221,7 +269,11 @@ class SponsorshipApplicationForm(forms.Form):
     )
     web_logo = forms.ImageField(
         label="Sponsor web logo",
-        help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
+        help_text=(
+            "For display on our sponsor webpage. "
+            "High resolution PNG or JPG, smallest "
+            "dimension no less than 256px",
+        ),
         required=False,
     )
     print_logo = forms.ImageField(
@@ -390,24 +442,36 @@ class SponsorshipApplicationForm(forms.Form):
 class SponsorshipReviewAdminForm(forms.ModelForm):
     start_date = forms.DateField(widget=AdminDateWidget(), required=False)
     end_date = forms.DateField(widget=AdminDateWidget(), required=False)
-    overlapped_by = forms.ModelChoiceField(queryset=Sponsorship.objects.select_related("sponsor", "package"), required=False)
+    overlapped_by = forms.ModelChoiceField(
+        queryset=Sponsorship.objects.select_related("sponsor", "package"),
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         force_required = kwargs.pop("force_required", False)
         super().__init__(*args, **kwargs)
         if self.instance:
             qs = self.fields["overlapped_by"].queryset.exclude(id=self.instance.id)
-            self.fields["overlapped_by"].queryset = qs.filter(sponsor_id=self.instance.sponsor_id)
+            self.fields["overlapped_by"].queryset = qs.filter(
+                sponsor_id=self.instance.sponsor_id
+            )
         if force_required:
-            self.fields.pop("overlapped_by")  # overlapped should never be displayed on approval
+            self.fields.pop(
+                "overlapped_by"
+            )  # overlapped should never be displayed on approval
             for field_name in self.fields:
                 self.fields[field_name].required = True
 
     class Meta:
         model = Sponsorship
-        fields = ["start_date", "end_date", "package", "sponsorship_fee"]
+        fields = [
+            "start_date",
+            "end_date",
+            "package",
+            "sponsorship_fee",
+        ]
         widgets = {
-            'year': SPONSORSHIP_YEAR_SELECT,
+            "year": SPONSORSHIP_YEAR_SELECT,
         }
 
     def clean(self):
@@ -425,12 +489,17 @@ class SignedSponsorshipReviewAdminForm(SponsorshipReviewAdminForm):
     """
     Form to approve sponsorships that already have a signed contract
     """
-    signed_contract = forms.FileField(help_text="Please upload the final version of the signed contract.")
+
+    signed_contract = forms.FileField(
+        help_text="Please upload the final version of the signed contract."
+    )
 
 
 class SponsorBenefitAdminInlineForm(forms.ModelForm):
     sponsorship_benefit = forms.ModelChoiceField(
-        queryset=SponsorshipBenefit.objects.order_by('program', 'order').select_related("program"),
+        queryset=SponsorshipBenefit.objects.order_by("program", "order").select_related(
+            "program"
+        ),
         required=False,
     )
 
@@ -439,7 +508,11 @@ class SponsorBenefitAdminInlineForm(forms.ModelForm):
 
     class Meta:
         model = SponsorBenefit
-        fields = ["sponsorship_benefit", "sponsorship", "benefit_internal_value"]
+        fields = [
+            "sponsorship_benefit",
+            "sponsorship",
+            "benefit_internal_value",
+        ]
 
     def save(self, commit=True):
         sponsorship = self.cleaned_data["sponsorship"]
@@ -461,7 +534,9 @@ class SponsorBenefitAdminInlineForm(forms.ModelForm):
             self.instance.name = benefit.name
             self.instance.description = benefit.description
             self.instance.program = benefit.program
-            self.instance.added_by_user = self.instance.added_by_user or benefit.standalone
+            self.instance.added_by_user = (
+                self.instance.added_by_user or benefit.standalone
+            )
             self.instance.standalone = benefit.standalone
 
         if commit:
@@ -525,9 +600,13 @@ class SendSponsorshipNotificationForm(forms.Form):
         custom_notification = subject or content
 
         if not (notification or custom_notification):
-            raise forms.ValidationError("Can not send email without notification or custom content")
+            raise forms.ValidationError(
+                "Can not send email without notification or custom content"
+            )
         if notification and custom_notification:
-            raise forms.ValidationError("You must select a notification or use custom content, not both")
+            raise forms.ValidationError(
+                "You must select a notification or use custom content, not both"
+            )
 
         return cleaned_data
 
@@ -546,7 +625,10 @@ class SponsorUpdateForm(forms.ModelForm):
 
     web_logo = forms.ImageField(
         widget=forms.widgets.FileInput,
-        help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
+        help_text=(
+            "For display on our sponsor webpage. High resolution "
+            "PNG or JPG, smallest dimension no less than 256px"
+        ),
         required=False,
     )
     print_logo = forms.ImageField(
@@ -557,7 +639,10 @@ class SponsorUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        formset_kwargs = {"prefix": "contact", "instance": self.instance}
+        formset_kwargs = {
+            "prefix": "contact",
+            "instance": self.instance,
+        }
         factory = forms.inlineformset_factory(
             Sponsor,
             SponsorContact,
@@ -575,10 +660,15 @@ class SponsorUpdateForm(forms.ModelForm):
             self.contacts_formset = factory(**formset_kwargs)
         # display fields as read-only
         for disabled in self.READONLY_FIELDS:
-            self.fields[disabled].widget.attrs['readonly'] = True
+            self.fields[disabled].widget.attrs["readonly"] = True
 
     class Meta:
-        exclude = ["created", "updated", "creator", "last_modified_by"]
+        exclude = [
+            "created",
+            "updated",
+            "creator",
+            "last_modified_by",
+        ]
         model = Sponsor
 
     def clean(self):
@@ -603,7 +693,6 @@ class SponsorUpdateForm(forms.ModelForm):
 
 
 class RequiredImgAssetConfigurationForm(forms.ModelForm):
-
     def clean(self):
         data = super().clean()
 
@@ -639,14 +728,21 @@ class SponsorRequiredAssetsForm(forms.Form):
             msg = "Form must be initialized with a sponsorship passed by the instance parameter"
             raise TypeError(msg)
         super().__init__(*args, **kwargs)
-        self.required_assets = BenefitFeature.objects.required_assets().from_sponsorship(self.sponsorship)
+        self.required_assets = (
+            BenefitFeature.objects.required_assets().from_sponsorship(self.sponsorship)
+        )
         if required_assets_ids:
-            self.required_assets = self.required_assets.filter(pk__in=required_assets_ids)
+            self.required_assets = self.required_assets.filter(
+                pk__in=required_assets_ids
+            )
 
         fields = {}
         ordered_assets = sorted(
             self.required_assets,
-            key=lambda x: (-int(bool(x.value)), x.due_date if x.due_date else datetime.date.min),
+            key=lambda x: (
+                -int(bool(x.value)),
+                x.due_date if x.due_date else datetime.date.min,
+            ),
             reverse=True,
         )
 
@@ -657,9 +753,14 @@ class SponsorRequiredAssetsForm(forms.Form):
             field = required_asset.as_form_field(required=required, initial=value)
 
             if required_asset.due_date and not bool(value):
-                field.label = mark_safe(f"<big><b>{field.label}</b></big><br><b>(Required by {required_asset.due_date})</b>")
+                field.label = mark_safe(
+                    f"<big><b>{field.label}</b></big><br><b>"
+                    f"(Required by {required_asset.due_date})</b>"
+                )
             if bool(value):
-                field.label = mark_safe(f"<big><b>{field.label}</b></big><br><small>(Fulfilled, thank you!)</small>")
+                field.label = mark_safe(
+                    f"<big><b>{field.label}</b></big><br><small>(Fulfilled, thank you!)</small>"
+                )
 
             fields[f_name] = field
 
@@ -686,11 +787,10 @@ class SponsorRequiredAssetsForm(forms.Form):
 
 
 class SponsorshipBenefitAdminForm(forms.ModelForm):
-
     class Meta:
         model = SponsorshipBenefit
         widgets = {
-            'year': SPONSORSHIP_YEAR_SELECT,
+            "year": SPONSORSHIP_YEAR_SELECT,
         }
         fields = "__all__"
 
@@ -711,18 +811,26 @@ class CloneApplicationConfigForm(forms.Form):
     from_year = forms.ChoiceField(
         required=True,
         help_text="From which year you want to clone the benefits and packages.",
-        choices=[]
+        choices=[],
     )
     target_year = forms.IntegerField(
         required=True,
-        help_text="The year of the resulting new sponsorship application configuration."
+        help_text="The year of the resulting new sponsorship application configuration.",
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        benefits_years = list(SponsorshipBenefit.objects.values_list("year", flat=True).distinct())
-        packages_years = list(SponsorshipPackage.objects.values_list("year", flat=True).distinct())
-        choices = [(y, y) for y in sorted(set(benefits_years + packages_years), reverse=True) if y]
+        benefits_years = list(
+            SponsorshipBenefit.objects.values_list("year", flat=True).distinct()
+        )
+        packages_years = list(
+            SponsorshipPackage.objects.values_list("year", flat=True).distinct()
+        )
+        choices = [
+            (y, y)
+            for y in sorted(set(benefits_years + packages_years), reverse=True)
+            if y
+        ]
         self.fields["from_year"].choices = choices
 
     @property
@@ -744,8 +852,12 @@ class CloneApplicationConfigForm(forms.Form):
 
         if from_year and target_year:
             if target_year < from_year:
-                raise forms.ValidationError("The target year must be greater the one used as source.")
+                raise forms.ValidationError(
+                    "The target year must be greater the one used as source."
+                )
             elif target_year in self.configured_years:
-                raise forms.ValidationError(f"The year {target_year} already have a valid confguration.")
+                raise forms.ValidationError(
+                    f"The year {target_year} already have a valid confguration."
+                )
 
         return self.cleaned_data

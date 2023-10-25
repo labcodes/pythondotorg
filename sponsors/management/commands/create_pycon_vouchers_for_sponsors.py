@@ -1,21 +1,36 @@
 import os
-from hashlib import sha1
-from calendar import timegm
-from datetime import datetime
 import sys
-from urllib.parse import urlencode
+from calendar import (
+    timegm,
+)
+from datetime import (
+    datetime,
+)
+from hashlib import (
+    sha1,
+)
+from urllib.parse import (
+    urlencode,
+)
 
 import requests
-from requests.exceptions import RequestException
-
-from django.db.models import Q
-from django.conf import settings
-from django.core.management import BaseCommand
+from django.conf import (
+    settings,
+)
+from django.core.management import (
+    BaseCommand,
+)
+from django.db.models import (
+    Q,
+)
+from requests.exceptions import (
+    RequestException,
+)
 
 from sponsors.models import (
-    SponsorBenefit,
     BenefitFeature,
     ProvidedTextAsset,
+    SponsorBenefit,
     TieredBenefit,
 )
 

@@ -1,11 +1,23 @@
 import datetime
 
-from django.contrib.auth import get_user_model
-from django.test import TestCase
-from django.utils import timezone
+from django.contrib.auth import (
+    get_user_model,
+)
+from django.test import (
+    TestCase,
+)
+from django.utils import (
+    timezone,
+)
 
-from ..factories import UserFactory, MembershipFactory
-from ..models import Membership, UserGroup
+from ..factories import (
+    MembershipFactory,
+    UserFactory,
+)
+from ..models import (
+    Membership,
+    UserGroup,
+)
 
 User = get_user_model()
 
@@ -13,9 +25,9 @@ User = get_user_model()
 class UsersModelsTestCase(TestCase):
     def test_create_superuser(self):
         user = User.objects.create_superuser(
-            username='username',
-            password='password',
-            email='user@domain.com'
+            username="username",
+            password="password",
+            email="user@domain.com",
         )
         self.assertNotEqual(user, None)
         self.assertTrue(user.is_active)
@@ -23,8 +35,8 @@ class UsersModelsTestCase(TestCase):
         self.assertTrue(user.is_staff)
 
         kwargs = {
-            'username': '',
-            'password': 'password',
+            "username": "",
+            "password": "password",
         }
         self.assertRaises(ValueError, User.objects.create_user, **kwargs)
 
@@ -58,14 +70,14 @@ class UsersModelsTestCase(TestCase):
 class UserGroupsModelsTestCase(TestCase):
     def test_create_usergroup(self):
         group = UserGroup.objects.create(
-            name='PLUG',
-            location='London, UK',
-            url='http://meetup.com/plug',
+            name="PLUG",
+            location="London, UK",
+            url="http://meetup.com/plug",
             url_type=UserGroup.TYPE_MEETUP,
         )
-        self.assertEqual(group.name, 'PLUG')
-        self.assertEqual(group.location, 'London, UK')
-        self.assertEqual(group.url, 'http://meetup.com/plug')
+        self.assertEqual(group.name, "PLUG")
+        self.assertEqual(group.location, "London, UK")
+        self.assertEqual(group.url, "http://meetup.com/plug")
         self.assertEqual(group.url_type, UserGroup.TYPE_MEETUP)
         self.assertIsNone(group.start_date)
         self.assertFalse(group.approved)

@@ -1,22 +1,36 @@
-import re
 import os
-
-from contextlib import ExitStack
-from tarfile import TarFile
-from tempfile import TemporaryDirectory, TemporaryFile
-
-import requests
-
-from django.core.management import BaseCommand
-from django.conf import settings
-
-from dateutil.parser import parse as parsedate
-
-from peps.converters import (
-    get_pep0_page, get_pep_page, add_pep_image, get_peps_rss, get_peps_last_updated
+import re
+from contextlib import (
+    ExitStack,
+)
+from tarfile import (
+    TarFile,
+)
+from tempfile import (
+    TemporaryDirectory,
+    TemporaryFile,
 )
 
-pep_number_re = re.compile(r'pep-(\d+)')
+import requests
+from dateutil.parser import (
+    parse as parsedate,
+)
+from django.conf import (
+    settings,
+)
+from django.core.management import (
+    BaseCommand,
+)
+
+from peps.converters import (
+    add_pep_image,
+    get_pep0_page,
+    get_pep_page,
+    get_peps_last_updated,
+    get_peps_rss,
+)
+
+pep_number_re = re.compile(r"pep-(\d+)")
 
 
 class Command(BaseCommand):
@@ -31,20 +45,21 @@ class Command(BaseCommand):
 
         ./manage.py generate_pep_pages --verbosity=2
     """
+
     help = "Generate PEP Page objects from rendered HTML"
 
     def is_pep_page(self, path):
-        return path.startswith('pep-') and path.endswith('.html')
+        return path.startswith("pep-") and path.endswith(".html")
 
     def is_image(self, path):
         # All images are pngs
-        return path.endswith('.png')
+        return path.endswith(".png")
 
     def handle(self, **options):
-        verbosity = int(options['verbosity'])
+        verbosity = int(options["verbosity"])
 
         def verbose(msg):
-            """ Output wrapper """
+            """Output wrapper"""
             if verbosity > 1:
                 print(msg)
 
@@ -60,10 +75,12 @@ class Command(BaseCommand):
                     verbose("== No update to artifacts, we're done here!")
                     return
                 temp_dir = stack.enter_context(TemporaryDirectory())
-                tar_ball = stack.enter_context(TarFile.open(fileobj=temp_file, mode='r:gz'))
+                tar_ball = stack.enter_context(
+                    TarFile.open(fileobj=temp_file, mode="r:gz")
+                )
                 tar_ball.extractall(path=temp_dir, numeric_owner=False)
 
-                artifacts_path = os.path.join(temp_dir, 'peps')
+                artifacts_path = os.path.join(temp_dir, "peps")
 
             verbose("Generating RSS Feed")
             peps_rss = get_peps_rss(artifacts_path)
@@ -80,7 +97,6 @@ class Command(BaseCommand):
 
             # Find pep pages
             for f in os.listdir(artifacts_path):
-
                 if self.is_image(f):
                     verbose(f"- Deferring import of image '{f}'")
                     image_paths.add(f)
@@ -91,7 +107,7 @@ class Command(BaseCommand):
                     verbose(f"- Skipping non-PEP file '{f}'")
                     continue
 
-                if 'pep-0000.html' in f:
+                if "pep-0000.html" in f:
                     verbose("- Skipping duplicate PEP0 index")
                     continue
 
@@ -115,8 +131,9 @@ class Command(BaseCommand):
                 pep_match = pep_number_re.match(img)
                 if pep_match:
                     pep_number = pep_match.groups(1)[0]
-                    verbose("Generating image for PEP {} at '{}'".format(
-                        pep_number, img))
+                    verbose(
+                        "Generating image for PEP {} at '{}'".format(pep_number, img)
+                    )
                     add_pep_image(artifacts_path, pep_number, img)
                 else:
                     verbose(f"- Skipping non-PEP related image '{img}'")
@@ -125,12 +142,12 @@ class Command(BaseCommand):
 
     def get_artifact_tarball(self, stack):
         artifact_url = settings.PEP_ARTIFACT_URL
-        if not artifact_url.startswith(('http://', 'https://')):
-            return stack.enter_context(open(artifact_url, 'rb'))
+        if not artifact_url.startswith(("http://", "https://")):
+            return stack.enter_context(open(artifact_url, "rb"))
 
         peps_last_updated = get_peps_last_updated()
         with requests.get(artifact_url, stream=True) as r:
-            artifact_last_modified = parsedate(r.headers['last-modified'])
+            artifact_last_modified = parsedate(r.headers["last-modified"])
             if peps_last_updated > artifact_last_modified:
                 return
 

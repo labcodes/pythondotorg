@@ -1,10 +1,13 @@
-from django.test import TestCase
+from django.test import (
+    TestCase,
+)
 
-from mailing.forms import BaseEmailTemplateForm
+from mailing.forms import (
+    BaseEmailTemplateForm,
+)
 
 
 class BaseEmailTemplateFormTests(TestCase):
-
     def setUp(self):
         self.data = {
             "content": "Hi, {{ name }}\n\nThis is a message to you.",

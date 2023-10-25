@@ -1,15 +1,28 @@
-from unittest.mock import Mock
+from unittest.mock import (
+    Mock,
+)
 
-from django.contrib.admin.views.main import ChangeList
-from model_bakery import baker
+from django.contrib.admin.views.main import (
+    ChangeList,
+)
+from django.test import (
+    RequestFactory,
+    TestCase,
+)
+from model_bakery import (
+    baker,
+)
 
-from django.test import TestCase, RequestFactory
+from sponsors.admin import (
+    SponsorshipAdmin,
+    SponsorshipStatusListFilter,
+)
+from sponsors.models import (
+    Sponsorship,
+)
 
-from sponsors.admin import SponsorshipStatusListFilter, SponsorshipAdmin
-from sponsors.models import Sponsorship
 
 class TestCustomSponsorshipStatusListFilter(TestCase):
-
     def setUp(self):
         self.request = RequestFactory().get("/")
         self.model_admin = SponsorshipAdmin
@@ -17,7 +30,7 @@ class TestCustomSponsorshipStatusListFilter(TestCase):
             request=self.request,
             params={},
             model=Sponsorship,
-            model_admin=self.model_admin
+            model_admin=self.model_admin,
         )
 
     def test_basic_configuration(self):
@@ -32,15 +45,34 @@ class TestCustomSponsorshipStatusListFilter(TestCase):
             ("approved", "Approved"),
             ("finalized", "Finalized"),
         ]
-        self.assertEqual(expected, self.filter.lookups(self.request, self.model_admin))
+        self.assertEqual(
+            expected,
+            self.filter.lookups(self.request, self.model_admin),
+        )
 
     def test_filter_queryset(self):
         sponsor = baker.make("sponsors.Sponsor")
         sponsorships = [
-            baker.make(Sponsorship, status=Sponsorship.REJECTED, sponsor=sponsor),
-            baker.make(Sponsorship, status=Sponsorship.APPLIED, sponsor=sponsor),
-            baker.make(Sponsorship, status=Sponsorship.APPROVED, sponsor=sponsor),
-            baker.make(Sponsorship, status=Sponsorship.FINALIZED, sponsor=sponsor),
+            baker.make(
+                Sponsorship,
+                status=Sponsorship.REJECTED,
+                sponsor=sponsor,
+            ),
+            baker.make(
+                Sponsorship,
+                status=Sponsorship.APPLIED,
+                sponsor=sponsor,
+            ),
+            baker.make(
+                Sponsorship,
+                status=Sponsorship.APPROVED,
+                sponsor=sponsor,
+            ),
+            baker.make(
+                Sponsorship,
+                status=Sponsorship.FINALIZED,
+                sponsor=sponsor,
+            ),
         ]
 
         # filter by applied, approved and finalized status by default

@@ -1,7 +1,16 @@
-from django.core.mail import EmailMessage
-from django.db import models
-from django.template import Template, Context
-from django.urls import reverse
+from django.core.mail import (
+    EmailMessage,
+)
+from django.db import (
+    models,
+)
+from django.template import (
+    Context,
+    Template,
+)
+from django.urls import (
+    reverse,
+)
 
 
 class BaseEmailTemplate(models.Model):

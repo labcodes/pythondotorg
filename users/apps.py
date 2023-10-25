@@ -1,10 +1,11 @@
-from django.apps import AppConfig
+from django.apps import (
+    AppConfig,
+)
 
 
 class UsersAppConfig(AppConfig):
-
-    name = 'users'
-    verbose_name = 'Users'
+    name = "users"
+    verbose_name = "Users"
 
     def ready(self):
-        import users.listeners
+        import users.listeners  # noqa: F401

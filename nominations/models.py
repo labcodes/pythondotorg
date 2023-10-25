@@ -1,15 +1,30 @@
 import datetime
 
-from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.urls import reverse
-from django.utils.text import slugify
+from django.db import (
+    models,
+)
+from django.db.models.signals import (
+    post_save,
+)
+from django.dispatch import (
+    receiver,
+)
+from django.urls import (
+    reverse,
+)
+from django.utils.text import (
+    slugify,
+)
+from markupfield.fields import (
+    MarkupField,
+)
 
-from fastly.utils import purge_url
-from markupfield.fields import MarkupField
-
-from users.models import User
+from fastly.utils import (
+    purge_url,
+)
+from users.models import (
+    User,
+)
 
 
 class Election(models.Model):
@@ -24,7 +39,10 @@ class Election(models.Model):
     nominations_open_at = models.DateTimeField(blank=True, null=True)
     nominations_close_at = models.DateTimeField(blank=True, null=True)
     description = MarkupField(
-        escape_html=False, markup_type="markdown", blank=False, null=True
+        escape_html=False,
+        markup_type="markdown",
+        blank=False,
+        null=True,
     )
 
     slug = models.SlugField(max_length=255, blank=True, null=True)
@@ -51,9 +69,14 @@ class Election(models.Model):
 
     @property
     def status(self):
-        if self.nominations_open_at is not None and self.nominations_close_at is not None:
+        if (
+            self.nominations_open_at is not None
+            and self.nominations_close_at is not None
+        ):
             if not self.nominations_open:
-                if self.nominations_open_at > datetime.datetime.now(datetime.timezone.utc):
+                if self.nominations_open_at > datetime.datetime.now(
+                    datetime.timezone.utc
+                ):
                     return "Nominations Not Yet Open"
 
                 return "Nominations Closed"
@@ -95,7 +118,10 @@ class Nominee(models.Model):
     def get_absolute_url(self):
         return reverse(
             "nominations:nominee_detail",
-            kwargs={"election": self.election.slug, "slug": self.slug},
+            kwargs={
+                "election": self.election.slug,
+                "slug": self.slug,
+            },
         )
 
     @property
@@ -179,11 +205,16 @@ class Nomination(models.Model):
     employer = models.CharField(max_length=1024, blank=False, null=True)
     other_affiliations = models.CharField(max_length=2048, blank=True, null=True)
     nomination_statement = MarkupField(
-        escape_html=True, markup_type="markdown", blank=False, null=True
+        escape_html=True,
+        markup_type="markdown",
+        blank=False,
+        null=True,
     )
 
     nominator = models.ForeignKey(
-        User, related_name="nominations_made", on_delete=models.CASCADE
+        User,
+        related_name="nominations_made",
+        on_delete=models.CASCADE,
     )
     nominee = models.ForeignKey(
         Nominee,
@@ -252,7 +283,7 @@ class Nomination(models.Model):
 
 @receiver(post_save, sender=Nomination)
 def purge_nomination_pages(sender, instance, created, **kwargs):
-    """ Purge pages that contain the rendered markup """
+    """Purge pages that contain the rendered markup"""
     # Skip in fixtures
     if kwargs.get("raw", False):
         return
@@ -268,6 +299,7 @@ def purge_nomination_pages(sender, instance, created, **kwargs):
         # Purge the election page
         purge_url(
             reverse(
-                "nominations:nominees_list", kwargs={"election": instance.election.slug}
+                "nominations:nominees_list",
+                kwargs={"election": instance.election.slug},
             )
         )

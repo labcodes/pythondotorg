@@ -1,4 +1,6 @@
-from django.db.models.query import QuerySet
+from django.db.models.query import (
+    QuerySet,
+)
 
 
 class MinutesQuerySet(QuerySet):
@@ -9,4 +11,4 @@ class MinutesQuerySet(QuerySet):
         return self.filter(is_published=True)
 
     def latest(self):
-        return self.published().order_by('-date')
+        return self.published().order_by("-date")

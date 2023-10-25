@@ -1,16 +1,30 @@
 import os
 import posixpath
 import re
+from urllib.parse import (
+    unquote,
+    urldefrag,
+)
 
-from urllib.parse import unquote, urldefrag
-
-from django.conf import settings
-from django.contrib.staticfiles.storage import ManifestFilesMixin, StaticFilesStorage
-from django.contrib.staticfiles.utils import matches_patterns
-from django.core.files.base import ContentFile
-
-from pipeline.storage import PipelineMixin
-from storages.backends.s3boto3 import S3Boto3Storage
+from django.conf import (
+    settings,
+)
+from django.contrib.staticfiles.storage import (
+    ManifestFilesMixin,
+    StaticFilesStorage,
+)
+from django.contrib.staticfiles.utils import (
+    matches_patterns,
+)
+from django.core.files.base import (
+    ContentFile,
+)
+from pipeline.storage import (
+    PipelineMixin,
+)
+from storages.backends.s3boto3 import (
+    S3Boto3Storage,
+)
 
 
 class MediaStorage(S3Boto3Storage):
@@ -29,7 +43,7 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
         """
         return [
             (match.start(), match.end())
-            for match in re.finditer(r'\/\*.*?\*\/', content, flags=re.DOTALL)
+            for match in re.finditer(r"\/\*.*?\*\/", content, flags=re.DOTALL)
         ]
 
     def url_converter(self, name, hashed_files, template=None, comment_blocks=None):
@@ -55,37 +69,41 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                 return matched
 
             # Ignore absolute/protocol-relative and data-uri URLs.
-            if re.match(r'^[a-z]+:', url):
+            if re.match(r"^[a-z]+:", url):
                 return matched
 
             # Ignore absolute URLs that don't point to a static file (dynamic
             # CSS / JS?). Note that STATIC_URL cannot be empty.
-            if url.startswith('/') and not url.startswith(settings.STATIC_URL):
+            if url.startswith("/") and not url.startswith(settings.STATIC_URL):
                 return matched
 
             # Strip off the fragment so a path-like fragment won't interfere.
             url_path, fragment = urldefrag(url)
 
-            if url_path.startswith('/'):
+            if url_path.startswith("/"):
                 # Otherwise the condition above would have returned prematurely.
                 assert url_path.startswith(settings.STATIC_URL)
-                target_name = url_path[len(settings.STATIC_URL):]
+                target_name = url_path[len(settings.STATIC_URL) :]
             else:
                 # We're using the posixpath module to mix paths and URLs conveniently.
-                source_name = name if os.sep == '/' else name.replace(os.sep, '/')
+                source_name = name if os.sep == "/" else name.replace(os.sep, "/")
                 target_name = posixpath.join(posixpath.dirname(source_name), url_path)
 
             # Determine the hashed name of the target file with the storage backend.
             hashed_url = self._url(
-                self._stored_name, unquote(target_name),
-                force=True, hashed_files=hashed_files,
+                self._stored_name,
+                unquote(target_name),
+                force=True,
+                hashed_files=hashed_files,
             )
 
-            transformed_url = '/'.join(url_path.split('/')[:-1] + hashed_url.split('/')[-1:])
+            transformed_url = "/".join(
+                url_path.split("/")[:-1] + hashed_url.split("/")[-1:]
+            )
 
             # Restore the fragment that was stripped off earlier.
             if fragment:
-                transformed_url += ('?#' if '?#' in url else '#') + fragment
+                transformed_url += ("?#" if "?#" in url else "#") + fragment
 
             # Return the hashed version to the file
             return template % unquote(transformed_url)
@@ -100,7 +118,7 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                 return False
         return False
 
-    def _post_process(self, paths, adjustable_paths, hashed_files):
+    def _post_process(self, paths, adjustable_paths, hashed_files):  # noqa: C901
         # Sort the files by directory level
         def path_level(name):
             return len(name.split(os.sep))
@@ -122,7 +140,7 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                     hashed_name = hashed_files[hash_key]
 
                 # then get the original's file content..
-                if hasattr(original_file, 'seek'):
+                if hasattr(original_file, "seek"):
                     original_file.seek(0)
 
                 hashed_file_exists = self.exists(hashed_name)
@@ -136,7 +154,12 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                         if matches_patterns(path, (extension,)):
                             comment_blocks = self.get_comment_blocks(content)
                             for pattern, template in patterns:
-                                converter = self.url_converter(name, hashed_files, template, comment_blocks)
+                                converter = self.url_converter(
+                                    name,
+                                    hashed_files,
+                                    template,
+                                    comment_blocks,
+                                )
                                 try:
                                     content = pattern.sub(converter, content)
                                 except ValueError as exc:

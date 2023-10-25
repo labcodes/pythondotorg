@@ -1,6 +1,10 @@
-from django.contrib import admin
+from django.contrib import (
+    admin,
+)
 
-from banners.models import Banner
+from banners.models import (
+    Banner,
+)
 
 
 @admin.register(Banner)

@@ -1,28 +1,55 @@
-import io, zipfile
-from tempfile import NamedTemporaryFile
+import io
+import zipfile
+from tempfile import (
+    NamedTemporaryFile,
+)
 
-from django import forms
-from django.contrib import messages
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
-from django.urls import reverse
-from django.utils import timezone
-from django.db.models import Q
-from django.db import transaction
+from django.contrib import (
+    messages,
+)
+from django.db import (
+    transaction,
+)
+from django.http import (
+    HttpResponse,
+)
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+    render,
+)
+from django.urls import (
+    reverse,
+)
 
-from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, \
-    SendSponsorshipNotificationForm, CloneApplicationConfigForm
-from sponsors.exceptions import InvalidStatusException
-from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
-from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact, BenefitFeature, \
-    SponsorshipCurrentYear, SponsorshipBenefit, SponsorshipPackage
+from sponsors import (
+    use_cases,
+)
+from sponsors.exceptions import (
+    InvalidStatusException,
+)
+from sponsors.forms import (
+    CloneApplicationConfigForm,
+    SendSponsorshipNotificationForm,
+    SignedSponsorshipReviewAdminForm,
+    SponsorshipReviewAdminForm,
+    SponsorshipsListForm,
+)
+from sponsors.models import (
+    BenefitFeature,
+    EmailTargetable,
+    SponsorshipCurrentYear,
+)
+from sponsors.pdf import (
+    render_contract_to_docx_response,
+    render_contract_to_pdf_response,
+)
 
 
 def preview_contract_view(ModelAdmin, request, pk):
     contract = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
-    format = request.GET.get('format', 'pdf')
-    if format == 'docx':
+    format = request.GET.get("format", "pdf")
+    if format == "docx":
         response = render_contract_to_docx_response(request, contract)
     else:
         response = render_contract_to_pdf_response(request, contract)
@@ -49,7 +76,11 @@ def reject_sponsorship_view(ModelAdmin, request, pk):
         return redirect(redirect_url)
 
     context = {"sponsorship": sponsorship}
-    return render(request, "sponsors/admin/reject_application.html", context=context)
+    return render(
+        request,
+        "sponsors/admin/reject_application.html",
+        context=context,
+    )
 
 
 def approve_sponsorship_view(ModelAdmin, request, pk):
@@ -75,18 +106,25 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
                 use_case = use_cases.ApproveSponsorshipApplicationUseCase.build()
                 use_case.execute(sponsorship, **kwargs)
                 ModelAdmin.message_user(
-                    request, "Sponsorship was approved!", messages.SUCCESS
+                    request,
+                    "Sponsorship was approved!",
+                    messages.SUCCESS,
                 )
             except InvalidStatusException as e:
                 ModelAdmin.message_user(request, str(e), messages.ERROR)
 
             redirect_url = reverse(
-                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+                "admin:sponsors_sponsorship_change",
+                args=[sponsorship.pk],
             )
             return redirect(redirect_url)
 
     context = {"sponsorship": sponsorship, "form": form}
-    return render(request, "sponsors/admin/approve_application.html", context=context)
+    return render(
+        request,
+        "sponsors/admin/approve_application.html",
+        context=context,
+    )
 
 
 def approve_signed_sponsorship_view(ModelAdmin, request, pk):
@@ -104,7 +142,9 @@ def approve_signed_sponsorship_view(ModelAdmin, request, pk):
     form = SignedSponsorshipReviewAdminForm(initial=initial, force_required=True)
 
     if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-        form = SignedSponsorshipReviewAdminForm(request.POST, request.FILES, force_required=True)
+        form = SignedSponsorshipReviewAdminForm(
+            request.POST, request.FILES, force_required=True
+        )
         if form.is_valid():
             kwargs = form.cleaned_data
             kwargs["request"] = request
@@ -114,33 +154,41 @@ def approve_signed_sponsorship_view(ModelAdmin, request, pk):
                 sponsorship = use_case.execute(sponsorship, **kwargs)
                 # execute it using existing contract
                 use_case = use_cases.ExecuteExistingContractUseCase.build()
-                use_case.execute(sponsorship.contract, kwargs["signed_contract"], request=request)
+                use_case.execute(
+                    sponsorship.contract,
+                    kwargs["signed_contract"],
+                    request=request,
+                )
                 ModelAdmin.message_user(
-                    request, "Signed sponsorship was approved!", messages.SUCCESS
+                    request,
+                    "Signed sponsorship was approved!",
+                    messages.SUCCESS,
                 )
             except InvalidStatusException as e:
                 ModelAdmin.message_user(request, str(e), messages.ERROR)
 
             redirect_url = reverse(
-                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+                "admin:sponsors_sponsorship_change",
+                args=[sponsorship.pk],
             )
             return redirect(redirect_url)
 
     context = {"sponsorship": sponsorship, "form": form}
-    return render(request, "sponsors/admin/approve_application.html", context=context)
+    return render(
+        request,
+        "sponsors/admin/approve_application.html",
+        context=context,
+    )
 
 
 def send_contract_view(ModelAdmin, request, pk):
     contract = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
 
     if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-
         use_case = use_cases.SendContractUseCase.build()
         try:
             use_case.execute(contract, request=request)
-            ModelAdmin.message_user(
-                request, "Contract was sent!", messages.SUCCESS
-            )
+            ModelAdmin.message_user(request, "Contract was sent!", messages.SUCCESS)
         except InvalidStatusException:
             status = contract.get_status_display().title()
             ModelAdmin.message_user(
@@ -164,7 +212,9 @@ def rollback_to_editing_view(ModelAdmin, request, pk):
             sponsorship.rollback_to_editing()
             sponsorship.save()
             ModelAdmin.message_user(
-                request, "Sponsorship is now editable!", messages.SUCCESS
+                request,
+                "Sponsorship is now editable!",
+                messages.SUCCESS,
             )
         except InvalidStatusException as e:
             ModelAdmin.message_user(request, str(e), messages.ERROR)
@@ -188,9 +238,11 @@ def unlock_view(ModelAdmin, request, pk):
     if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
         try:
             sponsorship.locked = False
-            sponsorship.save(update_fields=['locked'])
+            sponsorship.save(update_fields=["locked"])
             ModelAdmin.message_user(
-                request, "Sponsorship is now unlocked!", messages.SUCCESS
+                request,
+                "Sponsorship is now unlocked!",
+                messages.SUCCESS,
             )
         except InvalidStatusException as e:
             ModelAdmin.message_user(request, str(e), messages.ERROR)
@@ -214,9 +266,7 @@ def lock_view(ModelAdmin, request, pk):
     sponsorship.locked = True
     sponsorship.save()
 
-    redirect_url = reverse(
-        "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
-    )
+    redirect_url = reverse("admin:sponsors_sponsorship_change", args=[sponsorship.pk])
     return redirect(redirect_url)
 
 
@@ -226,13 +276,10 @@ def execute_contract_view(ModelAdmin, request, pk):
     is_post = request.method.upper() == "POST"
     signed_document = request.FILES.get("signed_document")
     if is_post and request.POST.get("confirm") == "yes" and signed_document:
-
         use_case = use_cases.ExecuteContractUseCase.build()
         try:
             use_case.execute(contract, signed_document, request=request)
-            ModelAdmin.message_user(
-                request, "Contract was executed!", messages.SUCCESS
-            )
+            ModelAdmin.message_user(request, "Contract was executed!", messages.SUCCESS)
         except InvalidStatusException:
             status = contract.get_status_display().title()
             ModelAdmin.message_user(
@@ -249,14 +296,17 @@ def execute_contract_view(ModelAdmin, request, pk):
         error_msg = "You must submit the signed contract document to execute it."
 
     context = {"contract": contract, "error_msg": error_msg}
-    return render(request, "sponsors/admin/execute_contract.html", context=context)
+    return render(
+        request,
+        "sponsors/admin/execute_contract.html",
+        context=context,
+    )
 
 
 def nullify_contract_view(ModelAdmin, request, pk):
     contract = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
 
     if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-
         use_case = use_cases.NullifyContractUseCase.build()
         try:
             use_case.execute(contract, request=request)
@@ -275,7 +325,11 @@ def nullify_contract_view(ModelAdmin, request, pk):
         return redirect(redirect_url)
 
     context = {"contract": contract}
-    return render(request, "sponsors/admin/nullify_contract.html", context=context)
+    return render(
+        request,
+        "sponsors/admin/nullify_contract.html",
+        context=context,
+    )
 
 
 @transaction.atomic
@@ -300,15 +354,22 @@ def update_related_sponsorships(ModelAdmin, request, pk):
                 sponsor_benefit.reset_attributes(benefit)
 
             ModelAdmin.message_user(
-                request, f"{len(sponsorships)} related sponsorships updated!", messages.SUCCESS
+                request,
+                f"{len(sponsorships)} related sponsorships updated!",
+                messages.SUCCESS,
             )
             redirect_url = reverse(
-                "admin:sponsors_sponsorshipbenefit_change", args=[benefit.pk]
+                "admin:sponsors_sponsorshipbenefit_change",
+                args=[benefit.pk],
             )
             return redirect(redirect_url)
 
     context = {"benefit": benefit, "form": form}
-    return render(request, "sponsors/admin/update_related_sponsorships.html", context=context)
+    return render(
+        request,
+        "sponsors/admin/update_related_sponsorships.html",
+        context=context,
+    )
 
 
 def list_uploaded_assets(ModelAdmin, request, pk):
@@ -318,7 +379,11 @@ def list_uploaded_assets(ModelAdmin, request, pk):
     sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
     assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
     context = {"sponsorship": sponsorship, "assets": assets}
-    return render(request, "sponsors/admin/list_uploaded_assets.html", context=context)
+    return render(
+        request,
+        "sponsors/admin/list_uploaded_assets.html",
+        context=context,
+    )
 
 
 def clone_application_config(ModelAdmin, request):
@@ -326,7 +391,7 @@ def clone_application_config(ModelAdmin, request):
     context = {
         "current_year": SponsorshipCurrentYear.get_year(),
         "configured_years": form.configured_years,
-        "new_year": None
+        "new_year": None,
     }
     if request.method == "POST":
         form = CloneApplicationConfigForm(data=request.POST)
@@ -341,7 +406,7 @@ def clone_application_config(ModelAdmin, request):
             ModelAdmin.message_user(
                 request,
                 f"Benefits and Packages for {target_year} copied with sucess from {from_year}!",
-                messages.SUCCESS
+                messages.SUCCESS,
             )
 
     context["form"] = form
@@ -384,7 +449,9 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
                 "to_manager": True,
             }
             notification = form.get_notification()
-            email_preview = notification.get_email_message(queryset.first(), **msg_kwargs)
+            email_preview = notification.get_email_message(
+                queryset.first(), **msg_kwargs
+            )
     else:
         form = SendSponsorshipNotificationForm()
 
@@ -395,7 +462,11 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
         "email_preview": email_preview,
         "queryset": queryset,
     }
-    return render(request, "sponsors/admin/send_sponsors_notification.html", context=context)
+    return render(
+        request,
+        "sponsors/admin/send_sponsors_notification.html",
+        context=context,
+    )
 
 
 def export_assets_as_zipfile(ModelAdmin, request, queryset):
@@ -406,22 +477,22 @@ def export_assets_as_zipfile(ModelAdmin, request, queryset):
     if not queryset.exists():
         ModelAdmin.message_user(
             request,
-            f"You have to select at least one asset to export.",
-            messages.WARNING
+            "You have to select at least one asset to export.",
+            messages.WARNING,
         )
         return redirect(request.path)
 
     assets_without_values = [asset for asset in queryset if not asset.has_value]
     if any(assets_without_values):
-        ModelAdmin.message_user(
-            request,
-            f"{len(assets_without_values)} assets from the selection doesn't have data to export. Please review your selection!",
-            messages.WARNING
+        _message = (
+            f"{len(assets_without_values)} assets from the "
+            "selection doesn't have data to export. Please review your selection!"
         )
+        ModelAdmin.message_user(request, _message, messages.WARNING)
         return redirect(request.path)
 
     buffer = io.BytesIO()
-    zip_file = zipfile.ZipFile(buffer, 'w')
+    zip_file = zipfile.ZipFile(buffer, "w")
 
     for asset in queryset:
         zipdir = "unknown"  # safety belt

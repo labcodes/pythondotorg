@@ -1,0 +1,249 @@
+[tool.ruff]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+]
+ignore = [
+    "E501",  # line too long, handled by black
+#    "B008",  # do not perform function calls in argument defaults
+#    "C901",  # too complex
+    "W191",  # indentation contains tabs
+]
+
+## Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
+##select = [
+##    "D",  # pydocstyle
+##    "E",  # pycodestyle
+##    "F",  # Pyflakes
+##    "INP",  # flake8-no-pep420
+##    "W",  # pycodestyle warnings
+##]
+##
+#select = [
+##    "A",  # flake8-builtins
+##    "B",  # flake8-bugbear
+##    "C",  # flake8-comprehensions
+###    "D",  # pydocstyle
+##    "E",  # pycodestyle - Error
+##    "F",  # Pyflakes
+##    "G",  # flake8-logging-format
+#    "I",  # isort
+##    "N",  # pep8-naming
+###    "Q",  # flake8-quotes
+##    "S",  # flake8-bandit
+##    "T",  # flake8-debugger
+##    "W",  # pycodestyle - Warning
+##    "ANN",  # flake8-annotations
+##    "ARG",  # flake8-unused-arguments
+##    "BLE",  # flake8-blind-except
+##    "COM",  # flake8-commas
+##    "DJ",  # flake8-django
+##    "DTZ",  # flake8-datetimez
+##    "EM",  # flake8-errmsg
+##    "ERA",  # eradicate
+##    "EXE",  # flake8-executable
+##    "FBT",  # flake8-boolean-trap
+##    "ICN",  # flake8-import-conventions
+##    "INP",  # flake8-no-pep420
+##    "ISC",  # flake8-implicit-str-concat
+##    "NPY",  # NumPy-specific rules
+##    "PD",  # pandas-vet
+##    "PGH",  # pygrep-hooks
+##    "PIE",  # flake8-pie
+##    "PL",  # Pylint
+##    "PT",  # flake8-pytest-style
+##    "PTH",  # flake8-use-pathlib
+##    "PYI",  # flake8-pyi
+##    "RET",  # flake8-return
+##    "RSE",  # flake8-raise
+##    "RUF",  # Ruff-specific rules
+##    "SIM",  # flake8-simplify
+##    "SLF",  # flake8-self
+##    "TCH",  # flake8-type-checking
+##    "TID",  # flake8-tidy-imports
+##    "TRY",  # tryceratops
+##    "UP",  # pyupgrade
+##    "YTT"  # flake8-2020
+#]
+#
+#
+#ignore = [
+#    "D100",  # pydocstyle - Missing docstring in public module
+#    "D101",  # pydocstyle - Missing docstring in public class
+#    "D102",  # pydocstyle - Missing docstring in public method
+#    "D103",  # pydocstyle - Missing docstring in public function
+#    "D105",  # pydocstyle - Missing docstring in magic method
+#    "D106",  # pydocstyle - Missing docstring in public nested class
+#    "D200",  # pydocstyle - One-line docstring should fit on one line
+#    "D205",  # pydocstyle - 1 blank line required between summary line and description
+#    "D212",  # pydocstyle - Multi-line docstring summary should start at the first line
+#    "D400",  # pydocstyle - First line should end with a period
+#]
+#
+## Allow fix for all enabled rules (when `--fix`) is provided.
+## https://docs.astral.sh/ruff/rules/
+
+fixable = [
+]
+#fixable = [
+##    "A",  # flake8-builtins
+##    "B",  # flake8-bugbear
+##    "C",  # flake8-comprehensions
+###    "D",  # pydocstyle
+##    "E",  # pycodestyle - Error
+##    "F",  # Pyflakes
+##    "G",  # flake8-logging-format
+#    "I",  # isort
+##    "N",  # pep8-naming
+##    "Q",  # flake8-quotes
+##    "S",  # flake8-bandit
+##    "T",  # flake8-debugger
+##    "W",  # pycodestyle - Warning
+##    "ANN",  # flake8-annotations
+##    "ARG",  # flake8-unused-arguments
+##    "BLE",  # flake8-blind-except
+##    "COM",  # flake8-commas
+##    "DJ",  # flake8-django
+##    "DTZ",  # flake8-datetimez
+##    "EM",  # flake8-errmsg
+##    "ERA",  # eradicate
+##    "EXE",  # flake8-executable
+##    "FBT",  # flake8-boolean-trap
+##    "ICN",  # flake8-import-conventions
+##    "INP",  # flake8-no-pep420
+##    "ISC",  # flake8-implicit-str-concat
+##    "NPY",  # NumPy-specific rules
+##    "PD",  # pandas-vet
+##    "PGH",  # pygrep-hooks
+##    "PIE",  # flake8-pie
+##    "PL",  # Pylint
+##    "PT",  # flake8-pytest-style
+##    "PTH",  # flake8-use-pathlib
+##    "PYI",  # flake8-pyi
+##    "RET",  # flake8-return
+##    "RSE",  # flake8-raise
+##    "RUF",  # Ruff-specific rules
+##    "SIM",  # flake8-simplify
+##    "SLF",  # flake8-self
+##    "TCH",  # flake8-type-checking
+##    "TID",  # flake8-tidy-imports
+##    "TRY",  # tryceratops
+##    "UP",  # pyupgrade
+##    "YTT"  # flake8-2020
+#]
+#unfixable = []
+#
+## Exclude a variety of commonly ignored directories.
+#exclude = [
+#    ".bzr",
+#    ".direnv",
+#    ".eggs",
+#    ".git",
+#    ".git-rewrite",
+#    ".hg",
+#    ".mypy_cache",
+#    ".nox",
+#    ".pants.d",
+#    ".pytype",
+#    ".ruff_cache",
+#    ".svn",
+#    ".tox",
+#    ".venv",
+#    "__pypackages__",
+#    "_build",
+#    "buck-out",
+#    "build",
+#    "dist",
+#    "node_modules",
+#    "venv",
+#    "*/migrations/*",
+#]
+#
+## Same as Black.
+line-length = 88
+#
+## Allow unused variables when underscore-prefixed.
+#dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+#
+## Assume Python 3.9
+target-version = "py39"
+#
+#[tool.ruff.mccabe]
+## Unlike Flake8, default to a complexity level of 10.
+#max-complexity = 10
+#
+[tool.ruff.per-file-ignores]
+"manage.py" = ["INP001"]
+"docs/source/conf.py" = ["INP001"]
+"custom_storages/__init__.py" = ["F401"]
+"sponsors/models/__init__.py" = ["F401"]
+"*/test_*.py" = [
+    "E501",
+    "W605",
+]
+
+[tool.ruff.isort]
+## find . -maxdepth 1 -type d -exec test -e "{}/__init__.py" \; -exec echo '"{}",' \; | sed 's/\.\///' | sed '$s/,$//'
+known-first-party = [
+    "minutes",
+    "mailing",
+    "membership",
+    "peps",
+    "boxes",
+    "successstories",
+    "jobs",
+    "custom_storages",
+    "work_groups",
+    "sponsors",
+    "codesamples",
+    "companies",
+    "blogs",
+    "cms",
+    "downloads",
+    "nominations",
+    "users",
+    "pydotorg",
+    "community",
+    "pages",
+    "banners",
+    "events",
+    "fastly"
+]
+#split-on-trailing-comma = true
+#lines-after-imports = 2
+#section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+##
+##[tool.ruff.isort.sections]
+##"django" = ["django"]
+#
+
+[tool.isort]
+profile = "black"
+force-single-line = true
+py_version = 39
+#line_length = 15
+#atomic=true
+#multi_line_output = 3
+#include_trailing_comma = true
+#force_grid_wrap = 0
+#use_parentheses = true
+#ensure_newline_before_comments = true
+
+
+[tool.black]
+target-version = ['py39']
+line-length = 88
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+# magic-trailing-comma = "respect"

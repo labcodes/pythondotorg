@@ -1,18 +1,47 @@
-from datetime import date
-from unittest.mock import Mock
+from datetime import (
+    date,
+)
+from unittest.mock import (
+    Mock,
+)
 
-from model_bakery import baker
+from allauth.account.models import (
+    EmailAddress,
+)
+from django.conf import (
+    settings,
+)
+from django.contrib.admin.models import (
+    ADDITION,
+    CHANGE,
+    LogEntry,
+)
+from django.contrib.contenttypes.models import (
+    ContentType,
+)
+from django.core import (
+    mail,
+)
+from django.template.loader import (
+    render_to_string,
+)
+from django.test import (
+    RequestFactory,
+    TestCase,
+)
+from model_bakery import (
+    baker,
+)
 
-from allauth.account.models import EmailAddress
-from django.conf import settings
-from django.core import mail
-from django.template.loader import render_to_string
-from django.test import TestCase, RequestFactory
-from django.contrib.admin.models import LogEntry, CHANGE, ADDITION
-from django.contrib.contenttypes.models import ContentType
-
-from sponsors import notifications
-from sponsors.models import Sponsorship, Contract, RequiredTextAssetConfiguration, SponsorBenefit
+from sponsors import (
+    notifications,
+)
+from sponsors.models import (
+    Contract,
+    RequiredTextAssetConfiguration,
+    SponsorBenefit,
+    Sponsorship,
+)
 
 
 class AppliedSponsorshipNotificationToPSFTests(TestCase):
@@ -34,7 +63,10 @@ class AppliedSponsorshipNotificationToPSFTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
+        self.assertEqual(
+            settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
+            email.from_email,
+        )
         self.assertEqual([settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL], email.to)
 
 
@@ -51,12 +83,20 @@ class AppliedSponsorshipNotificationToSponsorsTests(TestCase):
                 primary=True,
                 sponsor__name="foo",
             ),
-            baker.make("sponsors.SponsorContact", email=self.verified_email.email),
-            baker.make("sponsors.SponsorContact", email=self.unverified_email.email),
+            baker.make(
+                "sponsors.SponsorContact",
+                email=self.verified_email.email,
+            ),
+            baker.make(
+                "sponsors.SponsorContact",
+                email=self.unverified_email.email,
+            ),
         ]
         self.sponsor = baker.make("sponsors.Sponsor", contacts=self.sponsor_contacts)
         self.sponsorship = baker.make(
-            "sponsors.Sponsorship", sponsor=self.sponsor, submited_by=self.user
+            "sponsors.Sponsorship",
+            sponsor=self.sponsor,
+            submited_by=self.user,
         )
         self.subject_template = "sponsors/email/sponsor_new_application_subject.txt"
         self.content_template = "sponsors/email/sponsor_new_application.txt"
@@ -72,22 +112,29 @@ class AppliedSponsorshipNotificationToSponsorsTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
+        self.assertEqual(
+            settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
+            email.from_email,
+        )
         self.assertCountEqual([self.user.email, self.verified_email.email], email.to)
 
     def test_send_email_to_correct_recipients(self):
         context = {"user": self.user, "sponsorship": self.sponsorship}
         expected_contacts = ["foo@foo.com", self.verified_email.email]
         self.assertCountEqual(
-            expected_contacts, self.notification.get_recipient_list(context)
+            expected_contacts,
+            self.notification.get_recipient_list(context),
         )
 
     def test_list_required_assets_in_email_context(self):
-        cfg = baker.make(RequiredTextAssetConfiguration, internal_name='input')
+        cfg = baker.make(RequiredTextAssetConfiguration, internal_name="input")
         benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
         asset = cfg.create_benefit_feature(benefit)
         request = Mock()
-        base_context = {"sponsorship": self.sponsorship, "request": request}
+        base_context = {
+            "sponsorship": self.sponsorship,
+            "request": request,
+        }
         context = self.notification.get_email_context(**base_context)
         self.assertEqual(3, len(context))
         self.assertEqual(self.sponsorship, context["sponsorship"])
@@ -118,7 +165,10 @@ class RejectedSponsorshipNotificationToPSFTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
+        self.assertEqual(
+            settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
+            email.from_email,
+        )
         self.assertEqual([settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL], email.to)
 
 
@@ -148,7 +198,10 @@ class RejectedSponsorshipNotificationToSponsorsTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
+        self.assertEqual(
+            settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
+            email.from_email,
+        )
         self.assertEqual([self.user.email], email.to)
 
 
@@ -174,7 +227,10 @@ class ContractNotificationToPSFTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
+        self.assertEqual(
+            settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
+            email.from_email,
+        )
         self.assertEqual([settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL], email.to)
 
     def test_attach_contract_pdf(self):
@@ -224,7 +280,10 @@ class ContractNotificationToSponsorsTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
+        self.assertEqual(
+            settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
+            email.from_email,
+        )
         self.assertEqual([self.user.email], email.to)
 
     def test_attach_contract_pdf_by_default(self):
@@ -263,20 +322,29 @@ class ContractNotificationToSponsorsTests(TestCase):
 
 
 class SponsorshipApprovalLoggerTests(TestCase):
-
     def setUp(self):
-        self.request = RequestFactory().get('/')
+        self.request = RequestFactory().get("/")
         self.request.user = baker.make(settings.AUTH_USER_MODEL)
-        self.sponsorship = baker.make(Sponsorship, status=Sponsorship.APPROVED, sponsor__name='foo', _fill_optional=True)
-        self.contract = baker.make_recipe("sponsors.tests.empty_contract", sponsorship=self.sponsorship)
+        self.sponsorship = baker.make(
+            Sponsorship,
+            status=Sponsorship.APPROVED,
+            sponsor__name="foo",
+            _fill_optional=True,
+        )
+        self.contract = baker.make_recipe(
+            "sponsors.tests.empty_contract",
+            sponsorship=self.sponsorship,
+        )
         self.kwargs = {
             "request": self.request,
             "sponsorship": self.sponsorship,
-            "contract": self.contract
+            "contract": self.contract,
         }
         self.logger = notifications.SponsorshipApprovalLogger()
 
-    def test_create_log_entry_for_change_operation_with_approval_message(self):
+    def test_create_log_entry_for_change_operation_with_approval_message(
+        self,
+    ):
         self.assertEqual(LogEntry.objects.count(), 0)
         sponsorship_content_id = ContentType.objects.get_for_model(Sponsorship).pk
         contract_id = ContentType.objects.get_for_model(Contract).pk
@@ -295,22 +363,26 @@ class SponsorshipApprovalLoggerTests(TestCase):
         self.assertEqual(log_entry.object_id, str(self.contract.pk))
         self.assertEqual(str(self.contract), log_entry.object_repr)
         self.assertEqual(log_entry.action_flag, ADDITION)
-        self.assertEqual(log_entry.change_message, "Created After Sponsorship Approval")
+        self.assertEqual(
+            log_entry.change_message,
+            "Created After Sponsorship Approval",
+        )
 
 
 class SentContractLoggerTests(TestCase):
-
     def setUp(self):
-        self.request = RequestFactory().get('/')
+        self.request = RequestFactory().get("/")
         self.request.user = baker.make(settings.AUTH_USER_MODEL)
-        self.contract = baker.make_recipe('sponsors.tests.empty_contract')
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract")
         self.kwargs = {
             "request": self.request,
             "contract": self.contract,
         }
         self.logger = notifications.SentContractLogger()
 
-    def test_create_log_entry_for_change_operation_with_approval_message(self):
+    def test_create_log_entry_for_change_operation_with_approval_message(
+        self,
+    ):
         self.assertEqual(LogEntry.objects.count(), 0)
 
         self.logger.notify(**self.kwargs)
@@ -325,18 +397,19 @@ class SentContractLoggerTests(TestCase):
 
 
 class ExecutedContractLoggerTests(TestCase):
-
     def setUp(self):
-        self.request = RequestFactory().get('/')
+        self.request = RequestFactory().get("/")
         self.request.user = baker.make(settings.AUTH_USER_MODEL)
-        self.contract = baker.make_recipe('sponsors.tests.empty_contract')
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract")
         self.kwargs = {
             "request": self.request,
             "contract": self.contract,
         }
         self.logger = notifications.ExecutedContractLogger()
 
-    def test_create_log_entry_for_change_operation_with_approval_message(self):
+    def test_create_log_entry_for_change_operation_with_approval_message(
+        self,
+    ):
         self.assertEqual(LogEntry.objects.count(), 0)
 
         self.logger.notify(**self.kwargs)
@@ -351,18 +424,19 @@ class ExecutedContractLoggerTests(TestCase):
 
 
 class ExecutedExistingContractLoggerTests(TestCase):
-
     def setUp(self):
-        self.request = RequestFactory().get('/')
+        self.request = RequestFactory().get("/")
         self.request.user = baker.make(settings.AUTH_USER_MODEL)
-        self.contract = baker.make_recipe('sponsors.tests.empty_contract')
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract")
         self.kwargs = {
             "request": self.request,
             "contract": self.contract,
         }
         self.logger = notifications.ExecutedExistingContractLogger()
 
-    def test_create_log_entry_for_change_operation_with_approval_message(self):
+    def test_create_log_entry_for_change_operation_with_approval_message(
+        self,
+    ):
         self.assertEqual(LogEntry.objects.count(), 0)
 
         self.logger.notify(**self.kwargs)
@@ -373,22 +447,26 @@ class ExecutedExistingContractLoggerTests(TestCase):
         self.assertEqual(log_entry.object_id, str(self.contract.pk))
         self.assertEqual(str(self.contract), log_entry.object_repr)
         self.assertEqual(log_entry.action_flag, CHANGE)
-        self.assertEqual(log_entry.change_message, "Existing Contract Uploaded and Executed")
+        self.assertEqual(
+            log_entry.change_message,
+            "Existing Contract Uploaded and Executed",
+        )
 
 
 class NullifiedContractLoggerTests(TestCase):
-
     def setUp(self):
-        self.request = RequestFactory().get('/')
+        self.request = RequestFactory().get("/")
         self.request.user = baker.make(settings.AUTH_USER_MODEL)
-        self.contract = baker.make_recipe('sponsors.tests.empty_contract')
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract")
         self.kwargs = {
             "request": self.request,
             "contract": self.contract,
         }
         self.logger = notifications.NullifiedContractLogger()
 
-    def test_create_log_entry_for_change_operation_with_approval_message(self):
+    def test_create_log_entry_for_change_operation_with_approval_message(
+        self,
+    ):
         self.assertEqual(LogEntry.objects.count(), 0)
 
         self.logger.notify(**self.kwargs)
@@ -403,12 +481,14 @@ class NullifiedContractLoggerTests(TestCase):
 
 
 class SendSponsorNotificationLoggerTests(TestCase):
-
     def setUp(self):
-        self.request = RequestFactory().get('/')
+        self.request = RequestFactory().get("/")
         self.request.user = baker.make(settings.AUTH_USER_MODEL)
-        self.sponsorship = baker.make('sponsors.Sponsorship', sponsor__name="Sponsor")
-        self.notification = baker.make('sponsors.SponsorEmailNotificationTemplate', internal_name="Foo")
+        self.sponsorship = baker.make("sponsors.Sponsorship", sponsor__name="Sponsor")
+        self.notification = baker.make(
+            "sponsors.SponsorEmailNotificationTemplate",
+            internal_name="Foo",
+        )
         self.kwargs = {
             "request": self.request,
             "notification": self.notification,
@@ -428,7 +508,10 @@ class SendSponsorNotificationLoggerTests(TestCase):
         self.assertEqual(log_entry.object_id, str(self.sponsorship.pk))
         self.assertEqual(str(self.sponsorship), log_entry.object_repr)
         self.assertEqual(log_entry.action_flag, CHANGE)
-        self.assertEqual(log_entry.change_message, "Notification 'Foo' was sent to contacts: administrative")
+        self.assertEqual(
+            log_entry.change_message,
+            "Notification 'Foo' was sent to contacts: administrative",
+        )
 
 
 class AssetCloseToDueDateNotificationToSponsorsTestCase(TestCase):
@@ -444,12 +527,20 @@ class AssetCloseToDueDateNotificationToSponsorsTestCase(TestCase):
                 primary=True,
                 sponsor__name="foo",
             ),
-            baker.make("sponsors.SponsorContact", email=self.verified_email.email),
-            baker.make("sponsors.SponsorContact", email=self.unverified_email.email),
+            baker.make(
+                "sponsors.SponsorContact",
+                email=self.verified_email.email,
+            ),
+            baker.make(
+                "sponsors.SponsorContact",
+                email=self.unverified_email.email,
+            ),
         ]
         self.sponsor = baker.make("sponsors.Sponsor", contacts=self.sponsor_contacts)
         self.sponsorship = baker.make(
-            "sponsors.Sponsorship", sponsor=self.sponsor, submited_by=self.user
+            "sponsors.Sponsorship",
+            sponsor=self.sponsor,
+            submited_by=self.user,
         )
         self.subject_template = "sponsors/email/sponsor_expiring_assets_subject.txt"
         self.content_template = "sponsors/email/sponsor_expiring_assets.txt"
@@ -465,21 +556,29 @@ class AssetCloseToDueDateNotificationToSponsorsTestCase(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
+        self.assertEqual(
+            settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
+            email.from_email,
+        )
         self.assertCountEqual([self.user.email, self.verified_email.email], email.to)
 
     def test_send_email_to_correct_recipients(self):
         context = {"user": self.user, "sponsorship": self.sponsorship}
         expected_contacts = ["foo@foo.com", self.verified_email.email]
         self.assertCountEqual(
-            expected_contacts, self.notification.get_recipient_list(context)
+            expected_contacts,
+            self.notification.get_recipient_list(context),
         )
 
     def test_list_required_assets_in_email_context(self):
-        cfg = baker.make(RequiredTextAssetConfiguration, internal_name='input')
+        cfg = baker.make(RequiredTextAssetConfiguration, internal_name="input")
         benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
         asset = cfg.create_benefit_feature(benefit)
-        base_context = {"sponsorship": self.sponsorship, "due_date": date.today(), "days": 7}
+        base_context = {
+            "sponsorship": self.sponsorship,
+            "due_date": date.today(),
+            "days": 7,
+        }
         context = self.notification.get_email_context(**base_context)
         self.assertEqual(4, len(context))
         self.assertEqual(self.sponsorship, context["sponsorship"])
@@ -489,9 +588,8 @@ class AssetCloseToDueDateNotificationToSponsorsTestCase(TestCase):
 
 
 class ClonedResourceLoggerTests(TestCase):
-
     def setUp(self):
-        self.request = RequestFactory().get('/')
+        self.request = RequestFactory().get("/")
         self.request.user = baker.make(settings.AUTH_USER_MODEL)
         self.logger = notifications.ClonedResourcesLogger()
         self.package = baker.make("sponsors.SponsorshipPackage", name="Foo")
@@ -499,7 +597,7 @@ class ClonedResourceLoggerTests(TestCase):
             "request": self.request,
             "resource": self.package,
             "from_year": 2022,
-            "extra": "foo"
+            "extra": "foo",
         }
 
     def test_create_log_entry_for_cloned_resource(self):
@@ -513,4 +611,7 @@ class ClonedResourceLoggerTests(TestCase):
         self.assertEqual(log_entry.object_id, str(self.package.pk))
         self.assertEqual(str(self.package), log_entry.object_repr)
         self.assertEqual(log_entry.action_flag, ADDITION)
-        self.assertEqual(log_entry.change_message, "Cloned from 2022 sponsorship application config")
+        self.assertEqual(
+            log_entry.change_message,
+            "Cloned from 2022 sponsorship application config",
+        )

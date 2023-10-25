@@ -1,9 +1,22 @@
-from django.db import transaction
+from django.db import (
+    transaction,
+)
 
-from sponsors import notifications
-from sponsors.models import Sponsorship, Contract, SponsorContact, SponsorEmailNotificationTemplate, SponsorshipBenefit, \
-    SponsorshipPackage
-from sponsors.pdf import render_contract_to_pdf_file, render_contract_to_docx_file
+from sponsors import (
+    notifications,
+)
+from sponsors.models import (
+    Contract,
+    SponsorContact,
+    SponsorEmailNotificationTemplate,
+    Sponsorship,
+    SponsorshipBenefit,
+    SponsorshipPackage,
+)
+from sponsors.pdf import (
+    render_contract_to_docx_file,
+    render_contract_to_pdf_file,
+)
 
 
 class BaseUseCaseWithNotifications:
@@ -80,7 +93,7 @@ class SendContractUseCase(BaseUseCaseWithNotifications):
         # the generate contract file gets approved by PSF Board.
         # After that, the line bellow can be uncommented to enable
         # the desired behavior.
-        #notifications.ContractNotificationToSponsors(),
+        # notifications.ContractNotificationToSponsors(),
         notifications.SentContractLogger(),
     ]
 
@@ -104,11 +117,14 @@ class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
     def execute(self, contract, contract_file, **kwargs):
         contract.signed_document = contract_file
         contract.execute(force=self.force_execute)
-        overlapping_sponsorship = Sponsorship.objects.filter(
-            sponsor=contract.sponsorship.sponsor,
-        ).exclude(
-            id=contract.sponsorship.id
-        ).enabled().active_on_date(contract.sponsorship.start_date)
+        overlapping_sponsorship = (
+            Sponsorship.objects.filter(
+                sponsor=contract.sponsorship.sponsor,
+            )
+            .exclude(id=contract.sponsorship.id)
+            .enabled()
+            .active_on_date(contract.sponsorship.start_date)
+        )
         overlapping_sponsorship.update(overlapped_by=contract.sponsorship)
         self.notify(
             request=kwargs.get("request"),
@@ -143,7 +159,13 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
         notifications.SendSponsorNotificationLogger(),
     ]
 
-    def execute(self, notification: SponsorEmailNotificationTemplate, sponsorships, contact_types, **kwargs):
+    def execute(
+        self,
+        notification: SponsorEmailNotificationTemplate,
+        sponsorships,
+        contact_types,
+        **kwargs,
+    ):
         msg_kwargs = {
             "to_primary": SponsorContact.PRIMARY_CONTACT in contact_types,
             "to_administrative": SponsorContact.ADMINISTRATIVE_CONTACT in contact_types,

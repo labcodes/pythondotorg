@@ -1,10 +1,22 @@
-from django.contrib import admin
-from django.forms.models import modelform_factory
-from django.http import HttpResponse
-from django.urls import path
-from django.shortcuts import get_object_or_404
+from django.contrib import (
+    admin,
+)
+from django.forms.models import (
+    modelform_factory,
+)
+from django.http import (
+    HttpResponse,
+)
+from django.shortcuts import (
+    get_object_or_404,
+)
+from django.urls import (
+    path,
+)
 
-from mailing.forms import BaseEmailTemplateForm
+from mailing.forms import (
+    BaseEmailTemplateForm,
+)
 
 
 class BaseEmailTemplateAdmin(admin.ModelAdmin):
@@ -13,16 +25,15 @@ class BaseEmailTemplateAdmin(admin.ModelAdmin):
     readonly_fields = ["created_at", "updated_at"]
     search_fields = ["internal_name"]
     fieldsets = (
-        (None, {
-            'fields': ('internal_name',)
-        }),
-        ('Email template', {
-            'fields': ('subject', 'content')
-        }),
-        ('Timestamps', {
-            'classes': ('collapse',),
-            'fields': ('created_at', 'updated_at'),
-        }),
+        (None, {"fields": ("internal_name",)}),
+        ("Email template", {"fields": ("subject", "content")}),
+        (
+            "Timestamps",
+            {
+                "classes": ("collapse",),
+                "fields": ("created_at", "updated_at"),
+            },
+        ),
     )
 
     def get_form(self, *args, **kwargs):

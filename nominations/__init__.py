@@ -1,1 +1,1 @@
-default_app_config = 'nominations.apps.NominationsAppConfig'
+default_app_config = "nominations.apps.NominationsAppConfig"

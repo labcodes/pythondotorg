@@ -1,1 +1,1 @@
-default_app_config = 'blogs.apps.BlogsAppConfig'
+default_app_config = "blogs.apps.BlogsAppConfig"

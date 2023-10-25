@@ -1,19 +1,48 @@
 import os
-from unittest.mock import Mock, patch, call
-from model_bakery import baker
-from datetime import timedelta, date
-from pathlib import Path
+from datetime import (
+    date,
+    timedelta,
+)
+from pathlib import (
+    Path,
+)
+from unittest.mock import (
+    Mock,
+    call,
+    patch,
+)
 
-from django.conf import settings
-from django.test import TestCase
-from django.utils import timezone
-from django.core.mail import EmailMessage
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import (
+    settings,
+)
+from django.core.files.uploadedfile import (
+    SimpleUploadedFile,
+)
+from django.core.mail import (
+    EmailMessage,
+)
+from django.test import (
+    TestCase,
+)
+from django.utils import (
+    timezone,
+)
+from model_bakery import (
+    baker,
+)
 
-from sponsors import use_cases
-from sponsors.notifications import *
-from sponsors.models import Sponsorship, Contract, SponsorEmailNotificationTemplate, Sponsor, SponsorshipBenefit, \
-    SponsorshipPackage
+from sponsors import (
+    use_cases,
+)
+from sponsors.models import (
+    Contract,
+    Sponsor,
+    SponsorEmailNotificationTemplate,
+    Sponsorship,
+    SponsorshipBenefit,
+    SponsorshipPackage,
+)
+from sponsors.notifications import *  # noqa: F403
 
 
 class CreateSponsorshipApplicationUseCaseTests(TestCase):
@@ -50,7 +79,8 @@ class CreateSponsorshipApplicationUseCaseTests(TestCase):
         self.assertEqual(len(uc.notifications), 2)
         self.assertIsInstance(uc.notifications[0], AppliedSponsorshipNotificationToPSF)
         self.assertIsInstance(
-            uc.notifications[1], AppliedSponsorshipNotificationToSponsors
+            uc.notifications[1],
+            AppliedSponsorshipNotificationToSponsors,
         )
 
 
@@ -83,7 +113,8 @@ class RejectSponsorshipApplicationUseCaseTests(TestCase):
         self.assertEqual(len(uc.notifications), 2)
         self.assertIsInstance(uc.notifications[0], RejectedSponsorshipNotificationToPSF)
         self.assertIsInstance(
-            uc.notifications[1], RejectedSponsorshipNotificationToSponsors
+            uc.notifications[1],
+            RejectedSponsorshipNotificationToSponsors,
         )
 
 
@@ -159,9 +190,7 @@ class SendContractUseCaseTests(TestCase):
         uc = use_cases.SendContractUseCase.build()
         self.assertEqual(len(uc.notifications), 2)
         self.assertIsInstance(uc.notifications[0], ContractNotificationToPSF)
-        self.assertIsInstance(
-            uc.notifications[1], SentContractLogger
-        )
+        self.assertIsInstance(uc.notifications[1], SentContractLogger)
 
 
 class ExecuteContractUseCaseTests(TestCase):
@@ -189,11 +218,10 @@ class ExecuteContractUseCaseTests(TestCase):
     def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.ExecuteContractUseCase.build()
         self.assertEqual(len(uc.notifications), 2)
+        self.assertIsInstance(uc.notifications[0], ExecutedContractLogger)
         self.assertIsInstance(
-            uc.notifications[0], ExecutedContractLogger
-        )
-        self.assertIsInstance(
-            uc.notifications[1], RefreshSponsorshipsCache,
+            uc.notifications[1],
+            RefreshSponsorshipsCache,
         )
 
 
@@ -203,7 +231,9 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         self.use_case = use_cases.ExecuteExistingContractUseCase(self.notifications)
         self.user = baker.make(settings.AUTH_USER_MODEL)
         self.file = SimpleUploadedFile("contract.txt", b"Contract content")
-        self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.DRAFT)
+        self.contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", status=Contract.DRAFT
+        )
 
     def tearDown(self):
         try:
@@ -213,22 +243,27 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         except ValueError:
             pass
 
-    @patch("sponsors.models.contract.uuid.uuid4", Mock(return_value="1234"))
+    @patch(
+        "sponsors.models.contract.uuid.uuid4",
+        Mock(return_value="1234"),
+    )
     def test_execute_and_update_database_object(self):
         self.use_case.execute(self.contract, self.file)
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.EXECUTED)
         self.assertEqual(b"Contract content", self.contract.signed_document.read())
-        self.assertEqual(f"{Contract.SIGNED_PDF_DIR}1234.txt", self.contract.signed_document.name)
+        self.assertEqual(
+            f"{Contract.SIGNED_PDF_DIR}1234.txt",
+            self.contract.signed_document.name,
+        )
 
     def test_build_use_case_with_default_notifications(self):
         uc = use_cases.ExecuteExistingContractUseCase.build()
         self.assertEqual(len(uc.notifications), 2)
+        self.assertIsInstance(uc.notifications[0], ExecutedExistingContractLogger)
         self.assertIsInstance(
-            uc.notifications[0], ExecutedExistingContractLogger
-        )
-        self.assertIsInstance(
-            uc.notifications[1], RefreshSponsorshipsCache,
+            uc.notifications[1],
+            RefreshSponsorshipsCache,
         )
 
     def test_execute_contract_flag_overlapping_sponsorships(self):
@@ -250,7 +285,9 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         self.assertEqual(recent_contract.status, Contract.EXECUTED)
         self.assertEqual(sponsorship.overlapped_by, recent_contract.sponsorship)
 
-    def test_execute_contract_do_not_flag_overlap_if_no_date_range_conflict(self):
+    def test_execute_contract_do_not_flag_overlap_if_no_date_range_conflict(
+        self,
+    ):
         sponsorship = self.contract.sponsorship
         self.use_case.execute(self.contract, self.file)
         self.contract.refresh_from_db()
@@ -269,7 +306,9 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         self.assertEqual(recent_contract.status, Contract.EXECUTED)
         self.assertIsNone(sponsorship.overlapped_by)
 
-    def test_execute_contract_do_not_flag_overlap_if_from_other_sponsor(self):
+    def test_execute_contract_do_not_flag_overlap_if_from_other_sponsor(
+        self,
+    ):
         sponsorship = self.contract.sponsorship
         self.use_case.execute(self.contract, self.file)
         self.contract.refresh_from_db()
@@ -294,7 +333,10 @@ class NullifyContractUseCaseTests(TestCase):
         self.notifications = [Mock()]
         self.use_case = use_cases.NullifyContractUseCase(self.notifications)
         self.user = baker.make(settings.AUTH_USER_MODEL)
-        self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
+        self.contract = baker.make_recipe(
+            "sponsors.tests.empty_contract",
+            status=Contract.AWAITING_SIGNATURE,
+        )
 
     def test_nullify_and_update_database_object(self):
         self.use_case.execute(self.contract)
@@ -304,11 +346,10 @@ class NullifyContractUseCaseTests(TestCase):
     def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.NullifyContractUseCase.build()
         self.assertEqual(len(uc.notifications), 2)
+        self.assertIsInstance(uc.notifications[0], NullifiedContractLogger)
         self.assertIsInstance(
-            uc.notifications[0], NullifiedContractLogger
-        )
-        self.assertIsInstance(
-            uc.notifications[1], RefreshSponsorshipsCache,
+            uc.notifications[1],
+            RefreshSponsorshipsCache,
         )
 
 
@@ -320,38 +361,62 @@ class SendSponsorshipNotificationUseCaseTests(TestCase):
         self.sponsorships = baker.make(Sponsorship, sponsor__name="Foo", _quantity=3)
         self.sponsorships = Sponsorship.objects.all()  # to respect DB order
 
-    @patch.object(SponsorEmailNotificationTemplate, 'get_email_message')
+    @patch.object(SponsorEmailNotificationTemplate, "get_email_message")
     def test_send_notifications(self, mock_get_email_message):
         emails = [Mock(EmailMessage, autospec=True) for i in range(3)]
         mock_get_email_message.side_effect = emails
         contact_types = ["administrative"]
 
-        self.use_case.execute(self.notification, self.sponsorships, contact_types, request='request')
+        self.use_case.execute(
+            self.notification,
+            self.sponsorships,
+            contact_types,
+            request="request",
+        )
 
         self.assertEqual(mock_get_email_message.call_count, 3)
         self.assertEqual(self.notifications[0].notify.call_count, 3)
         for sponsorship in self.sponsorships:
-            kwargs = dict(to_accounting=False, to_administrative=True, to_manager=False, to_primary=False)
+            kwargs = dict(
+                to_accounting=False,
+                to_administrative=True,
+                to_manager=False,
+                to_primary=False,
+            )
             mock_get_email_message.assert_has_calls([call(sponsorship, **kwargs)])
-            self.notifications[0].notify.assert_has_calls([
-                call(notification=self.notification, sponsorship=sponsorship, contact_types=contact_types, request='request')
-            ])
+            self.notifications[0].notify.assert_has_calls(
+                [
+                    call(
+                        notification=self.notification,
+                        sponsorship=sponsorship,
+                        contact_types=contact_types,
+                        request="request",
+                    )
+                ]
+            )
         for email in emails:
             email.send.assert_called_once_with()
 
-    @patch.object(SponsorEmailNotificationTemplate, 'get_email_message', Mock(return_value=None))
+    @patch.object(
+        SponsorEmailNotificationTemplate,
+        "get_email_message",
+        Mock(return_value=None),
+    )
     def test_skip_sponsorships_if_no_email_message(self):
         contact_types = ["administrative"]
-        self.use_case.execute(self.notification, self.sponsorships, contact_types, request='request')
+        self.use_case.execute(
+            self.notification,
+            self.sponsorships,
+            contact_types,
+            request="request",
+        )
 
         self.assertEqual(self.notifications[0].notify.call_count, 0)
 
     def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.SendSponsorshipNotificationUseCase.build()
         self.assertEqual(len(uc.notifications), 1)
-        self.assertIsInstance(
-            uc.notifications[0], SendSponsorNotificationLogger
-        )
+        self.assertIsInstance(uc.notifications[0], SendSponsorNotificationLogger)
 
 
 class CloneSponsorshipYearUseCaseTests(TestCase):
@@ -366,7 +431,11 @@ class CloneSponsorshipYearUseCaseTests(TestCase):
         baker.make(SponsorshipBenefit, year=2021)  # benefit from another year
         benefits_2022 = baker.make(SponsorshipBenefit, year=2022, _quantity=3)
 
-        created_objects = self.use_case.execute(clone_from_year=2022, target_year=2023, request=self.request)
+        created_objects = self.use_case.execute(
+            clone_from_year=2022,
+            target_year=2023,
+            request=self.request,
+        )
 
         # assert new packages were created
         self.assertEqual(5, SponsorshipPackage.objects.count())
@@ -389,6 +458,4 @@ class CloneSponsorshipYearUseCaseTests(TestCase):
     def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.CloneSponsorshipYearUseCase.build()
         self.assertEqual(len(uc.notifications), 1)
-        self.assertIsInstance(
-            uc.notifications[0], ClonedResourcesLogger
-        )
+        self.assertIsInstance(uc.notifications[0], ClonedResourcesLogger)

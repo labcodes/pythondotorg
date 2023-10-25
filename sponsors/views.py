@@ -1,23 +1,52 @@
-from itertools import chain
-from django.conf import settings
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.db import transaction
-from django.forms.utils import ErrorList
-from django.shortcuts import redirect, render
-from django.urls import reverse_lazy, reverse
-from django.utils.decorators import method_decorator
-from django.views.generic import FormView, DetailView, RedirectView
+from itertools import (
+    chain,
+)
+
+from django.conf import (
+    settings,
+)
+from django.contrib import (
+    messages,
+)
+from django.contrib.auth.decorators import (
+    login_required,
+)
+from django.db import (
+    transaction,
+)
+from django.forms.utils import (
+    ErrorList,
+)
+from django.shortcuts import (
+    redirect,
+    render,
+)
+from django.urls import (
+    reverse,
+    reverse_lazy,
+)
+from django.utils.decorators import (
+    method_decorator,
+)
+from django.views.generic import (
+    FormView,
+)
+
+from sponsors import (
+    cookies,
+    use_cases,
+)
+from sponsors.forms import (
+    SponsorshipApplicationForm,
+    SponsorshipsBenefitsForm,
+)
 
 from .models import (
     SponsorshipBenefit,
+    SponsorshipCurrentYear,
     SponsorshipPackage,
-    SponsorshipProgram, SponsorshipCurrentYear,
+    SponsorshipProgram,
 )
-
-from sponsors import cookies
-from sponsors import use_cases
-from sponsors.forms import SponsorshipsBenefitsForm, SponsorshipApplicationForm
 
 
 class SelectSponsorshipApplicationBenefitsView(FormView):
@@ -90,7 +119,8 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
         for fname, benefits in [
             (f, v)
             for f, v in form.cleaned_data.items()
-            if f.startswith("benefits_") or f in ['a_la_carte_benefits', 'standalone_benefits']
+            if f.startswith("benefits_")
+            or f in ["a_la_carte_benefits", "standalone_benefits"]
         ]:
             data[fname] = sorted(b.id for b in benefits)
 
@@ -146,7 +176,10 @@ class NewSponsorshipApplicationView(FormView):
                 else:
                     added_benefits.append(benefit)
         else:
-            added_benefits, sponsorship_benefits = sponsorship_benefits, []
+            added_benefits, sponsorship_benefits = (
+                sponsorship_benefits,
+                [],
+            )
 
         kwargs.update(
             {
@@ -170,7 +203,9 @@ class NewSponsorshipApplicationView(FormView):
         sponsorship = uc.execute(
             self.request.user,
             sponsor,
-            benefits_form.get_benefits(include_a_la_carte=True, include_standalone=True),
+            benefits_form.get_benefits(
+                include_a_la_carte=True, include_standalone=True
+            ),
             benefits_form.get_package(),
             request=self.request,
         )
@@ -181,7 +216,10 @@ class NewSponsorshipApplicationView(FormView):
         response = render(
             self.request,
             "sponsors/sponsorship_application_finished.html",
-            context={"sponsorship": sponsorship, "notified": notified},
+            context={
+                "sponsorship": sponsorship,
+                "notified": notified,
+            },
         )
         cookies.delete_sponsorship_selected_benefits(response)
         return response

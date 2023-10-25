@@ -1,6 +1,10 @@
-from django.conf import settings
+from django.conf import (
+    settings,
+)
 
-from mailing.models import BaseEmailTemplate
+from mailing.models import (
+    BaseEmailTemplate,
+)
 
 SPONSOR_TEMPLATE_HELP_TEXT = (
     "<br>"

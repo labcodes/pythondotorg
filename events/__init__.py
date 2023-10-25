@@ -1,1 +1,1 @@
-default_app_config = 'events.apps.EventsAppConfig'
+default_app_config = "events.apps.EventsAppConfig"

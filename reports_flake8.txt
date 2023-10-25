@@ -1,0 +1,138 @@
+./boxes/templatetags/boxes.py:1:1: INP001 File is part of an implicit namespace package. Add an __init__.py?
+./events/importer.py:83:13: F841 local variable 'exc' is assigned to but never used
+./jobs/tests/test_views.py:377:9: F841 local variable 'creator' is assigned to but never used
+./jobs/tests/test_views.py:382:9: F841 local variable 'response' is assigned to but never used
+./pages/management/commands/import_pages_from_svn.py:54:9: F841 local variable 'e' is assigned to but never used
+./pages/management/commands/import_pages_from_svn.py:96:13: F841 local variable 'e' is assigned to but never used
+./pages/management/commands/import_pages_from_svn.py:112:13: F841 local variable 'e' is assigned to but never used
+./peps/converters.py:15:1: E731 do not assign a lambda expression, use a def
+./pydotorg/settings/heroku.py:8:1: F405 'DATABASES' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:19:30: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:31:14: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:33:17: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:37:5: F405 'MIDDLEWARE' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:43:14: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:44:19: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:45:23: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:46:18: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:48:22: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:51:20: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:54:18: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:61:1: F405 'INSTALLED_APPS' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:66:12: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:67:16: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:70:21: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:71:25: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:72:27: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:73:19: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:80:22: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/heroku.py:82:23: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/local.py:16:16: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/local.py:19:14: F405 'dj_database_url_parser' may be undefined, or defined from star imports: .base
+./pydotorg/settings/local.py:23:30: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/local.py:40:17: F405 'config' may be undefined, or defined from star imports: .base
+./pydotorg/settings/local.py:45:33: F405 'BASE' may be undefined, or defined from star imports: .base
+./pydotorg/settings/local.py:58:1: F405 'INSTALLED_APPS' may be undefined, or defined from star imports: .base
+./pydotorg/settings/local.py:62:1: F405 'MIDDLEWARE' may be undefined, or defined from star imports: .base
+./pydotorg/settings/local.py:73:1: F405 'REST_FRAMEWORK' may be undefined, or defined from star imports: .base
+./pydotorg/wsgi.py:27:1: E402 module level import not at top of file
+./sponsors/admin.py:39:30: E261 at least two spaces before inline comment
+./sponsors/admin.py:47:13: F405 'GenericAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:50:5: E731 do not assign a lambda expression, use a def
+./sponsors/admin.py:67:17: F405 'SponsorshipProgram' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:85:17: F405 'LogoPlacementConfiguration' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:88:17: F405 'TieredBenefitConfiguration' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:91:17: F405 'EmailTargetableConfiguration' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:98:17: F405 'RequiredImgAssetConfiguration' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:102:17: F405 'RequiredTextAssetConfiguration' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:105:17: F405 'RequiredResponseAssetConfiguration' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:108:17: F405 'ProvidedTextAssetConfiguration' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:111:17: F405 'ProvidedFileAssetConfiguration' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:113:13: F405 'BenefitFeatureConfiguration' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:126:17: F405 'SponsorshipBenefit' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:194:17: F405 'SponsorshipPackage' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:216:13: F405 'SponsorContact' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:222:13: F405 'Sponsorship' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:234:17: F405 'Sponsor' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:241:13: F405 'SponsorBenefit' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:275:14: F405 'EmailTargetableConfiguration' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:276:20: F405 'SponsorshipBenefit' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:289:14: F405 'SponsorBenefit' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:299:16: F405 'Sponsorship' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:305:44: F405 'Sponsorship' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:331:17: F405 'Sponsorship' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:385:17: F405 'Sponsorship' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:727:17: F405 'SponsorshipCurrentYear' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:752:9: F841 local variable 'configured_years' is assigned to but never used
+./sponsors/admin.py:756:9: F841 local variable 'packages_url' is assigned to but never used
+./sponsors/admin.py:785:9: F841 local variable 'packages_url' is assigned to but never used
+./sponsors/admin.py:809:17: F405 'LegalClause' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:814:17: F405 'Contract' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:971:17: F405 'SponsorEmailNotificationTemplate' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:976:24: F405 'SPONSOR_TEMPLATE_HELP_TEXT' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:988:67: F405 'GenericAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1006:14: F405 'BenefitFeature' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1010:20: F405 'SponsorshipBenefit' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1064:17: F405 'GenericAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1072:16: F405 'GenericAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1075:16: F405 'GenericAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1088:14: F405 'Sponsor' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1093:14: F405 'Sponsorship' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1130:18: F405 'GenericAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1134:17: F405 'TextAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1136:18: F405 'TextAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1139:17: F405 'ImgAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1141:18: F405 'ImgAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1144:17: F405 'FileAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1145:1: F811 redefinition of unused 'ImgAssetModelAdmin' from line 1140
+./sponsors/admin.py:1146:18: F405 'FileAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1149:17: F405 'ResponseAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/admin.py:1151:18: F405 'ResponseAsset' may be undefined, or defined from star imports: sponsors.models
+./sponsors/forms.py:294:9: F841 local variable 'cleaned_data' is assigned to but never used
+./sponsors/forms.py:615:9: F841 local variable 'cleaned_data' is assigned to but never used
+./sponsors/management/commands/create_pycon_vouchers_for_sponsors.py:1:1: F401 'os' imported but unused
+./sponsors/management/commands/create_pycon_vouchers_for_sponsors.py:5:1: F401 'sys' imported but unused
+./sponsors/management/commands/create_pycon_vouchers_for_sponsors.py:11:1: F401 'django.db.models.Q' imported but unused
+./sponsors/management/commands/create_pycon_vouchers_for_sponsors.py:92:121: E501 line too long (135 > 120 characters)
+./sponsors/management/commands/create_pycon_vouchers_for_sponsors.py:106:121: E501 line too long (125 > 120 characters)
+./sponsors/management/commands/create_pycon_vouchers_for_sponsors.py:113:121: E501 line too long (136 > 120 characters)
+./sponsors/management/commands/create_pycon_vouchers_for_sponsors.py:115:11: F541 f-string is missing placeholders
+./sponsors/models/sponsors.py:168:14: E225 missing whitespace around operator
+./sponsors/models/sponsors.py:292:9: F841 local variable 'features' is assigned to but never used
+./sponsors/models/sponsorship.py:318:9: F841 local variable 'conditions' is assigned to but never used
+./sponsors/tests/test_forms.py:128:9: F841 local variable 'ads_pkgs' is assigned to but never used
+./sponsors/tests/test_forms.py:786:9: F841 local variable 'img_asset' is assigned to but never used
+./sponsors/tests/test_forms.py:817:9: F841 local variable 'img_asset' is assigned to but never used
+./sponsors/tests/test_forms.py:818:9: F841 local variable 'text_asset' is assigned to but never used
+./sponsors/tests/test_management_command.py:36:13: F841 local variable 'quantity' is assigned to but never used
+./sponsors/tests/test_managers.py:105:9: F841 local variable 'regular_benefit' is assigned to but never used
+./sponsors/tests/test_managers.py:156:9: F841 local variable 'img_asset' is assigned to but never used
+./sponsors/tests/test_models.py:530:9: F841 local variable 'sponsor' is assigned to but never used
+./sponsors/tests/test_models.py:697:9: F841 local variable 'benefit_config' is assigned to but never used
+./sponsors/tests/test_models.py:717:9: F841 local variable 'benefit_config' is assigned to but never used
+./sponsors/tests/test_models.py:867:9: F841 local variable 'cfg_1' is assigned to but never used
+./sponsors/tests/test_models.py:873:9: F841 local variable 'cfg_2' is assigned to but never used
+./sponsors/tests/test_pdf.py:30:9: F841 local variable 'html' is assigned to but never used
+./sponsors/tests/test_use_cases.py:64:52: F405 'AppliedSponsorshipNotificationToPSF' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:66:34: F405 'AppliedSponsorshipNotificationToSponsors' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:97:52: F405 'RejectedSponsorshipNotificationToPSF' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:99:34: F405 'RejectedSponsorshipNotificationToSponsors' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:148:52: F405 'SponsorshipApprovalLogger' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:174:52: F405 'ContractNotificationToPSF' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:176:34: F405 'SentContractLogger' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:206:34: F405 'ExecutedContractLogger' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:209:34: F405 'RefreshSponsorshipsCache' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:241:34: F405 'ExecutedExistingContractLogger' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:244:34: F405 'RefreshSponsorshipsCache' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:321:34: F405 'NullifiedContractLogger' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:324:34: F405 'RefreshSponsorshipsCache' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:371:34: F405 'SendSponsorNotificationLogger' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_use_cases.py:385:9: F841 local variable 'benefits_2022' is assigned to but never used
+./sponsors/tests/test_use_cases.py:411:34: F405 'ClonedResourcesLogger' may be undefined, or defined from star imports: sponsors.notifications
+./sponsors/tests/test_views.py:119:9: F841 local variable 'psf_package' is assigned to but never used
+./sponsors/tests/test_views.py:124:9: F841 local variable 'at_capacity_benefit' is assigned to but never used
+./sponsors/tests/test_views.py:127:9: F841 local variable 'psf_package' is assigned to but never used
+./sponsors/tests/test_views_admin.py:867:9: F841 local variable 'response' is assigned to but never used
+./sponsors/tests/test_views_admin.py:1078:9: F841 local variable 'resp' is assigned to but never used
+./users/forms.py:106:1: W391 blank line at end of file
+./users/tests/test_views.py:575:9: F841 local variable 'context' is assigned to but never used

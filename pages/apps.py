@@ -1,6 +1,7 @@
-from django.apps import AppConfig
+from django.apps import (
+    AppConfig,
+)
 
 
 class PagesAppConfig(AppConfig):
-
-    name = 'pages'
+    name = "pages"

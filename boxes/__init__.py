@@ -1,1 +1,1 @@
-default_app_config = 'boxes.apps.BoxesAppConfig'
+default_app_config = "boxes.apps.BoxesAppConfig"

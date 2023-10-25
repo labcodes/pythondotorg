@@ -1,7 +1,13 @@
-from pathlib import Path
+from pathlib import (
+    Path,
+)
 
-from django.conf import settings
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import (
+    settings,
+)
+from django.core.files.uploadedfile import (
+    SimpleUploadedFile,
+)
 
 
 def get_static_image_file_as_upload(filename, upload_filename=None):

@@ -1,5 +1,10 @@
-from django.template import Template, Context
-from django.test import TestCase
+from django.template import (
+    Context,
+    Template,
+)
+from django.test import (
+    TestCase,
+)
 
 
 class TemplateTestCase(TestCase):

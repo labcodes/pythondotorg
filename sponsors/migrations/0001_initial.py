@@ -1,11 +1,15 @@
-from django.db import models, migrations
-import markupfield.fields
 import django.utils.timezone
-from django.conf import settings
+import markupfield.fields
+from django.conf import (
+    settings,
+)
+from django.db import (
+    migrations,
+    models,
+)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("companies", "0001_initial"),
@@ -27,7 +31,9 @@ class Migration(migrations.Migration):
                 (
                     "created",
                     models.DateTimeField(
-                        db_index=True, default=django.utils.timezone.now, blank=True
+                        db_index=True,
+                        default=django.utils.timezone.now,
+                        blank=True,
                     ),
                 ),
                 (
@@ -53,7 +59,10 @@ class Migration(migrations.Migration):
                         blank=True,
                     ),
                 ),
-                ("is_published", models.BooleanField(db_index=True, default=False)),
+                (
+                    "is_published",
+                    models.BooleanField(db_index=True, default=False),
+                ),
                 (
                     "featured",
                     models.BooleanField(
@@ -62,10 +71,16 @@ class Migration(migrations.Migration):
                         default=False,
                     ),
                 ),
-                ("_content_rendered", models.TextField(editable=False)),
+                (
+                    "_content_rendered",
+                    models.TextField(editable=False),
+                ),
                 (
                     "company",
-                    models.ForeignKey(to="companies.Company", on_delete=models.CASCADE),
+                    models.ForeignKey(
+                        to="companies.Company",
+                        on_delete=models.CASCADE,
+                    ),
                 ),
                 (
                     "creator",

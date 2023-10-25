@@ -1,4 +1,6 @@
-from django.conf import settings
+from django.conf import (
+    settings,
+)
 
 
 class AdminNoCaching:
@@ -29,7 +31,11 @@ class GlobalSurrogateKey:
         if hasattr(settings, "GLOBAL_SURROGATE_KEY"):
             response["Surrogate-Key"] = " ".join(
                 filter(
-                    None, [settings.GLOBAL_SURROGATE_KEY, response.get("Surrogate-Key")]
+                    None,
+                    [
+                        settings.GLOBAL_SURROGATE_KEY,
+                        response.get("Surrogate-Key"),
+                    ],
                 )
             )
         return response

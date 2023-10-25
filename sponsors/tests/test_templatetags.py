@@ -1,12 +1,15 @@
-from model_bakery import baker
-from django.test import TestCase
-from unittest.mock import patch, Mock
+from unittest.mock import (
+    patch,
+)
 
-from companies.models import Company
+from django.test import (
+    TestCase,
+)
+from model_bakery import (
+    baker,
+)
 
 from ..models import (
-    Sponsor,
-    SponsorBenefit,
     SponsorshipBenefit,
     TieredBenefitConfiguration,
 )
@@ -21,7 +24,9 @@ from ..templatetags.sponsors import (
 class FullSponsorshipTemplatetagTests(TestCase):
     def test_templatetag_context(self):
         sponsorship = baker.make(
-            "sponsors.Sponsorship", for_modified_package=False, _fill_optional=True
+            "sponsors.Sponsorship",
+            for_modified_package=False,
+            _fill_optional=True,
         )
         context = full_sponsorship(sponsorship)
         expected = {
@@ -34,26 +39,29 @@ class FullSponsorshipTemplatetagTests(TestCase):
 
     def test_do_not_display_fee_if_modified_package(self):
         sponsorship = baker.make(
-            "sponsors.Sponsorship", for_modified_package=True, _fill_optional=True
+            "sponsors.Sponsorship",
+            for_modified_package=True,
+            _fill_optional=True,
         )
         context = full_sponsorship(sponsorship)
         self.assertFalse(context["display_fee"])
 
     def test_allows_to_overwrite_display_fee_flag(self):
         sponsorship = baker.make(
-            "sponsors.Sponsorship", for_modified_package=True, _fill_optional=True
+            "sponsors.Sponsorship",
+            for_modified_package=True,
+            _fill_optional=True,
         )
         context = full_sponsorship(sponsorship, display_fee=True)
         self.assertTrue(context["display_fee"])
 
 
 class ListSponsorsTemplateTag(TestCase):
-
     def test_filter_sponsorship_with_logo_placement_benefits(self):
-        sponsorship = baker.make_recipe('sponsors.tests.finalized_sponsorship')
+        sponsorship = baker.make_recipe("sponsors.tests.finalized_sponsorship")
         baker.make_recipe(
-            'sponsors.tests.logo_at_download_feature',
-            sponsor_benefit__sponsorship=sponsorship
+            "sponsors.tests.logo_at_download_feature",
+            sponsor_benefit__sponsorship=sponsorship,
         )
 
         context = list_sponsors("download")
@@ -64,7 +72,6 @@ class ListSponsorsTemplateTag(TestCase):
 
 
 class BenefitQuantityForPackageTests(TestCase):
-
     def setUp(self):
         self.benefit = baker.make(SponsorshipBenefit)
         self.package = baker.make("sponsors.SponsorshipPackage")
@@ -84,7 +91,9 @@ class BenefitQuantityForPackageTests(TestCase):
         display = benefit_quantity_for_package(self.benefit.pk, self.package.pk)
         self.assertEqual(display, self.config.display_label)
 
-    def test_return_empty_string_if_mismatching_benefit_or_package(self):
+    def test_return_empty_string_if_mismatching_benefit_or_package(
+        self,
+    ):
         other_benefit = baker.make(SponsorshipBenefit)
         other_package = baker.make("sponsors.SponsorshipPackage")
 
@@ -95,8 +104,7 @@ class BenefitQuantityForPackageTests(TestCase):
 
 
 class BenefitNameForDisplayTests(TestCase):
-
-    @patch.object(SponsorshipBenefit, 'name_for_display')
+    @patch.object(SponsorshipBenefit, "name_for_display")
     def test_display_name_for_display_from_benefit(self, mocked_name_for_display):
         mocked_name_for_display.return_value = "Modified name"
         benefit = baker.make(SponsorshipBenefit)

@@ -1,1 +1,1 @@
-default_app_config = 'successstories.apps.SuccessstoriesAppConfig'
+default_app_config = "successstories.apps.SuccessstoriesAppConfig"

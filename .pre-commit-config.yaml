@@ -1,0 +1,14 @@
+default_stages: [commit]
+
+repos:
+-   repo: https://github.com/editorconfig-checker/editorconfig-checker.python
+    rev: '2.7.2'
+    hooks:
+    -   id: editorconfig-checker
+        alias: ec
+
+
+ci:
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false
