@@ -38,7 +38,7 @@ class Command(BaseCommand):
                         "The app label provided does not exist as an application."
                     )
                 )
-                return
+                return None
         else:
             app_list = apps.get_app_configs()
         for app in app_list:

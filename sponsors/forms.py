@@ -343,7 +343,7 @@ class SponsorshipApplicationForm(forms.Form):
     def clean_sponsor(self):
         sponsor = self.cleaned_data.get("sponsor")
         if not sponsor:
-            return
+            return None
 
         if Sponsorship.objects.in_progress().filter(sponsor=sponsor).exists():
             msg = f"The sponsor {sponsor.name} already have open Sponsorship applications. "

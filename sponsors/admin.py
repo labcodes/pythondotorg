@@ -79,12 +79,14 @@ class AssetsInline(GenericTabularInline):
     model = GenericAsset
     extra = 0
     max_num = 0
-    has_delete_permission = lambda self, request, obj: False
     readonly_fields = [
         "internal_name",
         "user_submitted_info",
         "value",
     ]
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     def value(self, obj=None):
         if not obj or not obj.value:

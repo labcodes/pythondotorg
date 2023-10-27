@@ -43,7 +43,7 @@ class Command(BaseCommand):
 
         if r.status_code != 200:
             print(f"ERROR Couldn't load {url}")
-            return
+            return None
 
         # Create new associated image and generate ultimate path
         img = Image()

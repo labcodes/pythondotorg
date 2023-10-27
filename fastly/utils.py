@@ -9,7 +9,7 @@ def purge_url(path):
     Purge a Fastly.com URL given a path. path argument must begin with a slash
     """
     if settings.DEBUG:
-        return
+        return None
 
     api_key = getattr(settings, "FASTLY_API_KEY", None)
     if api_key:

@@ -149,7 +149,7 @@ class Command(BaseCommand):
         with requests.get(artifact_url, stream=True) as r:
             artifact_last_modified = parsedate(r.headers["last-modified"])
             if peps_last_updated > artifact_last_modified:
-                return
+                return None
 
             temp_file = stack.enter_context(TemporaryFile())
             for chunk in r.iter_content(chunk_size=8192):

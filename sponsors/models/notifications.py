@@ -45,7 +45,7 @@ class SponsorEmailNotificationTemplate(BaseEmailTemplate):
         }
         contacts = sponsorship.sponsor.contacts.filter_by_contact_types(**contact_types)
         if not contacts.exists():
-            return
+            return None
 
         recipients = contacts.values_list("email", flat=True)
         return self.get_email(

@@ -52,7 +52,7 @@ def convert_pep0(artifact_path):
         pep0_content = pep0_file.read()
     data = convert_pep_page(0, pep0_content)
     if data is None:
-        return
+        return None
     return data["content"]
 
 
@@ -119,10 +119,7 @@ def convert_pep_page(pep_number, content):
         data["title"] = soup.title.text
 
         if not re.search(r"PEP \d+", data["title"]):
-            data["title"] = "PEP {} -- {}".format(
-                pep_number_humanize,
-                soup.title.text,
-            )
+            data["title"] = f"PEP {pep_number_humanize} -- {soup.title.text}"
 
         header = soup.body.find("div", class_="header")
         header, data = fix_headers(header, data)
@@ -165,7 +162,7 @@ def convert_pep_page(pep_number, content):
 
     # Return early if 'html' or 'body' return None.
     if pep_content.html is None or pep_content.body is None:
-        return
+        return None
 
     # Strip <html> and <body> tags.
     pep_content.html.unwrap()
@@ -183,7 +180,7 @@ def get_pep_page(artifact_path, pep_number, commit=True):
     pep_path = os.path.join(artifact_path, f"pep-{pep_number}.html")
     if not os.path.exists(pep_path):
         print(f"PEP Path '{pep_path}' does not exist, skipping")
-        return
+        return None
     with open(pep_path) as pep_file:
         pep_content = pep_file.read()
     pep_content = convert_pep_page(pep_number, pep_content)
@@ -217,13 +214,13 @@ def add_pep_image(artifact_path, pep_number, path):
     image_path = os.path.join(artifact_path, path)
     if not os.path.exists(image_path):
         print(f"Image Path '{image_path}' does not exist, skipping")
-        return
+        return None
 
     try:
         page = Page.objects.get(path=pep_url(pep_number))
     except Page.DoesNotExist:
         print(f"Could not find backing PEP {pep_number}")
-        return
+        return None
 
     # Find existing images, we have to loop here as we can't use the ORM
     # to query against image__path
@@ -258,7 +255,7 @@ def add_pep_image(artifact_path, pep_number, path):
 def get_peps_rss(artifact_path):
     rss_feed = os.path.join(artifact_path, "peps.rss")
     if not os.path.exists(rss_feed):
-        return
+        return None
 
     page, _ = Page.objects.get_or_create(
         path="dev/peps/peps.rss",

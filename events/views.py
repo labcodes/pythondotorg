@@ -1,3 +1,4 @@
+import contextlib
 import datetime
 
 from django.contrib import (
@@ -51,10 +52,8 @@ class EventListBase(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         featured_events = self.get_queryset().filter(featured=True)
-        try:
+        with contextlib.suppress(IndexError):
             context["featured"] = featured_events[0]
-        except IndexError:
-            pass
 
         context["event_categories"] = EventCategory.objects.all()[:10]
         context["event_locations"] = EventLocation.objects.all()[:10]

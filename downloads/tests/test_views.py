@@ -521,10 +521,7 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
             password="password",
         )
         self.normal_user_key = self.normal_user.auth_token.key
-        self.Authorization_normal = "{} {}".format(
-            self.token_header,
-            self.normal_user_key,
-        )
+        self.Authorization_normal = f"{self.token_header} {self.normal_user_key}"
 
     def get_json(self, response):
         return response.data

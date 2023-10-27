@@ -285,7 +285,7 @@ DEFAULT_FROM_EMAIL = "noreply@python.org"
 
 ### Pipeline
 
-from .pipeline import (  # noqa
+from .pipeline import (  # noqa: F401, E402
     PIPELINE,
 )
 

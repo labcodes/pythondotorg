@@ -100,7 +100,7 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
         if not self.request.session.test_cookie_worked():
             error = ErrorList()
             error.append("You must allow cookies from python.org to proceed.")
-            form._errors.setdefault("__all__", error)
+            form._errors.setdefault("__all__", error)  # noqa: SLF001
             return self.form_invalid(form)
 
         response = super().form_valid(form)

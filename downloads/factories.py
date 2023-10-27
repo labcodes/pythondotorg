@@ -76,6 +76,7 @@ def _get_id(obj, key):
     if resource_uri:
         # i.e. /foo/1/ -> /foo/1 -> ('/foo', '/', '1') -> '1'
         return resource_uri.rstrip("/").rpartition("/")[-1]
+    return None
 
 
 def initial_data():
